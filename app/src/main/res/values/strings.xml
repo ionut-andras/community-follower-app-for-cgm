@@ -1,0 +1,32 @@
+<resources>
+    <!-- Generic strings -->
+    <string name="app_name">Follower for Dexcom</string>
+    <string name="defaultGlucoseValue">N/A</string>
+    <string name="defaultGlucoseTrend"></string>
+    <string name="emailLabel">Email</string>
+    <string name="passwordLabel">Password</string>
+    <string name="glucoseMeasureUnit">mg/dL</string>
+    <string name="menuRefresh">mg/dL</string>
+    <string name="notificationChannelId">dexcom_channel_01</string>
+    <string name="notificationChannelName">FollowerForDexcom</string>
+    <string name="notificationChannelDescription">Notification channel for FollowerForDexcom</string>
+    <string name="highGlucoseValue">High glucose value</string>
+    <string name="lowGlucoseValue">Low glucose value</string>
+    <string name="normalGlucoseValue">Normal glucose value</string>
+    <string name="autoCancelNotifications">Auto cancel notifications for HarmonyOS Lite</string>
+    <string name="buttonLoginText">Login</string>
+    <string name="applicationsSettingsTitleText">Settings</string>
+    <string name="applicationsSettingsBackText">Back</string>
+    <string name="text3h">3h</string>
+    <string name="text6h">6h</string>
+    <string name="text12h">12h</string>
+    <string name="text24h">24h</string>
+
+    <!-- Variables -->
+    <string name="variableNameGenericData">data</string>
+    <string name="variableNameLoginFailed">loginFailed</string>
+    <string name="variableNameLoginFormMessage">loginFormMessage</string>
+
+    <!-- Messages -->
+    <string name="messageLoginFailed">Invalid username or password. Please try again!</string>
+</resources>
