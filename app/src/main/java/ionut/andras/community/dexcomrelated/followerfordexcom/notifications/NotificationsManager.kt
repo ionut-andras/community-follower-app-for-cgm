@@ -4,10 +4,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.os.Build
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.drawable.IconCompat
@@ -18,6 +17,8 @@ class NotificationsManager (private var appContext: Context) {
     private lateinit var androidNotificationManager: NotificationManager
 
     private lateinit var icon: IconCompat
+
+    private lateinit var soundUri: Uri
 
     private var builderContentIntent: PendingIntent? = null
 
@@ -37,20 +38,27 @@ class NotificationsManager (private var appContext: Context) {
         this.autoCancelNotification = autoCancelFlag
     }
 
+    fun setSoundUrl(soundUrl: String) {
+        this.soundUri = Uri.parse(soundUrl)
+    }
+
+    fun clearSound() {
+        soundUri = Uri.EMPTY
+    }
+
     fun triggerNotification(title: String, message: String): Int {
-        var notificationID = 0
-        if (autoCancelNotification) {
+        val notificationID = if (autoCancelNotification) {
             // Log.i(">>>>>>>>>>>>>>>", "GetAndIncrement")
             // Notifications that will be automatically cancelled after a time period needs to have different IDs
-            notificationID = notificationIdHandler.getAndIncrement()
+            notificationIdHandler.getAndIncrement()
         } else {
             // Log.i(">>>>>>>>>>>>>>>", "Get")
-            notificationID = notificationIdHandler.get()
+            notificationIdHandler.get()
         }
 
         prepareNotificationChannel()
 
-        var  builder = createNotificationBuilder(title, message)
+        val builder = createNotificationBuilder(title, message)
         if (null != builderContentIntent) {
             builder.setContentIntent(builderContentIntent)
         }
@@ -64,11 +72,11 @@ class NotificationsManager (private var appContext: Context) {
     }
 
     fun triggerAutoCancelNotification(title: String, message: String, autoCancelDelayMillis: Long = 1000) {
-        var notificationID = triggerNotification(title, message)
+        val notificationID = triggerNotification(title, message)
 
-        var handler = Handler(Looper.getMainLooper())
+        val handler = Handler(Looper.getMainLooper())
 
-        var runnable = Runnable {
+        val runnable = Runnable {
             androidNotificationManager.cancel(notificationID)
         }
         handler.postDelayed(runnable, autoCancelDelayMillis)
@@ -96,10 +104,13 @@ class NotificationsManager (private var appContext: Context) {
     private fun createNotificationChannel(channelId: String, channelName: String, channelDescription: String) {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val importance = NotificationManager.IMPORTANCE_HIGH
         val channel = NotificationChannel(channelId, channelName, importance).apply {
             description = channelDescription
             enableVibration(true)
+        }
+        if (soundUri != Uri.EMPTY) {
+            channel.setSound(soundUri, null)
         }
 
         // Register the channel with the system

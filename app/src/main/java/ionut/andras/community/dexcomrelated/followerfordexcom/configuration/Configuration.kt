@@ -21,6 +21,9 @@ class Configuration: Serializable {
 
     var glucoseHighThreshold: Int = 180
     var glucoseLowThreshold: Int = 90
+    var glucoseUrgentLowThreshold: Int = 70
+
+    var glucoseRisingDroppingHighThreshold: Int = 20
 
     var plotLabelsCount: Int = 8
 

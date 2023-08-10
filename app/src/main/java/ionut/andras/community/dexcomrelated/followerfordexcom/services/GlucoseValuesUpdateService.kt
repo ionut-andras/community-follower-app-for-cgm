@@ -2,8 +2,10 @@ package ionut.andras.community.dexcomrelated.followerfordexcom.services
 
 import android.app.PendingIntent
 import android.app.Service
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.media.RingtoneManager
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -11,6 +13,7 @@ import android.os.Looper
 import android.util.Log
 import ionut.andras.community.dexcomrelated.followerfordexcom.MainActivity
 import ionut.andras.community.dexcomrelated.followerfordexcom.R
+import ionut.andras.community.dexcomrelated.followerfordexcom.alarms.DexcomAlarmManager
 import ionut.andras.community.dexcomrelated.followerfordexcom.api.DexcomApiRequestsHandler
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.Configuration
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.UserPreferences
@@ -314,6 +317,10 @@ class GlucoseValuesUpdateService : Service() {
 
         // Convert text to bitmap
         notificationManager.setNotificationIcon(glucoseNotificationData.toIcon())
+
+        // Set the notification sound
+        notificationManager.setSoundUrl(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString())
+
         // Trigger notification
         val builder = notificationManager.createNotificationBuilder(
             glucoseNotificationData.glucoseValue,
@@ -345,6 +352,14 @@ class GlucoseValuesUpdateService : Service() {
 
             // Convert text to bitmap
             notificationManager.setNotificationIcon(glucoseNotificationData.toIcon())
+
+            // Set the notification sound
+            val soundResourceId = DexcomAlarmManager(appConfiguration).getNotificationAlarmSound(glucoseNotificationData)
+            if (0 < soundResourceId) {
+                notificationManager.setSoundUrl("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${applicationContext.packageName}/${soundResourceId}")
+            } else {
+                notificationManager.clearSound()
+            }
 
             val sharedPreferences = applicationContext.getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
             appConfiguration.autoCancelNotifications = sharedPreferences.getBoolean(UserPreferences.autoCancelNotifications, appConfiguration.autoCancelNotifications)
