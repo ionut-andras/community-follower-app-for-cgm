@@ -28,4 +28,8 @@ class Configuration: Serializable {
     var plotLabelsCount: Int = 8
 
     var autoCancelNotifications: Boolean = false;
+
+    companion object {
+        const val REQUEST_CODE_PERMISSION_NOTIFICATIONS = 100
+    }
 }

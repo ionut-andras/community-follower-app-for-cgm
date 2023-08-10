@@ -1,11 +1,14 @@
 package ionut.andras.community.dexcomrelated.followerfordexcom
 
 import android.content.*
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.mikephil.charting.charts.LineChart
 import ionut.andras.community.dexcomrelated.followerfordexcom.common.GlucoseValueColorRange
@@ -39,6 +42,9 @@ class MainActivity : AppCompatActivityWrapper() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
+
+        // Check application minimum requirements
+        checkApplicationMinimumRequirements()
 
         // Initialize application settings
         initApplicationSettings()
@@ -97,6 +103,38 @@ class MainActivity : AppCompatActivityWrapper() {
         appConfiguration.username = sharedPreferences.getString(UserPreferences.loginEmail, null).toString()
         appConfiguration.password = sharedPreferences.getString(UserPreferences.loginPassword, null).toString()
         appConfiguration.dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null).toString()
+    }
+
+    private fun checkApplicationMinimumRequirements() {
+        checkRequiredPermissions()
+    }
+
+    private fun checkRequiredPermissions() {
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+            != PackageManager.PERMISSION_GRANTED) {
+            // Request the permission
+            ActivityCompat.requestPermissions(this,
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                Configuration.REQUEST_CODE_PERMISSION_NOTIFICATIONS)
+        }
+    }
+    // Handle the permission result in onRequestPermissionsResult()
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == Configuration.REQUEST_CODE_PERMISSION_NOTIFICATIONS) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // The user granted the permission.
+                // You can now send notifications.
+            } else {
+                // The user denied the permission.
+                // You cannot send notifications.
+            }
+        }
     }
 
     private fun displayLoginFormNeeded(): Boolean {
