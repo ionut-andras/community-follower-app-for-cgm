@@ -6,9 +6,11 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.EditText
 import androidx.appcompat.widget.SwitchCompat
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.Configuration
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.UserPreferences
+import kotlin.reflect.full.declaredMemberProperties
 
 class ApplicationSettingsActivity : AppCompatActivityWrapper() {
     private lateinit var sharedPreferences: SharedPreferences
@@ -31,6 +33,11 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper() {
         autoCancelNotifications.isChecked = sharedPreferences.getBoolean(UserPreferences.autoCancelNotifications, appConfiguration.autoCancelNotifications)
 
         Log.i("Settings: autoCancelNotifications.isChecked", autoCancelNotifications.isChecked.toString())
+
+//        appConfiguration::class.declaredMemberProperties.map {
+            val minDisplayableGlucoseValue = findViewById<EditText>(R.id.minDisplayableGlucoseValue)
+            minDisplayableGlucoseValue.setText(appConfiguration.minDisplayableGlucoseValue.toString())
+  //      }
     }
 
     private fun enableSettingsActivityListeners() {

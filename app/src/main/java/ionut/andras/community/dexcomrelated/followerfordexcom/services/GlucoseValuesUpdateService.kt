@@ -14,6 +14,7 @@ import android.util.Log
 import ionut.andras.community.dexcomrelated.followerfordexcom.MainActivity
 import ionut.andras.community.dexcomrelated.followerfordexcom.R
 import ionut.andras.community.dexcomrelated.followerfordexcom.alarms.DexcomAlarmManager
+import ionut.andras.community.dexcomrelated.followerfordexcom.alarms.DexcomAlarmType
 import ionut.andras.community.dexcomrelated.followerfordexcom.api.DexcomApiRequestsHandler
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.Configuration
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.UserPreferences
@@ -318,13 +319,13 @@ class GlucoseValuesUpdateService : Service() {
         // Convert text to bitmap
         notificationManager.setNotificationIcon(glucoseNotificationData.toIcon())
 
-        // Set the notification sound
-        notificationManager.setSoundUrl(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString())
+        notificationManager.prepareNotificationChannels()
 
         // Trigger notification
         val builder = notificationManager.createNotificationBuilder(
             glucoseNotificationData.glucoseValue,
-            glucoseNotificationData.glucoseValueTrend
+            glucoseNotificationData.glucoseValueTrend,
+            true
         )
         builder.setContentIntent(pendingIntent)
 
@@ -353,13 +354,8 @@ class GlucoseValuesUpdateService : Service() {
             // Convert text to bitmap
             notificationManager.setNotificationIcon(glucoseNotificationData.toIcon())
 
-            // Set the notification sound
-            val soundResourceId = DexcomAlarmManager(appConfiguration).getNotificationAlarmSound(glucoseNotificationData)
-            if (0 < soundResourceId) {
-                notificationManager.setSoundUrl("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${applicationContext.packageName}/${soundResourceId}")
-            } else {
-                notificationManager.clearSound()
-            }
+            val alarmType = DexcomAlarmManager(appConfiguration).getNotificationAlarmType(glucoseNotificationData)
+            notificationManager.setAlarmType(alarmType)
 
             val sharedPreferences = applicationContext.getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
             appConfiguration.autoCancelNotifications = sharedPreferences.getBoolean(UserPreferences.autoCancelNotifications, appConfiguration.autoCancelNotifications)
@@ -384,7 +380,8 @@ class GlucoseValuesUpdateService : Service() {
                     glucoseNotificationData.toNotificationMessage(
                         applicationContext,
                         appConfiguration
-                    )
+                    ),
+                    appConfiguration.autoCancelDelayMillis
                 )
             }
             // Stamp notification timestamp

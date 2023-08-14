@@ -1,7 +1,6 @@
 package ionut.andras.community.dexcomrelated.followerfordexcom.alarms
 
 import android.util.Log
-import ionut.andras.community.dexcomrelated.followerfordexcom.R
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.Configuration
 import ionut.andras.community.dexcomrelated.followerfordexcom.constants.DexcomTrendsConversionMap
 import ionut.andras.community.dexcomrelated.followerfordexcom.notifications.GlucoseNotificationData
@@ -16,7 +15,7 @@ class DexcomAlarmManager(private var configuration: Configuration) {
      * - If glucose value raising fast trigger rising fast alarm
      * - If glucose value dropping fast trigger dropping fast alarm
      */
-    fun getNotificationAlarmSound(glucoseNotificationData: GlucoseNotificationData): Int {
+    fun getNotificationAlarmType(glucoseNotificationData: GlucoseNotificationData): String {
         val glucoseValue = glucoseNotificationData.glucoseValue.toInt()
 
         val glucoseRecentHistory = glucoseNotificationData.glucoseRecentHistory
@@ -39,11 +38,10 @@ class DexcomAlarmManager(private var configuration: Configuration) {
             in  configuration.glucoseUrgentLowThreshold..configuration.glucoseLowThreshold -> triggerLowAlarm()
             in configuration.glucoseHighThreshold..configuration.maxDisplayableGlucoseValue -> triggerHighAlarm()
             else -> {
-                if (
-                    DexcomTrendsConversionMap.DOUBLE_DOWN == DexcomTrendsConversionMap.convert[trend]
-                    || DexcomTrendsConversionMap.DOUBLE_UP == DexcomTrendsConversionMap.convert[trend]
-                ) {
-                    triggerRiseDropFastAlarm()
+                if (DexcomTrendsConversionMap.DOUBLE_UP == DexcomTrendsConversionMap.convert[trend]) {
+                    triggerRiseFastAlarm()
+                } else if (DexcomTrendsConversionMap.DOUBLE_DOWN == DexcomTrendsConversionMap.convert[trend]) {
+                    triggerDropFastAlarm()
                 } else {
                     triggerNoAlarm()
                 }
@@ -53,28 +51,33 @@ class DexcomAlarmManager(private var configuration: Configuration) {
         return returnValue
     }
 
-    private fun triggerUrgentLowAlarm(): Int {
+    private fun triggerUrgentLowAlarm(): String {
         Log.i("DexcomAlarmManager", "triggerUrgentLowAlarm")
-        return R.raw.glucose_urgent_low
+        return DexcomAlarmType.URGENT_LOW
     }
 
-    private fun triggerLowAlarm(): Int {
+    private fun triggerLowAlarm(): String {
         Log.i("DexcomAlarmManager", "triggerLowAlarm")
-        return R.raw.glucose_low
+        return DexcomAlarmType.LOW
     }
 
-    private fun triggerHighAlarm(): Int {
+    private fun triggerHighAlarm(): String {
         Log.i("DexcomAlarmManager", "triggerHighAlarm")
-        return R.raw.glucose_high
+        return DexcomAlarmType.HIGH
     }
 
-    private fun triggerRiseDropFastAlarm(): Int {
-        Log.i("DexcomAlarmManager", "triggerRiseDropFastAlarm")
-        return R.raw.glucose_risedrop_fast
+    private fun triggerRiseFastAlarm(): String {
+        Log.i("DexcomAlarmManager", "triggerRiseFastAlarm")
+        return DexcomAlarmType.RISING_FAST
     }
 
-    private fun triggerNoAlarm(): Int {
+    private fun triggerDropFastAlarm(): String {
+        Log.i("DexcomAlarmManager", "triggerDropFastAlarm")
+        return DexcomAlarmType.DROPPING_FAST
+    }
+
+    private fun triggerNoAlarm(): String {
         Log.i("DexcomAlarmManager", "triggerNoAlarm")
-        return 0
+        return DexcomAlarmType.NORMAL
     }
 }

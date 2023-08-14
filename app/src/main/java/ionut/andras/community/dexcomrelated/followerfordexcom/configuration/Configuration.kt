@@ -29,6 +29,8 @@ class Configuration: Serializable {
 
     var autoCancelNotifications: Boolean = false;
 
+    var autoCancelDelayMillis: Long = 8000
+
     companion object {
         const val REQUEST_CODE_PERMISSION_NOTIFICATIONS = 100
     }

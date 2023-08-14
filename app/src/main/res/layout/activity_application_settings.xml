@@ -43,4 +43,25 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/ic_menu_revert" />
 
+    <TextView
+        android:id="@+id/minDisplayableGlucoseValueText"
+        android:layout_width="241dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="24dp"
+        android:text="Glucose min value (Chart)"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/autoCancelNotifications" />
+
+    <EditText
+        android:id="@+id/minDisplayableGlucoseValue"
+        android:layout_width="93dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="36dp"
+        android:ems="10"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/autoCancelNotifications" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
