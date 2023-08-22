@@ -29,4 +29,18 @@
 
     <!-- Messages -->
     <string name="messageLoginFailed">Invalid username or password. Please try again!</string>
+
+    <!-- Labels / Hints -->
+    <string name="hintGlucoseMinValueChart">Glucose min value (Chart)</string>
+    <string name="hintEditGlucoseMinValueChart">Edit glucose min value (Chart)</string>
+    <string name="hintGlucoseMaxValueChart">Glucose max value (Chart)</string>
+    <string name="hintEditGlucoseMaxValueChart">Edit glucose max value (Chart)</string>
+
+    <string name="hintGlucoseUrgentLowThreshold">Urgent low glucose threshold</string>
+    <string name="hintEditGlucoseUrgentLowThreshold">Edit urgent low glucose threshold</string>
+    <string name="hintGlucoseLowThreshold">Glucose low threshold</string>
+    <string name="hintEditGlucoseLowThreshold">Edit glucose low threshold</string>
+    <string name="hintGlucoseHighThreshold">Glucose high threshold</string>
+    <string name="hintEditGlucoseHighThreshold">Edit glucose high threshold</string>
+
 </resources>

@@ -10,7 +10,6 @@ import android.widget.EditText
 import androidx.appcompat.widget.SwitchCompat
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.Configuration
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.UserPreferences
-import kotlin.reflect.full.declaredMemberProperties
 
 class ApplicationSettingsActivity : AppCompatActivityWrapper() {
     private lateinit var sharedPreferences: SharedPreferences
@@ -34,10 +33,12 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper() {
 
         Log.i("Settings: autoCancelNotifications.isChecked", autoCancelNotifications.isChecked.toString())
 
-//        appConfiguration::class.declaredMemberProperties.map {
-            val minDisplayableGlucoseValue = findViewById<EditText>(R.id.minDisplayableGlucoseValue)
-            minDisplayableGlucoseValue.setText(appConfiguration.minDisplayableGlucoseValue.toString())
-  //      }
+        findViewById<EditText>(R.id.minDisplayableGlucoseValue).setText(appConfiguration.minDisplayableGlucoseValue.toString())
+        findViewById<EditText>(R.id.maxDisplayableGlucoseValue).setText(appConfiguration.maxDisplayableGlucoseValue.toString())
+
+        findViewById<EditText>(R.id.glucoseUrgentLowThresholdValue).setText(appConfiguration.glucoseUrgentLowThreshold.toString())
+        findViewById<EditText>(R.id.glucoseLowThresholdValue).setText(appConfiguration.glucoseLowThreshold.toString())
+        findViewById<EditText>(R.id.glucoseHighThresholdValue).setText(appConfiguration.glucoseHighThreshold.toString())
     }
 
     private fun enableSettingsActivityListeners() {
@@ -56,7 +57,7 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper() {
     }
 
     fun btnSettingsBackOnClick(view: View) {
-        var intent = Intent(applicationContext, MainActivity::class.java)
+        val intent = Intent(applicationContext, MainActivity::class.java)
         startActivity(intent)
     }
 }

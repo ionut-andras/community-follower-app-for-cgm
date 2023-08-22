@@ -48,20 +48,123 @@
         android:layout_width="241dp"
         android:layout_height="24dp"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="24dp"
-        android:text="Glucose min value (Chart)"
+        android:layout_marginTop="40dp"
+        android:text="@string/hintGlucoseMinValueChart"
+        app:layout_constraintEnd_toStartOf="@+id/minDisplayableGlucoseValue"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/autoCancelNotifications" />
 
     <EditText
         android:id="@+id/minDisplayableGlucoseValue"
         android:layout_width="93dp"
-        android:layout_height="24dp"
+        android:layout_height="48dp"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="36dp"
+        android:autofillHints="@string/hintEditGlucoseMinValueChart"
         android:ems="10"
-        android:inputType="number"
+        android:hint="@string/hintEditGlucoseMinValueChart"
+        android:inputType="none"
+        android:textColorHint="#757575"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/autoCancelNotifications" />
+
+    <TextView
+        android:id="@+id/maxDisplayableGlucoseValueText"
+        android:layout_width="241dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="28dp"
+        android:text="@string/hintGlucoseMaxValueChart"
+        app:layout_constraintEnd_toStartOf="@+id/maxDisplayableGlucoseValue"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/minDisplayableGlucoseValueText" />
+
+    <EditText
+        android:id="@+id/maxDisplayableGlucoseValue"
+        android:layout_width="93dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="36dp"
+        android:autofillHints="@string/hintEditGlucoseMaxValueChart"
+        android:ems="10"
+        android:hint="@string/hintEditGlucoseMaxValueChart"
+        android:inputType="none"
+        android:textColorHint="#757575"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/minDisplayableGlucoseValue" />
+
+    <TextView
+        android:id="@+id/glucoseUrgentLowThresholdText"
+        android:layout_width="241dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="64dp"
+        android:text="@string/hintGlucoseUrgentLowThreshold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/maxDisplayableGlucoseValueText" />
+
+    <EditText
+        android:id="@+id/glucoseUrgentLowThresholdValue"
+        android:layout_width="93dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="36dp"
+        android:autofillHints="@string/hintEditGlucoseUrgentLowThreshold"
+        android:ems="10"
+        android:hint="@string/hintEditGlucoseUrgentLowThreshold"
+        android:inputType="none"
+        android:textColorHint="#757575"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/maxDisplayableGlucoseValue" />
+
+    <EditText
+        android:id="@+id/glucoseLowThresholdValue"
+        android:layout_width="93dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="36dp"
+        android:autofillHints="@string/hintEditGlucoseLowThreshold"
+        android:ems="10"
+        android:hint="@string/hintEditGlucoseLowThreshold"
+        android:inputType="none"
+        android:textColorHint="#757575"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/glucoseUrgentLowThresholdValue" />
+
+    <TextView
+        android:id="@+id/glucoseLowThresholdText"
+        android:layout_width="241dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="28dp"
+        android:text="@string/hintGlucoseLowThreshold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/glucoseUrgentLowThresholdText" />
+
+    <TextView
+        android:id="@+id/glucoseHighThresholdText"
+        android:layout_width="241dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="28dp"
+        android:text="@string/hintGlucoseHighThreshold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/glucoseLowThresholdText" />
+
+    <EditText
+        android:id="@+id/glucoseHighThresholdValue"
+        android:layout_width="93dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="36dp"
+        android:autofillHints="@string/hintEditGlucoseHighThreshold"
+        android:ems="10"
+        android:hint="@string/hintEditGlucoseHighThreshold"
+        android:inputType="none"
+        android:textColorHint="#757575"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/glucoseLowThresholdValue" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
