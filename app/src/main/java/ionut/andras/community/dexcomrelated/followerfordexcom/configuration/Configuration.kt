@@ -31,6 +31,8 @@ class Configuration: Serializable {
 
     var autoCancelDelayMillis: Long = 8000
 
+    var disableNotificationSoundSeconds = 1800 // 30 mins
+
     companion object {
         const val REQUEST_CODE_PERMISSION_NOTIFICATIONS = 100
     }

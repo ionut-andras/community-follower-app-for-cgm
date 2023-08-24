@@ -20,6 +20,8 @@ import ionut.andras.community.dexcomrelated.followerfordexcom.notifications.Gluc
 import ionut.andras.community.dexcomrelated.followerfordexcom.plot.PlotGlucoseHistoricValues
 import ionut.andras.community.dexcomrelated.followerfordexcom.services.GlucoseValuesUpdateService
 import ionut.andras.community.dexcomrelated.followerfordexcom.services.broadcast.BroadcastActions
+import ionut.andras.community.dexcomrelated.followerfordexcom.toast.ToastWrapper
+import ionut.andras.community.dexcomrelated.followerfordexcom.utils.DateTimeConversion
 import ionut.andras.community.dexcomrelated.followerfordexcom.utils.DexcomDateTimeConversion
 import org.json.JSONArray
 
@@ -37,6 +39,8 @@ class MainActivity : AppCompatActivityWrapper() {
     private lateinit var sharedPreferences: SharedPreferences
 
     private lateinit var broadcastReceiver: BroadcastReceiver
+
+    private var lastGlucoseValueUpdate: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -195,6 +199,8 @@ class MainActivity : AppCompatActivityWrapper() {
 
         viewGlucoseTrend.text = Html.fromHtml(trendSign, Html.FROM_HTML_MODE_COMPACT)
 
+        lastGlucoseValueUpdate = DateTimeConversion().getCurrentTimestamp()
+
         return GlucoseNotificationData(glucoseValue, trendSign.toString(), timeOffsetFromCurrent)
     }
 
@@ -234,22 +240,51 @@ class MainActivity : AppCompatActivityWrapper() {
                 when (intent.action) {
                     BroadcastActions.AUTHENTICATION_FAILED -> displayLoginForm(getString(R.string.messageLoginFailed))
                     BroadcastActions.GLUCOSE_DATA_CHANGED -> performGlucoseDataChange(intent)
+                    BroadcastActions.TOASTER_OK_GLUCOSE_VALUE -> disableNotificationSoundForSeconds(intent, appConfiguration.disableNotificationSoundSeconds)
                 }
             }
         }
         registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.AUTHENTICATION_FAILED))
         registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.GLUCOSE_DATA_CHANGED))
+        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TOASTER_OK_GLUCOSE_VALUE))
     }
 
     private fun performGlucoseDataChange(intent: Intent) {
         val glucoseDataString = intent.getStringExtra(getString(R.string.variableNameGenericData)).toString()
-        Log.i("Updating MainActivity views with: ", glucoseDataString)
+        Log.i("Updating MainActivity views with", glucoseDataString)
 
         // Update glucose value and trend in the main screen
-        updateGlucoseInformation(glucoseDataString)
+        val glucoseNotificationData = updateGlucoseInformation(glucoseDataString)
 
         // Draw metrics history
         plotGlucoseData(glucoseDataString)
+
+        // Display the informational toast
+        displayToastGlucoseValue(glucoseNotificationData)
+    }
+
+    fun disableNotificationSoundForSeconds(intent: Intent, seconds: Int) {
+        val broadcastValue = intent.getStringExtra(getString(R.string.variableNameGenericData)).toString()
+        if ("OK" == broadcastValue) {
+            // Call the service with user request for refresh Action
+            val intent = Intent(applicationContext, GlucoseValuesUpdateService::class.java)
+            intent.putExtra("appConfiguration", appConfiguration)
+            intent.putExtra(GlucoseValuesUpdateService.ACTION, GlucoseValuesUpdateService.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND)
+            intent.putExtra(getString(R.string.variableNameGenericData), seconds)
+            applicationContext.startService(intent)
+        }
+    }
+
+    private fun displayToastGlucoseValue(glucoseNotificationData: GlucoseNotificationData) {
+        if (DateTimeConversion().getCurrentTimestamp() - lastGlucoseValueUpdate > appConfiguration.glucoseValueNotificationIntervalSeconds) {
+            // Display the informational toast
+            val toastText =
+                glucoseNotificationData.toNotificationMessage(applicationContext, appConfiguration)
+            ToastWrapper(applicationContext).displayMessageToast(
+                findViewById(R.id.glucoseValue),
+                toastText
+            )
+        }
     }
 
     private fun unregisterBroadcastReceivers() {

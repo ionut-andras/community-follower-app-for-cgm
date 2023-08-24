@@ -2,10 +2,8 @@ package ionut.andras.community.dexcomrelated.followerfordexcom.services
 
 import android.app.PendingIntent
 import android.app.Service
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.media.RingtoneManager
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -46,6 +44,7 @@ class GlucoseValuesUpdateService : Service() {
 
     private var lastNotificationTimestamp: Long = 0
     private var lastNotificationValue: Int = 0
+    private var temporaryDisableNotificationTimestamp: Long = 0
 
     companion object{
         // Action
@@ -55,6 +54,7 @@ class GlucoseValuesUpdateService : Service() {
         const val START_FOREGROUND_SERVICE = "START_FOREGROUND_SERVICE"
         const val STOP_FOREGROUND_SERVICE = "STOP_FOREGROUND_SERVICE"
         const val USER_REQUEST_REFRESH = "USER_REQUEST_REFRESH"
+        const val TEMPORARY_DISABLE_NOTIFICATIONS_SOUND = "TEMPORARY_DISABLE_NOTIFICATIONS_SOUND"
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -74,6 +74,7 @@ class GlucoseValuesUpdateService : Service() {
             START_FOREGROUND_SERVICE -> startServiceInForeground(intent)
             STOP_FOREGROUND_SERVICE -> stopServiceFromForeground(intent)
             USER_REQUEST_REFRESH -> userRequestRefresh()
+            TEMPORARY_DISABLE_NOTIFICATIONS_SOUND -> temporaryDisableNotificationSound(intent)
         }
 
         return START_STICKY
@@ -105,6 +106,11 @@ class GlucoseValuesUpdateService : Service() {
     private fun userRequestRefresh() {
         Log.i("userRequestRefresh", "Refreshing...")
         getAuthenticatedUserGlucoseData()
+    }
+
+    private fun temporaryDisableNotificationSound(intent: Intent?) {
+        Log.i("temporaryDisableNotificationSound", "Starting...")
+        temporaryDisableNotificationTimestamp = DateTimeConversion().getCurrentTimestamp()
     }
 
     /**
@@ -354,7 +360,18 @@ class GlucoseValuesUpdateService : Service() {
             // Convert text to bitmap
             notificationManager.setNotificationIcon(glucoseNotificationData.toIcon())
 
-            val alarmType = DexcomAlarmManager(appConfiguration).getNotificationAlarmType(glucoseNotificationData)
+            var alarmType = DexcomAlarmManager(appConfiguration).getNotificationAlarmType(glucoseNotificationData)
+            if (
+                0 != DexcomAlarmType.URGENT_LOW.compareTo(alarmType) &&
+                0 != DexcomAlarmType.LOW.compareTo(alarmType)
+            ) {
+                // If alarm is temporary disabled, ignore the alarm type
+                // Feature triggered automatically only if the alarm is not low or urgent low
+                if (DateTimeConversion().getCurrentTimestamp() - temporaryDisableNotificationTimestamp < appConfiguration.disableNotificationSoundSeconds) {
+                    alarmType = DexcomAlarmType.NORMAL
+                }
+            }
+
             notificationManager.setAlarmType(alarmType)
 
             val sharedPreferences = applicationContext.getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)

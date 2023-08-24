@@ -31,14 +31,16 @@ data class GlucoseNotificationData (var glucoseValue: String, var glucoseValueTr
             notificationMessage = appContext.getString(R.string.lowGlucoseValue)
         }
 
-        notificationMessage += "\n("
-        for ((i, value) in glucoseRecentHistory.withIndex()) {
-            if (i > 0) {
-                notificationMessage += ", "
+        if (0 < glucoseRecentHistory.size) {
+            notificationMessage += "\n("
+            for ((i, value) in glucoseRecentHistory.withIndex()) {
+                if (i > 0) {
+                    notificationMessage += ", "
+                }
+                notificationMessage += "$value"
             }
-            notificationMessage += "$value"
+            notificationMessage += ")"
         }
-        notificationMessage += ")"
 
         return notificationMessage
     }
