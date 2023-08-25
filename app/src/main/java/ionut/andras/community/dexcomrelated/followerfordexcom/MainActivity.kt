@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivityWrapper() {
 
     private lateinit var broadcastReceiver: BroadcastReceiver
 
-    private var lastGlucoseValueUpdate: Long = 0
+    private var lastToastDisplayTimestamp: Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -199,8 +199,6 @@ class MainActivity : AppCompatActivityWrapper() {
 
         viewGlucoseTrend.text = Html.fromHtml(trendSign, Html.FROM_HTML_MODE_COMPACT)
 
-        lastGlucoseValueUpdate = DateTimeConversion().getCurrentTimestamp()
-
         return GlucoseNotificationData(glucoseValue, trendSign.toString(), timeOffsetFromCurrent)
     }
 
@@ -276,7 +274,12 @@ class MainActivity : AppCompatActivityWrapper() {
     }
 
     private fun displayToastGlucoseValue(glucoseNotificationData: GlucoseNotificationData) {
-        if (DateTimeConversion().getCurrentTimestamp() - lastGlucoseValueUpdate > appConfiguration.glucoseValueNotificationIntervalSeconds) {
+        val currentTimestamp = DateTimeConversion().getCurrentTimestamp()
+        Log.i("displayToastGlucoseValue", "Current TS: $currentTimestamp / Last Toast Display TS: $lastToastDisplayTimestamp")
+        Log.i("displayToastGlucoseValue", "Notification interval (sec): ${appConfiguration.glucoseValueNotificationIntervalSeconds}")
+        Log.i("displayToastGlucoseValue", "Delta (sec): ${currentTimestamp - lastToastDisplayTimestamp}")
+        if (currentTimestamp - lastToastDisplayTimestamp > appConfiguration.glucoseValueNotificationIntervalSeconds) {
+            Log.i("displayToastGlucoseValue", "Displaying toast...")
             // Display the informational toast
             val toastText =
                 glucoseNotificationData.toNotificationMessage(applicationContext, appConfiguration)
@@ -284,6 +287,9 @@ class MainActivity : AppCompatActivityWrapper() {
                 findViewById(R.id.glucoseValue),
                 toastText
             )
+            lastToastDisplayTimestamp = DateTimeConversion().getCurrentTimestamp()
+        } else {
+            Log.i("displayToastGlucoseValue", "Conditions for displaying toast not meet.")
         }
     }
 

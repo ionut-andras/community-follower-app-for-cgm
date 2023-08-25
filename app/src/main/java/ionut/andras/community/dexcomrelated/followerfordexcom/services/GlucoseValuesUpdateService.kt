@@ -368,6 +368,7 @@ class GlucoseValuesUpdateService : Service() {
                 // If alarm is temporary disabled, ignore the alarm type
                 // Feature triggered automatically only if the alarm is not low or urgent low
                 if (DateTimeConversion().getCurrentTimestamp() - temporaryDisableNotificationTimestamp < appConfiguration.disableNotificationSoundSeconds) {
+                    Log.i("triggerNotification", "Notification sound temporary disabled for ${appConfiguration.disableNotificationSoundSeconds} seconds.")
                     alarmType = DexcomAlarmType.NORMAL
                 }
             }
