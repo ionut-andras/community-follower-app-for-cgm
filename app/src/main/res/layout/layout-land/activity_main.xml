@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/settingsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="@string/applicationsSettingsBackText"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        android:onClick="btnSettingsOnClick"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:drawable/ic_menu_agenda"
+        tools:ignore="ImageContrastCheck,ImageContrastCheck" />
+
+    <TextView
+        android:id="@+id/glucoseValueTime"
+        android:layout_width="284dp"
+        android:layout_height="24dp"
+        android:autoSizeTextType="uniform"
+        android:ellipsize="none"
+        android:foregroundGravity="center"
+        android:gravity="center"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.189" />
+
+    <TextView
+        android:id="@+id/glucoseMeasureUnit"
+        android:layout_width="215dp"
+        android:layout_height="25dp"
+        android:autoSizeTextType="uniform"
+        android:ellipsize="none"
+        android:foregroundGravity="center"
+        android:gravity="center"
+        android:text="@string/glucoseMeasureUnit"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.398" />
+
+    <TextView
+        android:id="@+id/glucoseValue"
+        android:layout_width="131dp"
+        android:layout_height="77dp"
+        android:autoSizeTextType="uniform"
+        android:foregroundGravity="center"
+        android:gravity="center"
+        android:text="@string/defaultGlucoseValue"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.51"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.282" />
+
+    <TextView
+        android:id="@+id/glucoseTrend"
+        android:layout_width="113dp"
+        android:layout_height="68dp"
+        android:layout_marginStart="116dp"
+        android:layout_marginBottom="28dp"
+        android:autoSizeTextType="uniform"
+        android:text="@string/defaultGlucoseTrend"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toTopOf="@+id/glucoseMeasureUnit"
+        app:layout_constraintStart_toStartOf="@+id/glucoseValue" />
+
+    <Button
+        android:id="@+id/plotBtn3h"
+        android:layout_width="63dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="4dp"
+        android:onClick="btn3hOnClick"
+        android:text="@string/text3h"
+        android:textColor="@color/white"
+        android:background="@color/transparent"
+        app:layout_constraintBottom_toTopOf="@+id/lineChart"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/plotBtn6h"
+        android:layout_width="63dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginBottom="4dp"
+        android:onClick="btn6hOnClick"
+        android:text="@string/text6h"
+        android:textColor="@color/white"
+        android:background="@color/transparent"
+        app:layout_constraintBottom_toTopOf="@+id/lineChart"
+        app:layout_constraintStart_toEndOf="@+id/plotBtn3h" />
+
+    <Button
+        android:id="@+id/plotBtn12h"
+        android:layout_width="63dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginBottom="4dp"
+        android:onClick="btn12hOnClick"
+        android:text="@string/text12h"
+        android:textColor="@color/white"
+        android:background="@color/transparent"
+        app:layout_constraintBottom_toTopOf="@+id/lineChart"
+        app:layout_constraintStart_toEndOf="@+id/plotBtn6h" />
+
+    <Button
+        android:id="@+id/plotBtn24h"
+        android:layout_width="63dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginBottom="4dp"
+        android:onClick="btn24hOnClick"
+        android:text="@string/text24h"
+        android:textColor="@color/white"
+        android:background="@color/transparent"
+        app:layout_constraintBottom_toTopOf="@+id/lineChart"
+        app:layout_constraintStart_toEndOf="@+id/plotBtn12h" />
+
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/lineChart"
+        android:layout_width="401dp"
+        android:layout_height="297dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.932" />
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="358dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="11dp"
+        android:layout_marginBottom="9dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.055">
+
+        <!-- Need a default list for Android internal callbacks -->
+        <ListView
+            android:id="@android:id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
