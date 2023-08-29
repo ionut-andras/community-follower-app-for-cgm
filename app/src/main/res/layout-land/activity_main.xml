@@ -4,60 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <ImageView
-        android:id="@+id/settingsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="16dp"
-        android:contentDescription="@string/applicationsSettingsBackText"
-        android:minWidth="48dp"
-        android:minHeight="48dp"
-        android:onClick="btnSettingsOnClick"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_agenda"
-        tools:ignore="ImageContrastCheck,ImageContrastCheck" />
-
-    <TextView
-        android:id="@+id/glucoseValue"
-        android:layout_width="131dp"
-        android:layout_height="77dp"
-        android:autoSizeTextType="uniform"
-        android:foregroundGravity="center"
-        android:gravity="center"
-        android:text="@string/defaultGlucoseValue"
-        android:textSize="34sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.51"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.217" />
-
-    <TextView
-        android:id="@+id/glucoseValueTime"
-        android:layout_width="284dp"
-        android:layout_height="24dp"
-        android:autoSizeTextType="uniform"
-        android:ellipsize="none"
-        android:foregroundGravity="center"
-        android:gravity="center"
-        android:textSize="34sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.13" />
+    tools:context=".MainActivity"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="0dp">
 
     <TextView
         android:id="@+id/glucoseMeasureUnit"
-        android:layout_width="215dp"
-        android:layout_height="25dp"
+        android:layout_width="188dp"
+        android:layout_height="15dp"
         android:autoSizeTextType="uniform"
         android:ellipsize="none"
         android:foregroundGravity="center"
@@ -65,17 +19,50 @@
         android:text="@string/glucoseMeasureUnit"
         android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/glucoseValue"
+        app:layout_constraintHorizontal_bias="0.396"
+        app:layout_constraintStart_toStartOf="@+id/glucoseValue"
+        app:layout_constraintTop_toBottomOf="@+id/glucoseValue"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/glucoseValueTime"
+        android:layout_width="299dp"
+        android:layout_height="15dp"
+        android:autoSizeTextType="uniform"
+        android:ellipsize="none"
+        android:foregroundGravity="center"
+        android:gravity="center"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.964"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.339" />
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/glucoseValue"
+        android:layout_width="107dp"
+        android:layout_height="39dp"
+        android:autoSizeTextType="uniform"
+        android:foregroundGravity="center"
+        android:gravity="center"
+        android:text="@string/defaultGlucoseValue"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/glucoseValueTime"
+        app:layout_constraintStart_toStartOf="@+id/glucoseValueTime"
+        app:layout_constraintTop_toBottomOf="@+id/glucoseValueTime"
+        app:layout_constraintVertical_bias="0.006" />
 
     <TextView
         android:id="@+id/glucoseTrend"
-        android:layout_width="113dp"
-        android:layout_height="68dp"
-        android:layout_marginStart="116dp"
-        android:layout_marginBottom="32dp"
+        android:layout_width="62dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="92dp"
+        android:layout_marginBottom="4dp"
         android:autoSizeTextType="uniform"
         android:text="@string/defaultGlucoseTrend"
         android:textSize="34sp"
@@ -88,10 +75,10 @@
         android:layout_height="48dp"
         android:layout_marginStart="4dp"
         android:layout_marginBottom="4dp"
+        android:background="@color/transparent"
         android:onClick="btn3hOnClick"
         android:text="@string/text3h"
         android:textColor="@color/white"
-        android:background="@color/transparent"
         app:layout_constraintBottom_toTopOf="@+id/lineChart"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -101,10 +88,10 @@
         android:layout_height="48dp"
         android:layout_marginStart="44dp"
         android:layout_marginBottom="4dp"
+        android:background="@color/transparent"
         android:onClick="btn6hOnClick"
         android:text="@string/text6h"
         android:textColor="@color/white"
-        android:background="@color/transparent"
         app:layout_constraintBottom_toTopOf="@+id/lineChart"
         app:layout_constraintStart_toEndOf="@+id/plotBtn3h" />
 
@@ -114,10 +101,10 @@
         android:layout_height="48dp"
         android:layout_marginStart="44dp"
         android:layout_marginBottom="4dp"
+        android:background="@color/transparent"
         android:onClick="btn12hOnClick"
         android:text="@string/text12h"
         android:textColor="@color/white"
-        android:background="@color/transparent"
         app:layout_constraintBottom_toTopOf="@+id/lineChart"
         app:layout_constraintStart_toEndOf="@+id/plotBtn6h" />
 
@@ -127,34 +114,37 @@
         android:layout_height="48dp"
         android:layout_marginStart="44dp"
         android:layout_marginBottom="4dp"
+        android:background="@color/transparent"
         android:onClick="btn24hOnClick"
         android:text="@string/text24h"
         android:textColor="@color/white"
-        android:background="@color/transparent"
         app:layout_constraintBottom_toTopOf="@+id/lineChart"
         app:layout_constraintStart_toEndOf="@+id/plotBtn12h" />
 
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/lineChart"
         android:layout_width="0dp"
-        android:layout_height="327dp"
+        android:layout_height="281dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.99" />
+        app:layout_constraintVertical_bias="1.0"
+
+        />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
-        android:layout_width="285dp"
-        android:layout_height="322dp"
+        android:layout_width="721dp"
+        android:layout_height="71dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="11dp"
         android:layout_marginBottom="9dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.454"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
