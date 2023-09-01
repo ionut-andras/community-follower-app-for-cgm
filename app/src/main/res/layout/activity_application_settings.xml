@@ -65,7 +65,7 @@
         android:ems="10"
         android:hint="@string/hintEditGlucoseMinValueChart"
         android:inputType="none"
-        android:textColorHint="#757575"
+        android:textColorHint="#808080"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/autoCancelNotifications" />
 
@@ -91,7 +91,7 @@
         android:ems="10"
         android:hint="@string/hintEditGlucoseMaxValueChart"
         android:inputType="none"
-        android:textColorHint="#757575"
+        android:textColorHint="#808080"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/minDisplayableGlucoseValue" />
 
@@ -115,7 +115,7 @@
         android:ems="10"
         android:hint="@string/hintEditGlucoseUrgentLowThreshold"
         android:inputType="none"
-        android:textColorHint="#757575"
+        android:textColorHint="#808080"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/maxDisplayableGlucoseValue" />
 
@@ -129,7 +129,7 @@
         android:ems="10"
         android:hint="@string/hintEditGlucoseLowThreshold"
         android:inputType="none"
-        android:textColorHint="#757575"
+        android:textColorHint="#808080"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/glucoseUrgentLowThresholdValue" />
 
@@ -163,7 +163,7 @@
         android:ems="10"
         android:hint="@string/hintEditGlucoseHighThreshold"
         android:inputType="none"
-        android:textColorHint="#757575"
+        android:textColorHint="#808080"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/glucoseLowThresholdValue" />
 
