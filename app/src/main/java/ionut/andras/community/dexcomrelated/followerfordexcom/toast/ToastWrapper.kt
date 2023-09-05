@@ -2,9 +2,7 @@ package ionut.andras.community.dexcomrelated.followerfordexcom.toast
 
 import android.content.Context
 import android.util.Log
-import android.view.Gravity
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import ionut.andras.community.dexcomrelated.followerfordexcom.R
@@ -28,8 +26,7 @@ class ToastWrapper(context: Context?) : Toast(context) {
         val customToast = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE)
         customToast.setAction("OK") {
             Log.i("displayMessageToast", "OK button clicked")
-            BroadcastSender(appContext, BroadcastActions.TOASTER_OK_GLUCOSE_VALUE).
-            broadcast(appContext.getString(R.string.variableNameGenericData), "OK")
+            BroadcastSender(appContext, BroadcastActions.TOASTER_OK_GLUCOSE_VALUE).broadcast(appContext.getString(R.string.variableNameGenericData), "OK")
         }
         customToast.show()
     }

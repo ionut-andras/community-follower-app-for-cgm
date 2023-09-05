@@ -2,6 +2,7 @@ package ionut.andras.community.dexcomrelated.followerfordexcom
 
 import android.content.*
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
@@ -20,6 +21,7 @@ import ionut.andras.community.dexcomrelated.followerfordexcom.notifications.Gluc
 import ionut.andras.community.dexcomrelated.followerfordexcom.plot.PlotGlucoseHistoricValues
 import ionut.andras.community.dexcomrelated.followerfordexcom.services.GlucoseValuesUpdateService
 import ionut.andras.community.dexcomrelated.followerfordexcom.services.broadcast.BroadcastActions
+import ionut.andras.community.dexcomrelated.followerfordexcom.services.broadcast.BroadcastSender
 import ionut.andras.community.dexcomrelated.followerfordexcom.toast.ToastWrapper
 import ionut.andras.community.dexcomrelated.followerfordexcom.utils.DateTimeConversion
 import ionut.andras.community.dexcomrelated.followerfordexcom.utils.DexcomDateTimeConversion
@@ -38,7 +40,7 @@ class MainActivity : AppCompatActivityWrapper() {
     // Application settings
     private lateinit var sharedPreferences: SharedPreferences
 
-    private lateinit var broadcastReceiver: BroadcastReceiver
+    private var broadcastReceiver: BroadcastReceiver? = null
 
     private var lastToastDisplayTimestamp: Long = 0
 
@@ -80,6 +82,7 @@ class MainActivity : AppCompatActivityWrapper() {
 
     override fun onResume() {
         super.onResume()
+        Log.i("MainActivity onResume", "Resuming main activity...")
         registerBroadcastReceivers()
     }
 
@@ -117,9 +120,11 @@ class MainActivity : AppCompatActivityWrapper() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
             != PackageManager.PERMISSION_GRANTED) {
             // Request the permission
-            ActivityCompat.requestPermissions(this,
-                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                Configuration.REQUEST_CODE_PERMISSION_NOTIFICATIONS)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    Configuration.REQUEST_CODE_PERMISSION_NOTIFICATIONS)
+            }
         }
     }
     // Handle the permission result in onRequestPermissionsResult()
@@ -208,11 +213,7 @@ class MainActivity : AppCompatActivityWrapper() {
     }
 
     private fun forceRefreshGlucoseData() {
-        // Call the service with user request for refresh Action
-        val intent = Intent(applicationContext, GlucoseValuesUpdateService::class.java)
-        intent.putExtra("appConfiguration", appConfiguration)
-        intent.putExtra(GlucoseValuesUpdateService.ACTION, GlucoseValuesUpdateService.USER_REQUEST_REFRESH)
-        applicationContext.startService(intent)
+        BroadcastSender(applicationContext, BroadcastActions.USER_REQUEST_REFRESH).broadcast()
     }
 
     private fun enableSwipeToRefresh() {
@@ -232,19 +233,24 @@ class MainActivity : AppCompatActivityWrapper() {
     }
 
     private fun registerBroadcastReceivers() {
-        broadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context, intent: Intent) {
-                // Identify broadcast operation
-                when (intent.action) {
-                    BroadcastActions.AUTHENTICATION_FAILED -> displayLoginForm(getString(R.string.messageLoginFailed))
-                    BroadcastActions.GLUCOSE_DATA_CHANGED -> performGlucoseDataChange(intent)
-                    BroadcastActions.TOASTER_OK_GLUCOSE_VALUE -> disableNotificationSoundForSeconds(intent, appConfiguration.disableNotificationSoundSeconds)
+        if (null == broadcastReceiver) {
+            broadcastReceiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    // Identify broadcast operation
+                    when (intent.action) {
+                        BroadcastActions.AUTHENTICATION_FAILED -> displayLoginForm(getString(R.string.messageLoginFailed))
+                        BroadcastActions.GLUCOSE_DATA_CHANGED -> performGlucoseDataChange(intent)
+                        BroadcastActions.TOASTER_OK_GLUCOSE_VALUE -> disableNotificationSoundForSeconds(intent, appConfiguration.disableNotificationSoundSeconds)
+                    }
                 }
             }
+
+            val intentFilter = IntentFilter()
+            intentFilter.addAction(BroadcastActions.AUTHENTICATION_FAILED)
+            intentFilter.addAction(BroadcastActions.GLUCOSE_DATA_CHANGED)
+            intentFilter.addAction(BroadcastActions.TOASTER_OK_GLUCOSE_VALUE)
+            registerReceiver(broadcastReceiver, intentFilter)
         }
-        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.AUTHENTICATION_FAILED))
-        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.GLUCOSE_DATA_CHANGED))
-        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TOASTER_OK_GLUCOSE_VALUE))
     }
 
     private fun performGlucoseDataChange(intent: Intent) {
@@ -263,13 +269,10 @@ class MainActivity : AppCompatActivityWrapper() {
 
     fun disableNotificationSoundForSeconds(intent: Intent, seconds: Int) {
         val broadcastValue = intent.getStringExtra(getString(R.string.variableNameGenericData)).toString()
+        Log.i("disableNotificationSoundForSeconds", "Function start")
+
         if ("OK" == broadcastValue) {
-            // Call the service with user request for refresh Action
-            val intent = Intent(applicationContext, GlucoseValuesUpdateService::class.java)
-            intent.putExtra("appConfiguration", appConfiguration)
-            intent.putExtra(GlucoseValuesUpdateService.ACTION, GlucoseValuesUpdateService.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND)
-            intent.putExtra(getString(R.string.variableNameGenericData), seconds)
-            applicationContext.startService(intent)
+            BroadcastSender(applicationContext, BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND).broadcast(getString(R.string.variableNameGenericData), seconds.toString())
         }
     }
 

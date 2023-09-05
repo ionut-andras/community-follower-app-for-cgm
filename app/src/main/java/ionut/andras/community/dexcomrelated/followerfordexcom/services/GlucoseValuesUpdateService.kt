@@ -2,8 +2,10 @@ package ionut.andras.community.dexcomrelated.followerfordexcom.services
 
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
@@ -46,19 +48,41 @@ class GlucoseValuesUpdateService : Service() {
     private var lastNotificationValue: Int = 0
     private var temporaryDisableNotificationTimestamp: Long = 0
 
+    private lateinit var broadcastReceiver: BroadcastReceiver
+
+    private var isServiceRunning = false
+
     companion object{
         // Action
         const val ACTION = "ACTION"
 
         // Actions list
         const val START_FOREGROUND_SERVICE = "START_FOREGROUND_SERVICE"
-        const val STOP_FOREGROUND_SERVICE = "STOP_FOREGROUND_SERVICE"
-        const val USER_REQUEST_REFRESH = "USER_REQUEST_REFRESH"
-        const val TEMPORARY_DISABLE_NOTIFICATIONS_SOUND = "TEMPORARY_DISABLE_NOTIFICATIONS_SOUND"
     }
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+
+        broadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+
+                Log.i("GlucoseValuesUpdateService > BroadcastReceiver", "Received broadcast message for intent action" + intent.action)
+
+                // Identify broadcast operation
+                when (intent.action) {
+                    BroadcastActions.USER_REQUEST_REFRESH -> userRequestRefresh()
+                    BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND -> temporaryDisableNotificationSound(intent)
+                    BroadcastActions.STOP_FOREGROUND_SERVICE -> stopServiceFromForeground(intent)
+                }
+            }
+        }
+        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.STOP_FOREGROUND_SERVICE))
+        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.USER_REQUEST_REFRESH))
+        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND))
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -72,28 +96,34 @@ class GlucoseValuesUpdateService : Service() {
 
         when (serviceAction) {
             START_FOREGROUND_SERVICE -> startServiceInForeground(intent)
-            STOP_FOREGROUND_SERVICE -> stopServiceFromForeground(intent)
-            USER_REQUEST_REFRESH -> userRequestRefresh()
-            TEMPORARY_DISABLE_NOTIFICATIONS_SOUND -> temporaryDisableNotificationSound(intent)
         }
 
         return START_STICKY
     }
 
     private fun startServiceInForeground(intent: Intent?) {
-        Log.i("startServiceInForeground", "Starting...")
+        if (!isServiceRunning) {
+            Log.i("startServiceInForeground", "Starting...")
 
-        // Send the notification needed by OS in order to start a foreground service
-        val title = "Starting " + applicationContext.getString(R.string.app_name) + " in background"
-        sendInitialNotificationAndStartForegroundService(GlucoseNotificationData(title, "", "now"))
+            // Send the notification needed by OS in order to start a foreground service
+            val title = "Starting " + applicationContext.getString(R.string.app_name) + " in background"
+            sendInitialNotificationAndStartForegroundService(GlucoseNotificationData(title, "", "now"))
 
-        // Get initial values to fill in the main activity fields
-        getAuthenticatedUserGlucoseData()
+            // Get initial values to fill in the main activity fields
+            getAuthenticatedUserGlucoseData()
 
-        // Schedule next reads
-        enableContinuousRefresh()
+            // Schedule next reads
+            enableContinuousRefresh()
 
-        // stopSelf(startId)
+            // stopSelf(startId)
+
+            isServiceRunning = true
+        } else {
+            Log.i("startServiceInForeground", "Service already running. Skipping initialization...")
+
+            // Get initial values to fill in the main activity fields
+            getAuthenticatedUserGlucoseData()
+        }
     }
 
     private fun stopServiceFromForeground(intent: Intent?) {
