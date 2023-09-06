@@ -25,6 +25,7 @@ import ionut.andras.community.dexcomrelated.followerfordexcom.services.broadcast
 import ionut.andras.community.dexcomrelated.followerfordexcom.services.broadcast.BroadcastSender
 import ionut.andras.community.dexcomrelated.followerfordexcom.utils.DateTimeConversion
 import ionut.andras.community.dexcomrelated.followerfordexcom.utils.DexcomDateTimeConversion
+import ionut.andras.community.dexcomrelated.followerfordexcom.utils.SharedPreferencesFactory
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import java.io.Serializable
@@ -74,7 +75,7 @@ class GlucoseValuesUpdateService : Service() {
 
                 // Identify broadcast operation
                 when (intent.action) {
-                    BroadcastActions.USER_REQUEST_REFRESH -> userRequestRefresh()
+                    BroadcastActions.USER_REQUEST_REFRESH -> userRequestRefresh(intent)
                     BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND -> temporaryDisableNotificationSound(intent)
                     BroadcastActions.STOP_FOREGROUND_SERVICE -> stopServiceFromForeground(intent)
                 }
@@ -85,14 +86,23 @@ class GlucoseValuesUpdateService : Service() {
         registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND))
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val serviceAction = intent?.getStringExtra(ACTION)
-
-        Log.i("onStartCommand", "Action: $serviceAction")
+    private fun parseBroadcastExtraInfo(intent: Intent?) {
         appConfiguration = getSerializableExtra(intent, "appConfiguration", Configuration::class.java)
         if (appConfiguration.dexcomSessionID.isNotEmpty()) {
             glucoseRetrievalSession = appConfiguration.dexcomSessionID
         }
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val serviceAction = intent?.getStringExtra(ACTION)
+
+        Log.i("onStartCommand", "Action: $serviceAction")
+        /*appConfiguration = getSerializableExtra(intent, "appConfiguration", Configuration::class.java)
+        if (appConfiguration.dexcomSessionID.isNotEmpty()) {
+            glucoseRetrievalSession = appConfiguration.dexcomSessionID
+        }*/
+
+        parseBroadcastExtraInfo(intent)
 
         when (serviceAction) {
             START_FOREGROUND_SERVICE -> startServiceInForeground(intent)
@@ -128,13 +138,13 @@ class GlucoseValuesUpdateService : Service() {
 
     private fun stopServiceFromForeground(intent: Intent?) {
         Log.i("stopServiceFromForeground", "Stopping...")
-
         stopService(intent)
         stopSelf()
     }
 
-    private fun userRequestRefresh() {
+    private fun userRequestRefresh(intent: Intent?) {
         Log.i("userRequestRefresh", "Refreshing...")
+        parseBroadcastExtraInfo(intent)
         getAuthenticatedUserGlucoseData()
     }
 
@@ -306,7 +316,9 @@ class GlucoseValuesUpdateService : Service() {
         val glucoseNotificationData = buildNotificationDataObject(glucoseDataString)
 
         // Broadcast information to update glucose value and trend in the main screen
-        BroadcastSender(applicationContext, BroadcastActions.GLUCOSE_DATA_CHANGED).broadcast(getString(R.string.variableNameGenericData), glucoseDataString)
+        BroadcastSender(applicationContext, BroadcastActions.GLUCOSE_DATA_CHANGED)
+            .addInfo(getString(R.string.variableNameGenericData), glucoseDataString)
+            .broadcast()
 
         // Sends the notification of the service
         triggerNotification(glucoseNotificationData)
@@ -405,7 +417,8 @@ class GlucoseValuesUpdateService : Service() {
 
             notificationManager.setAlarmType(alarmType)
 
-            val sharedPreferences = applicationContext.getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
+            // val sharedPreferences = applicationContext.getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
+            val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
             appConfiguration.autoCancelNotifications = sharedPreferences.getBoolean(UserPreferences.autoCancelNotifications, appConfiguration.autoCancelNotifications)
 
             // Set the flag for NotificationManager
@@ -460,21 +473,24 @@ class GlucoseValuesUpdateService : Service() {
     }
 
     private fun saveDexcomAccountId(accountId: String) {
-        val sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
+        // val sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
+        val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
+
         sharedPreferences.edit().putString(UserPreferences.dexcomAccountId, accountId).apply()
     }
 
     private fun saveDexcomSession() {
-        val sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
+        // val sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
+        val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
+
         sharedPreferences.edit().putString(UserPreferences.dexcomSessionId, glucoseRetrievalSession.toString()).apply()
     }
 
     private fun broadcastLoginFailed() {
         // Broadcast command to redirect to login with message
-        BroadcastSender(
-            applicationContext,
-            BroadcastActions.AUTHENTICATION_FAILED
-        ).broadcast(getString(R.string.variableNameLoginFailed), "true")
+        BroadcastSender(applicationContext, BroadcastActions.AUTHENTICATION_FAILED)
+            .addInfo(getString(R.string.variableNameLoginFailed), "true")
+            .broadcast()
     }
 
     private fun <T : Serializable?> getSerializableExtra(intent: Intent?, extraParameterName: String, className: Class<T>): T

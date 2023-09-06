@@ -25,6 +25,7 @@ import ionut.andras.community.dexcomrelated.followerfordexcom.services.broadcast
 import ionut.andras.community.dexcomrelated.followerfordexcom.toast.ToastWrapper
 import ionut.andras.community.dexcomrelated.followerfordexcom.utils.DateTimeConversion
 import ionut.andras.community.dexcomrelated.followerfordexcom.utils.DexcomDateTimeConversion
+import ionut.andras.community.dexcomrelated.followerfordexcom.utils.SharedPreferencesFactory
 import org.json.JSONArray
 
 
@@ -105,11 +106,13 @@ class MainActivity : AppCompatActivityWrapper() {
     }
 
     private fun initApplicationSettings() {
-        sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
+        // sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
+        sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
 
         appConfiguration.username = sharedPreferences.getString(UserPreferences.loginEmail, null).toString()
         appConfiguration.password = sharedPreferences.getString(UserPreferences.loginPassword, null).toString()
         appConfiguration.dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null).toString()
+        lastToastDisplayTimestamp = sharedPreferences.getLong(UserPreferences.lastToastDisplayTimestamp, 0)
     }
 
     private fun checkApplicationMinimumRequirements() {
@@ -147,7 +150,9 @@ class MainActivity : AppCompatActivityWrapper() {
     }
 
     private fun displayLoginFormNeeded(): Boolean {
-        sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
+        // sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
+        sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
+
         val email = sharedPreferences.getString(UserPreferences.loginEmail, null)
         val password = sharedPreferences.getString(UserPreferences.loginPassword, null)
         val dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
@@ -208,12 +213,15 @@ class MainActivity : AppCompatActivityWrapper() {
     }
 
     private fun plotGlucoseData(chartJsonDataAsString: String) {
+        Log.i("mainActivity > plotGlucoseData", "Starting")
         val plotGlucoseHistoricValues = PlotGlucoseHistoricValues(appConfiguration, JSONArray(chartJsonDataAsString))
         plotGlucoseHistoricValues.start(applicationContext, glucoseHistoricChart, R.layout.glucose_plot_marker_view)
     }
 
     private fun forceRefreshGlucoseData() {
-        BroadcastSender(applicationContext, BroadcastActions.USER_REQUEST_REFRESH).broadcast()
+        BroadcastSender(applicationContext, BroadcastActions.USER_REQUEST_REFRESH)
+            .addInfo("appConfiguration", appConfiguration)
+            .broadcast()
     }
 
     private fun enableSwipeToRefresh() {
@@ -272,7 +280,9 @@ class MainActivity : AppCompatActivityWrapper() {
         Log.i("disableNotificationSoundForSeconds", "Function start")
 
         if ("OK" == broadcastValue) {
-            BroadcastSender(applicationContext, BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND).broadcast(getString(R.string.variableNameGenericData), seconds.toString())
+            BroadcastSender(applicationContext, BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND)
+                .addInfo(getString(R.string.variableNameGenericData), seconds.toString())
+                .broadcast()
         }
     }
 
@@ -291,6 +301,8 @@ class MainActivity : AppCompatActivityWrapper() {
                 toastText
             )
             lastToastDisplayTimestamp = DateTimeConversion().getCurrentTimestamp()
+            sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
+            sharedPreferences.edit().putLong(UserPreferences.lastToastDisplayTimestamp, lastToastDisplayTimestamp).apply()
         } else {
             Log.i("displayToastGlucoseValue", "Conditions for displaying toast not meet.")
         }

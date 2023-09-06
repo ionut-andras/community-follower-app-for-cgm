@@ -3,20 +3,29 @@ package ionut.andras.community.dexcomrelated.followerfordexcom.services.broadcas
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.Configuration
 
 class BroadcastSender(private var applicationContext: Context, private var broadcastAction: String) {
+    private val intent = Intent()
 
-    fun broadcast(variableName: String?, dataString: String?) {
-        Log.i("GlucoseDataUpdateBroadcastSender: ", ">>>>>>>>>>>>>> Broadcasting >>>>>>>>>>>>>>")
-        Log.i("GlucoseDataUpdateBroadcastSender > Action: ", broadcastAction)
-        val intent = Intent(broadcastAction)
-        if (!variableName.isNullOrEmpty()) {
-            intent.putExtra(variableName, dataString)
-        }
-        applicationContext.sendBroadcast(intent)
+    init {
+        intent.action = broadcastAction
+    }
+
+    fun addInfo(variableName: String, data: String?): BroadcastSender {
+        intent.putExtra(variableName, data)
+        return this
+    }
+
+    fun addInfo(variableName: String, data: Configuration?): BroadcastSender {
+        intent.putExtra(variableName, data)
+        return this
     }
 
     fun broadcast() {
-        broadcast(null, null)
+        Log.i("GlucoseDataUpdateBroadcastSender: ", ">>>>>>>>>>>>>> Broadcasting >>>>>>>>>>>>>>")
+        Log.i("GlucoseDataUpdateBroadcastSender > Action: ", broadcastAction)
+        Log.i("GlucoseDataUpdateBroadcastSender > Extra: ", intent.extras.toString())
+        applicationContext.sendBroadcast(intent)
     }
 }

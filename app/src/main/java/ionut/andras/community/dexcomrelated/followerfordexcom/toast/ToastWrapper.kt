@@ -26,7 +26,9 @@ class ToastWrapper(context: Context?) : Toast(context) {
         val customToast = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE)
         customToast.setAction("OK") {
             Log.i("displayMessageToast", "OK button clicked")
-            BroadcastSender(appContext, BroadcastActions.TOASTER_OK_GLUCOSE_VALUE).broadcast(appContext.getString(R.string.variableNameGenericData), "OK")
+            BroadcastSender(appContext, BroadcastActions.TOASTER_OK_GLUCOSE_VALUE)
+                .addInfo(appContext.getString(R.string.variableNameGenericData), "OK")
+                .broadcast()
         }
         customToast.show()
     }

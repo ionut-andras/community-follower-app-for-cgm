@@ -1,6 +1,5 @@
 package ionut.andras.community.dexcomrelated.followerfordexcom
 
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -10,6 +9,7 @@ import android.widget.EditText
 import androidx.appcompat.widget.SwitchCompat
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.Configuration
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.UserPreferences
+import ionut.andras.community.dexcomrelated.followerfordexcom.utils.SharedPreferencesFactory
 
 class ApplicationSettingsActivity : AppCompatActivityWrapper() {
     private lateinit var sharedPreferences: SharedPreferences
@@ -26,7 +26,8 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper() {
     }
 
     private fun init() {
-        sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
+        // sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
+        sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
 
         val autoCancelNotifications = findViewById<SwitchCompat>(R.id.autoCancelNotifications)
         autoCancelNotifications.isChecked = sharedPreferences.getBoolean(UserPreferences.autoCancelNotifications, appConfiguration.autoCancelNotifications)
@@ -43,7 +44,8 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper() {
 
     private fun enableSettingsActivityListeners() {
         val autoCancelNotifications = findViewById<SwitchCompat>(R.id.autoCancelNotifications)
-        sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
+        // sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
+        sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
 
         autoCancelNotifications.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
