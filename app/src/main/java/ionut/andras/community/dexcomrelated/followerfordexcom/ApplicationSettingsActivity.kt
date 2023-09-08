@@ -4,7 +4,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
-import android.view.View
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.EditText
 import androidx.appcompat.widget.SwitchCompat
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.Configuration
@@ -58,7 +59,26 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper() {
         }
     }
 
-    fun btnSettingsBackOnClick(view: View) {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.application_settings_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        return when (item.itemId) {
+            R.id.iconSettingsBack -> {
+                iconSettingsBackOnClick()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun iconSettingsBackOnClick() {
         val intent = Intent(applicationContext, MainActivity::class.java)
         startActivity(intent)
     }

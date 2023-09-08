@@ -6,6 +6,8 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
@@ -84,7 +86,7 @@ class MainActivity : AppCompatActivityWrapper() {
     override fun onResume() {
         super.onResume()
         Log.i("MainActivity onResume", "Resuming main activity...")
-        registerBroadcastReceivers()
+        registerBroadcastReceivers(true)
     }
 
     override fun onStop() {
@@ -103,6 +105,25 @@ class MainActivity : AppCompatActivityWrapper() {
         super.onDestroy()
 
         unregisterBroadcastReceivers()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.main_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        return when (item.itemId) {
+            R.id.iconSettings -> {
+                iconSettingsOnClick()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun initApplicationSettings() {
@@ -240,8 +261,9 @@ class MainActivity : AppCompatActivityWrapper() {
        // Placeholder
     }
 
-    private fun registerBroadcastReceivers() {
-        if (null == broadcastReceiver) {
+    private fun registerBroadcastReceivers(forceRegister: Boolean = false) {
+        if ((null == broadcastReceiver) || forceRegister) {
+            Log.i("mainActivity > registerBroadcastReceivers", "Registering broadcast receiver...")
             broadcastReceiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
                     // Identify broadcast operation
@@ -253,11 +275,11 @@ class MainActivity : AppCompatActivityWrapper() {
                 }
             }
 
-            val intentFilter = IntentFilter()
-            intentFilter.addAction(BroadcastActions.AUTHENTICATION_FAILED)
-            intentFilter.addAction(BroadcastActions.GLUCOSE_DATA_CHANGED)
-            intentFilter.addAction(BroadcastActions.TOASTER_OK_GLUCOSE_VALUE)
-            registerReceiver(broadcastReceiver, intentFilter)
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.AUTHENTICATION_FAILED))
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.GLUCOSE_DATA_CHANGED))
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TOASTER_OK_GLUCOSE_VALUE))
+        } else {
+            Log.i("mainActivity > registerBroadcastReceivers", "Skip broadcast receiver registration...")
         }
     }
 
@@ -316,7 +338,7 @@ class MainActivity : AppCompatActivityWrapper() {
         }
     }
 
-    fun btnSettingsOnClick(view: View) {
+    private fun iconSettingsOnClick() {
         val intent = Intent(applicationContext, ApplicationSettingsActivity::class.java)
         startActivity(intent)
     }

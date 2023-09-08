@@ -29,20 +29,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/settingsBackButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="36dp"
-        android:contentDescription="@string/applicationsSettingsBackText"
-        android:minWidth="48dp"
-        android:minHeight="48dp"
-        android:onClick="btnSettingsBackOnClick"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_revert" />
-
     <TextView
         android:id="@+id/minDisplayableGlucoseValueText"
         android:layout_width="241dp"
