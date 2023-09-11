@@ -156,7 +156,24 @@ class MainActivity : AppCompatActivityWrapper() {
                     Configuration.REQUEST_CODE_PERMISSION_NOTIFICATIONS)
             }
         }
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.FOREGROUND_SERVICE)
+            != PackageManager.PERMISSION_GRANTED) {
+            // Request the permission
+            ActivityCompat.requestPermissions(this,
+                arrayOf(android.Manifest.permission.FOREGROUND_SERVICE),
+                Configuration.REQUEST_CODE_PERMISSION_NOTIFICATIONS)
+        }
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+            != PackageManager.PERMISSION_GRANTED) {
+            // Request the permission
+            ActivityCompat.requestPermissions(this,
+                arrayOf(android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS),
+                Configuration.REQUEST_CODE_PERMISSION_NOTIFICATIONS)
+        }
     }
+
     // Handle the permission result in onRequestPermissionsResult()
     override fun onRequestPermissionsResult(
         requestCode: Int,
