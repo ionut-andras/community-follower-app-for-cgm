@@ -10,18 +10,14 @@
         android:id="@+id/applicationSettingsActivityActionToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
         android:elevation="1sp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        android:maxHeight="25sp"
+        android:theme="@style/ToolbarStyle"
         app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
+        app:popupTheme="@style/ToolbarStyle">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/applicationsSettingsTitleText"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:text="@string/applicationsSettingsTitleText"/>
     </androidx.appcompat.widget.Toolbar>
 
     <androidx.appcompat.widget.SwitchCompat
