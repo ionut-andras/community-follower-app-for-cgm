@@ -2,6 +2,7 @@ package ionut.andras.community.dexcomrelated.followerfordexcom
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
@@ -19,13 +20,20 @@ class LoginActivity : AppCompatActivityWrapper() {
 
         setContentView(R.layout.activity_login)
 
+        initializeView()
+
+        showToastIfMessageAvailable(intent)
+    }
+
+    private fun initializeView() {
+        val disclaimerTextView = findViewById<TextView>(R.id.loginDisclaimerTextView)
+        disclaimerTextView.movementMethod = LinkMovementMethod.getInstance()
+
         emailText = findViewById(R.id.loginEmailAddress)
         passwordText = findViewById(R.id.loginPassword)
 
         val loginButton = findViewById<Button>(R.id.btnLogin)
         loginButton.isEnabled = false
-
-        showToastIfMessageAvailable(intent)
     }
 
     fun checkboxDisclaimerChanged(view: View) {

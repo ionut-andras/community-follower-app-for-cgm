@@ -257,6 +257,9 @@ class GlucoseValuesUpdateService : Service() {
             if (apiResponse.isSuccess()) {
                 accountId = apiResponse.data.toString().trim('"')
                 Log.i("authenticateWithUsernamePassword - Response: ", accountId)
+            } else {
+                Log.i("authenticateWithUsernamePassword - Failure: ", "Clean authentication data")
+                SharedPreferencesFactory(applicationContext).getInstance().edit().clear().apply()
             }
         }
         return accountId
