@@ -17,6 +17,8 @@
     <string name="buttonLoginText">Login</string>
     <string name="applicationsSettingsTitleText">Settings</string>
     <string name="applicationsSettingsBackText">Back</string>
+    <string name="myAccountTitleText">My Account</string>
+    <string name="logoutTitleText">Log out</string>
     <string name="text3h">3h</string>
     <string name="text6h">6h</string>
     <string name="text12h">12h</string>

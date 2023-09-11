@@ -12,6 +12,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.mikephil.charting.charts.LineChart
 import ionut.andras.community.dexcomrelated.followerfordexcom.common.GlucoseValueColorRange
@@ -51,6 +52,7 @@ class MainActivity : AppCompatActivityWrapper() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
+        setSupportActionBar(findViewById(R.id.mainActivityActionToolbar))
 
         // Check application minimum requirements
         checkApplicationMinimumRequirements()
@@ -120,6 +122,10 @@ class MainActivity : AppCompatActivityWrapper() {
         return when (item.itemId) {
             R.id.iconSettings -> {
                 iconSettingsOnClick()
+                true
+            }
+            R.id.iconLogout -> {
+                iconLogoutOnClick()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -340,6 +346,31 @@ class MainActivity : AppCompatActivityWrapper() {
 
     private fun iconSettingsOnClick() {
         val intent = Intent(applicationContext, ApplicationSettingsActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun iconLogoutOnClick() {
+        Log.i("iconLogoutOnClick", "Logging out")
+
+        var email = sharedPreferences.getString(UserPreferences.loginEmail, null)
+        var password = sharedPreferences.getString(UserPreferences.loginPassword, null)
+        var dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
+        Log.i("displayLoginFormNeeded > email", email.toString())
+        Log.i("displayLoginFormNeeded > password", password.toString())
+        Log.i("displayLoginFormNeeded > dexcomSessionID", dexcomSessionID.toString())
+
+
+        SharedPreferencesFactory(applicationContext).getInstance().edit().clear().apply()
+
+        email = sharedPreferences.getString(UserPreferences.loginEmail, null)
+        password = sharedPreferences.getString(UserPreferences.loginPassword, null)
+        dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
+        Log.i("displayLoginFormNeeded > email", email.toString())
+        Log.i("displayLoginFormNeeded > password", password.toString())
+        Log.i("displayLoginFormNeeded > dexcomSessionID", dexcomSessionID.toString())
+
+
+        val intent = Intent(applicationContext, LoginActivity::class.java)
         startActivity(intent)
     }
 

@@ -20,6 +20,7 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_application_settings)
+        setSupportActionBar(findViewById(R.id.applicationSettingsActivityActionToolbar))
 
         init()
 

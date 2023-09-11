@@ -6,6 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/mainActivityActionToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="1sp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        android:maxHeight="25sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+    </androidx.appcompat.widget.Toolbar>
+
     <TextView
         android:id="@+id/glucoseValue"
         android:layout_width="131dp"
@@ -133,7 +151,7 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
         android:layout_width="285dp"
-        android:layout_height="322dp"
+        android:layout_height="338dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="11dp"

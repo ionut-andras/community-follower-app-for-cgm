@@ -3,5 +3,22 @@
         android:id="@+id/iconSettings"
         android:icon="@drawable/settings_icon_48"
         app:showAsAction="always"
-        android:title="@string/app_name" />
+        android:title="@string/applicationsSettingsTitleText"
+        app:iconPadding="0sp"
+        />
+    <item
+        android:id="@+id/iconLogout"
+        android:icon="@drawable/logout_icon_48"
+        app:showAsAction="ifRoom"
+        android:title="@string/logoutTitleText"
+        app:iconPadding="0sp"
+        />
+    <!--
+    <item
+        android:id="@+id/iconAccount"
+        android:icon="@drawable/account_icon_48"
+        app:showAsAction="ifRoom"
+        android:title="@string/myAccountTitleText">
+    </item>
+    -->
 </menu>

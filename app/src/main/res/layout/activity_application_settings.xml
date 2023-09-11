@@ -6,6 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".ApplicationSettingsActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/applicationSettingsActivityActionToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="1sp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        android:maxHeight="25sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/applicationsSettingsTitleText"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+    </androidx.appcompat.widget.Toolbar>
+
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/autoCancelNotifications"
         android:layout_width="wrap_content"
