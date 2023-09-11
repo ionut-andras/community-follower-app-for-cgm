@@ -13,6 +13,6 @@ The app's creators and publishers disclaim all liability for any direct or indir
 
 Please use at your own risk.
 
-Please read our <a href="https://sites.google.com/view/followerfordexcom">Terms and conditions </a> very carefully.
+Please read our <a href="https://sites.google.com/view/followerfordexcom" target="_blanc">Terms and conditions </a> very carefully.
 
 By using this app, you agree to these terms and conditions.
