@@ -2,8 +2,10 @@ package ionut.andras.community.dexcomrelated.followerfordexcom
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.UserPreferences
@@ -22,9 +24,16 @@ class LoginActivity : AppCompatActivityWrapper() {
         passwordText = findViewById(R.id.loginPassword)
 
         val loginButton = findViewById<Button>(R.id.btnLogin)
-        loginButton.isEnabled = true
+        loginButton.isEnabled = false
 
         showToastIfMessageAvailable(intent)
+    }
+
+    fun checkboxDisclaimerChanged(view: View) {
+        val disclaimerCheckbox = findViewById<CheckBox>(R.id.checkboxDisclaimer)
+        val loginButton = findViewById<Button>(R.id.btnLogin)
+Log.i("checkboxDisclaimerChanged: ", disclaimerCheckbox.isChecked.toString())
+        loginButton.isEnabled = disclaimerCheckbox.isChecked
     }
 
     fun btnLoginOnClick(view: View) {

@@ -23,6 +23,7 @@
     <string name="text6h">6h</string>
     <string name="text12h">12h</string>
     <string name="text24h">24h</string>
+    <string name="checkboxLoginThermsAndConditions">Please agree before continue</string>
 
     <!-- Variables -->
     <string name="variableNameGenericData">data</string>
@@ -45,4 +46,6 @@
     <string name="hintGlucoseHighThreshold">Glucose high threshold</string>
     <string name="hintEditGlucoseHighThreshold">Edit glucose high threshold</string>
 
+    <!-- Long messages -->
+    <string name="limitedResponsibility">ATTENTION: Please carefully read this before continue.\n\nThis application is NOT an official Dexcom Application and is NOT related in any way with Dexcom.\n\nThe application is for informational purposes only and is not intended to be a substitute for professional medical advice, diagnosis, or treatment.\nThe app\'s creators and publishers are not responsible for any adverse effects or consequences that may result from the use of this app.\n\nThe app is provided \"as is\" and without any warranties, express or implied.\nThe app\'s creators and publishers disclaim all liability for any direct or indirect damages caused by the use of this app.\n\nPlease use at your own risk.\n\nPlease read our <a href="https://sites.google.com/view/followerfordexcom">Terms and conditions </a> very carefully.\n\nBy using this app, you agree to these terms and conditions.</string>
 </resources>

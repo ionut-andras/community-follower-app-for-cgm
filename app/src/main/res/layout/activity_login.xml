@@ -10,14 +10,13 @@
         android:id="@+id/loginEmailAddress"
         android:layout_width="299dp"
         android:layout_height="50dp"
-        android:layout_marginTop="132dp"
+        android:layout_marginTop="52dp"
         android:ems="10"
         android:hint="@string/emailLabel"
         android:importantForAutofill="no"
         android:inputType="textEmailAddress"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,7 +24,7 @@
         android:id="@+id/loginPassword"
         android:layout_width="300dp"
         android:layout_height="50dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginTop="24dp"
         android:ems="10"
         android:hint="@string/passwordLabel"
         android:importantForAutofill="no"
@@ -33,22 +32,62 @@
         android:minHeight="48dp"
         android:textColorHint="#808080"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/loginEmailAddress"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/loginEmailAddress"
         app:layout_constraintTop_toBottomOf="@+id/loginEmailAddress"
-        app:layout_constraintVertical_bias="0.002" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:text="@string/buttonLoginText"
+        android:layout_marginTop="24dp"
         android:onClick="btnLoginOnClick"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/buttonLoginText"
+        app:layout_constraintEnd_toEndOf="@+id/loginPassword"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/loginPassword"
         app:layout_constraintTop_toBottomOf="@+id/loginPassword" />
+
+    <CheckBox
+        android:id="@+id/checkboxDisclaimer"
+        android:layout_width="318dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:longClickable="false"
+        android:onClick="checkboxDisclaimerChanged"
+        android:text="@string/checkboxLoginThermsAndConditions"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/loginDisclaimerScrollView"
+        app:layout_constraintHorizontal_bias="0.476"
+        app:layout_constraintStart_toStartOf="@+id/loginDisclaimerScrollView"
+        app:layout_constraintTop_toBottomOf="@+id/loginDisclaimerScrollView"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ScrollView
+        android:id="@+id/loginDisclaimerScrollView"
+        android:layout_width="360dp"
+        android:layout_height="400dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/btnLogin"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="@+id/btnLogin"
+        app:layout_constraintTop_toBottomOf="@+id/btnLogin">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/loginDisclaimerTextView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="@string/limitedResponsibility" />
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
