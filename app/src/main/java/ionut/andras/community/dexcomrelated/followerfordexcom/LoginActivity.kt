@@ -9,11 +9,13 @@ import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.UserPreferences
+import ionut.andras.community.dexcomrelated.followerfordexcom.core.AppCompatActivityWrapper
 import ionut.andras.community.dexcomrelated.followerfordexcom.utils.SharedPreferencesFactory
 
 class LoginActivity : AppCompatActivityWrapper() {
     private lateinit var emailText: TextView
     private lateinit var passwordText: TextView
+    private lateinit var loginButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,19 +28,20 @@ class LoginActivity : AppCompatActivityWrapper() {
     }
 
     private fun initializeView() {
+        // Enable hyperlinks in scrollable text view
         val disclaimerTextView = findViewById<TextView>(R.id.loginDisclaimerTextView)
         disclaimerTextView.movementMethod = LinkMovementMethod.getInstance()
 
+        // Initialize mail components
         emailText = findViewById(R.id.loginEmailAddress)
         passwordText = findViewById(R.id.loginPassword)
 
-        val loginButton = findViewById<Button>(R.id.btnLogin)
+        loginButton = findViewById<Button>(R.id.btnLogin)
         loginButton.isEnabled = false
     }
 
     fun checkboxDisclaimerChanged(view: View) {
         val disclaimerCheckbox = findViewById<CheckBox>(R.id.checkboxDisclaimer)
-        val loginButton = findViewById<Button>(R.id.btnLogin)
         loginButton.isEnabled = disclaimerCheckbox.isChecked
     }
 

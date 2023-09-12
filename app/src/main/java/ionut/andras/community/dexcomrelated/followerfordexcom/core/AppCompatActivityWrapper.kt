@@ -1,4 +1,4 @@
-package ionut.andras.community.dexcomrelated.followerfordexcom
+package ionut.andras.community.dexcomrelated.followerfordexcom.core
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

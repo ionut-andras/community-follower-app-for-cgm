@@ -10,6 +10,7 @@ import android.widget.EditText
 import androidx.appcompat.widget.SwitchCompat
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.Configuration
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.UserPreferences
+import ionut.andras.community.dexcomrelated.followerfordexcom.core.AppCompatActivityWrapper
 import ionut.andras.community.dexcomrelated.followerfordexcom.utils.SharedPreferencesFactory
 
 class ApplicationSettingsActivity : AppCompatActivityWrapper() {

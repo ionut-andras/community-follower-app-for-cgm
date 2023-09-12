@@ -2,7 +2,6 @@ package ionut.andras.community.dexcomrelated.followerfordexcom
 
 import android.content.*
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
@@ -10,9 +9,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.edit
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.mikephil.charting.charts.LineChart
 import ionut.andras.community.dexcomrelated.followerfordexcom.common.GlucoseValueColorRange
@@ -20,7 +16,9 @@ import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.Conf
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.UserPreferences
 import ionut.andras.community.dexcomrelated.followerfordexcom.constants.DexcomConstants
 import ionut.andras.community.dexcomrelated.followerfordexcom.constants.DexcomTrendsConversionMap
+import ionut.andras.community.dexcomrelated.followerfordexcom.core.AppCompatActivityWrapper
 import ionut.andras.community.dexcomrelated.followerfordexcom.notifications.GlucoseNotificationData
+import ionut.andras.community.dexcomrelated.followerfordexcom.permissions.PermissionHandler
 import ionut.andras.community.dexcomrelated.followerfordexcom.plot.PlotGlucoseHistoricValues
 import ionut.andras.community.dexcomrelated.followerfordexcom.services.GlucoseValuesUpdateService
 import ionut.andras.community.dexcomrelated.followerfordexcom.services.broadcast.BroadcastActions
@@ -51,6 +49,7 @@ class MainActivity : AppCompatActivityWrapper() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Setup design elements
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.mainActivityActionToolbar))
 
@@ -143,34 +142,8 @@ class MainActivity : AppCompatActivityWrapper() {
     }
 
     private fun checkApplicationMinimumRequirements() {
-        checkRequiredPermissions()
-    }
-
-    private fun checkRequiredPermissions() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
-            != PackageManager.PERMISSION_GRANTED) {
-            // Request the permission
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ActivityCompat.requestPermissions(this,
-                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                    Configuration.REQUEST_CODE_PERMISSION_NOTIFICATIONS)
-            }
-        }
-
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.FOREGROUND_SERVICE)
-            != PackageManager.PERMISSION_GRANTED) {
-            // Request the permission
-            ActivityCompat.requestPermissions(this,
-                arrayOf(android.Manifest.permission.FOREGROUND_SERVICE),
-                Configuration.REQUEST_CODE_PERMISSION_NOTIFICATIONS)
-        }
-
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-            != PackageManager.PERMISSION_GRANTED) {
-            // Request the permission
-            ActivityCompat.requestPermissions(this,
-                arrayOf(android.Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS),
-                Configuration.REQUEST_CODE_PERMISSION_NOTIFICATIONS)
+        if (!PermissionHandler(applicationContext).checkPermissions()){
+            PermissionHandler(applicationContext).requestPermissions(this)
         }
     }
 
@@ -298,9 +271,9 @@ class MainActivity : AppCompatActivityWrapper() {
                 }
             }
 
-            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.AUTHENTICATION_FAILED))
-            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.GLUCOSE_DATA_CHANGED))
-            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TOASTER_OK_GLUCOSE_VALUE))
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.AUTHENTICATION_FAILED), RECEIVER_NOT_EXPORTED)
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.GLUCOSE_DATA_CHANGED), RECEIVER_NOT_EXPORTED)
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TOASTER_OK_GLUCOSE_VALUE), RECEIVER_NOT_EXPORTED)
         } else {
             Log.i("mainActivity > registerBroadcastReceivers", "Skip broadcast receiver registration...")
         }

@@ -11,4 +11,5 @@
     <color name="red">#FFFF0000</color>
     <color name="red_alpha_80">#33FF0000</color>
     <color name="transparent">#00000000</color>
+    <color name="green">#00FF00</color>
 </resources>

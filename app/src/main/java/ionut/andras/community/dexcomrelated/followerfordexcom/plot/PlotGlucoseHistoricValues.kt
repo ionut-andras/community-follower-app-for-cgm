@@ -77,6 +77,8 @@ class PlotGlucoseHistoricValues(private var configuration: Configuration, var da
             // Reverse the colors to match reversed entries
             circleColors = entriesArrayColor.reversed()
             setDrawCircleHole(false)
+            setDrawFilled(false)
+            //fillColor = ContextCompat.getColor(applicationContext, R.color.green)
         }
 
         with(glucoseHistoricChart) {
