@@ -32,6 +32,7 @@
 
     <!-- Messages -->
     <string name="messageLoginFailed">Invalid username or password. Please try again!</string>
+    <string name="messageSupportedRegions">Currently, we support Dexcom Accounts from: USA only!</string>
 
     <!-- Labels / Hints -->
     <string name="hintGlucoseMinValueChart">Glucose min value (Chart)</string>
