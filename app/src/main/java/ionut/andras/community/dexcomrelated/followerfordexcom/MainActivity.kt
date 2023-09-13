@@ -11,6 +11,7 @@ import android.text.Html
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.mikephil.charting.charts.LineChart
@@ -363,19 +364,23 @@ class MainActivity : AppCompatActivityWrapper() {
         startActivity(intent)
     }
 
-    fun btn3hOnClick() {
+    fun btn3hOnClick(view: View) {
+        Log.i("btn3hOnClick", "Interval selected: " + view.id)
         appConfiguration.glucoseHistoryNumberOfMetrics = 3 * 12
         forceRefreshGlucoseData()
     }
-    fun btn6hOnClick() {
+    fun btn6hOnClick(view: View) {
+        Log.i("btn6hOnClick", "Interval selected: " + view.id)
         appConfiguration.glucoseHistoryNumberOfMetrics = 6 * 12
         forceRefreshGlucoseData()
     }
-    fun btn12hOnClick() {
+    fun btn12hOnClick(view: View) {
+        Log.i("btn12hOnClick", "Interval selected: " + view.id)
         appConfiguration.glucoseHistoryNumberOfMetrics = 12 * 12
         forceRefreshGlucoseData()
     }
-    fun btn24hOnClick() {
+    fun btn24hOnClick(view: View) {
+        Log.i("btn24hOnClick", "Interval selected: " + view.id)
         appConfiguration.glucoseHistoryNumberOfMetrics = 24 * 12
         forceRefreshGlucoseData()
     }
