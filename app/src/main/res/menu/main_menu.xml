@@ -1,11 +1,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/iconInfo"
+        android:icon="@drawable/info_icon_48"
+        app:showAsAction="ifRoom"
+        android:title="@string/menuInfo"
+        app:iconPadding="0sp"
+        />
+
+    <item
         android:id="@+id/iconSettings"
         android:icon="@drawable/settings_icon_48"
         app:showAsAction="always"
         android:title="@string/applicationsSettingsTitleText"
         app:iconPadding="0sp"
         />
+    <!--
     <item
         android:id="@+id/iconLogout"
         android:icon="@drawable/logout_icon_48"
@@ -13,7 +22,6 @@
         android:title="@string/logoutTitleText"
         app:iconPadding="0sp"
         />
-    <!--
     <item
         android:id="@+id/iconAccount"
         android:icon="@drawable/account_icon_48"

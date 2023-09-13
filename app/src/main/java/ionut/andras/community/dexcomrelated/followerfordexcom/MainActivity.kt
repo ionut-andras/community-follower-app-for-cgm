@@ -1,6 +1,10 @@
 package ionut.andras.community.dexcomrelated.followerfordexcom
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Html
@@ -123,8 +127,8 @@ class MainActivity : AppCompatActivityWrapper() {
                 iconSettingsOnClick()
                 true
             }
-            R.id.iconLogout -> {
-                iconLogoutOnClick()
+            R.id.iconInfo -> {
+                iconInfoOnClick()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -156,12 +160,15 @@ class MainActivity : AppCompatActivityWrapper() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (requestCode == Configuration.REQUEST_CODE_PERMISSION_NOTIFICATIONS) {
+
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // The user granted the permission.
                 // You can now send notifications.
+                Log.i("onRequestPermissionsResult", "Notifications permissions granted.")
             } else {
                 // The user denied the permission.
                 // You cannot send notifications.
+                Log.i("onRequestPermissionsResult", "Notifications permissions denied.")
             }
         }
     }
@@ -213,7 +220,7 @@ class MainActivity : AppCompatActivityWrapper() {
         // Glucose Trend
         val viewGlucoseTrend = findViewById<TextView>(R.id.glucoseTrend)
 
-        var glucoseTrend = glucoseData.getJSONObject(0).getString("Trend").toString()
+        val glucoseTrend = glucoseData.getJSONObject(0).getString("Trend").toString()
         // glucoseTrend = DexcomTrendsConversionMap.FLAT
         // glucoseTrend = DexcomTrendsConversionMap.FORTY_FIVE_DOWN
         // glucoseTrend = DexcomTrendsConversionMap.FORTY_FIVE_UP
@@ -339,28 +346,8 @@ class MainActivity : AppCompatActivityWrapper() {
         startActivity(intent)
     }
 
-    private fun iconLogoutOnClick() {
-        Log.i("iconLogoutOnClick", "Logging out")
-
-        var email = sharedPreferences.getString(UserPreferences.loginEmail, null)
-        var password = sharedPreferences.getString(UserPreferences.loginPassword, null)
-        var dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
-        Log.i("displayLoginFormNeeded > email", email.toString())
-        Log.i("displayLoginFormNeeded > password", password.toString())
-        Log.i("displayLoginFormNeeded > dexcomSessionID", dexcomSessionID.toString())
-
-
-        SharedPreferencesFactory(applicationContext).getInstance().edit().clear().apply()
-
-        email = sharedPreferences.getString(UserPreferences.loginEmail, null)
-        password = sharedPreferences.getString(UserPreferences.loginPassword, null)
-        dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
-        Log.i("displayLoginFormNeeded > email", email.toString())
-        Log.i("displayLoginFormNeeded > password", password.toString())
-        Log.i("displayLoginFormNeeded > dexcomSessionID", dexcomSessionID.toString())
-
-
-        val intent = Intent(applicationContext, LoginActivity::class.java)
+    private fun iconInfoOnClick() {
+        val intent = Intent(applicationContext, ApplicationPermissionsInfoActivity::class.java)
         startActivity(intent)
     }
 

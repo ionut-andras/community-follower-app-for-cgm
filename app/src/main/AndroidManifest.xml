@@ -22,9 +22,9 @@
             android:name=".services.GlucoseValuesUpdateService"
             android:enabled="true"
             android:exported="true"
-            android:permission="" />
+            />
 
-       <activity
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -32,7 +32,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".LoginActivity"
             android:exported="true">
@@ -41,9 +40,17 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ApplicationSettingsActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ApplicationPermissionsInfoActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

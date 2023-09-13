@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.widget.SwitchCompat
 import ionut.andras.community.dexcomrelated.followerfordexcom.configuration.Configuration
@@ -59,6 +60,12 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper() {
                 sharedPreferences.edit().putBoolean(UserPreferences.autoCancelNotifications, false).apply()
             }
         }
+
+        val logoutButton = findViewById<Button>(R.id.btnSettingsLogout)
+        logoutButton.setOnClickListener{
+            btnLogoutOnClick()
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -82,6 +89,31 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper() {
 
     private fun iconSettingsBackOnClick() {
         val intent = Intent(applicationContext, MainActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun btnLogoutOnClick() {
+        Log.i("iconLogoutOnClick", "Logging out")
+
+        var email = sharedPreferences.getString(UserPreferences.loginEmail, null)
+        var password = sharedPreferences.getString(UserPreferences.loginPassword, null)
+        var dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
+        Log.i("displayLoginFormNeeded > email", email.toString())
+        Log.i("displayLoginFormNeeded > password", password.toString())
+        Log.i("displayLoginFormNeeded > dexcomSessionID", dexcomSessionID.toString())
+
+
+        SharedPreferencesFactory(applicationContext).getInstance().edit().clear().apply()
+
+        email = sharedPreferences.getString(UserPreferences.loginEmail, null)
+        password = sharedPreferences.getString(UserPreferences.loginPassword, null)
+        dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
+        Log.i("displayLoginFormNeeded > email", email.toString())
+        Log.i("displayLoginFormNeeded > password", password.toString())
+        Log.i("displayLoginFormNeeded > dexcomSessionID", dexcomSessionID.toString())
+
+
+        val intent = Intent(applicationContext, LoginActivity::class.java)
         startActivity(intent)
     }
 }

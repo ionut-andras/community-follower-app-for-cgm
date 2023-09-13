@@ -96,6 +96,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/messageSupportedRegions"
+        android:textColor="@color/red"
         app:layout_constraintBottom_toTopOf="@+id/loginEmailAddress"
         app:layout_constraintEnd_toEndOf="@+id/loginEmailAddress"
         app:layout_constraintStart_toStartOf="@+id/loginEmailAddress"
