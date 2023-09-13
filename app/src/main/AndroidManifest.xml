@@ -21,8 +21,8 @@
         <service
             android:name=".services.GlucoseValuesUpdateService"
             android:enabled="true"
-            android:exported="true"
-            />
+            android:exported="false">
+        </service>
 
         <activity
             android:name=".MainActivity"

@@ -81,9 +81,9 @@ class GlucoseValuesUpdateService : Service() {
                 }
             }
         }
-        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.STOP_FOREGROUND_SERVICE))
-        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.USER_REQUEST_REFRESH))
-        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND))
+        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.STOP_FOREGROUND_SERVICE), RECEIVER_NOT_EXPORTED)
+        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.USER_REQUEST_REFRESH), RECEIVER_NOT_EXPORTED)
+        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND), RECEIVER_NOT_EXPORTED)
     }
 
     private fun parseBroadcastExtraInfo(intent: Intent?) {
@@ -290,7 +290,7 @@ class GlucoseValuesUpdateService : Service() {
      * Uses the Session Id - obtained from a call to authorize() - to get the glucose data.
      */
     private fun getGlucoseData(sessionId: String): String? {
-        Log.i("Get glucose data:", "Running Get Glucose Data routine")
+        Log.i("getGlucoseData", "Running Get Glucose Data routine")
 
         var glucoseDataString: String? = null
         if (sessionId.isNotEmpty()) {
@@ -302,7 +302,7 @@ class GlucoseValuesUpdateService : Service() {
             if (apiResponse.isSuccess()) {
                 //  Extract JSON with the list of metrics
                 glucoseDataString = apiResponse.data.toString()
-                Log.i("getLatestGlucoseValues - Response", glucoseDataString)
+                Log.i("getLatestGlucoseValues", "Response received")
             }
         }
         return glucoseDataString
@@ -314,7 +314,7 @@ class GlucoseValuesUpdateService : Service() {
      * @param glucoseDataString String
      */
     private fun processGlucoseData(glucoseDataString: String) {
-        Log.i("processGlucoseData:", glucoseDataString)
+        Log.i("processGlucoseData:", "Starting..."); //glucoseDataString)
 
         val glucoseNotificationData = buildNotificationDataObject(glucoseDataString)
 

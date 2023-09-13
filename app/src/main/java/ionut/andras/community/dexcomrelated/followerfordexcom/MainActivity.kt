@@ -50,6 +50,8 @@ class MainActivity : AppCompatActivityWrapper() {
 
     private var lastToastDisplayTimestamp: Long = 0
 
+    private var resumeFromBackground: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -90,8 +92,10 @@ class MainActivity : AppCompatActivityWrapper() {
 
     override fun onResume() {
         super.onResume()
-        Log.i("MainActivity onResume", "Resuming main activity...")
-        registerBroadcastReceivers(true)
+        Log.i("MainActivity onResume", "Resuming main activity. Resume from background: " + resumeFromBackground.toString())
+
+        registerBroadcastReceivers(resumeFromBackground)
+        resumeFromBackground = false
     }
 
     override fun onStop() {
@@ -101,12 +105,16 @@ class MainActivity : AppCompatActivityWrapper() {
     }
 
     override fun onPause() {
-        super.onPause()
+        Log.i("MainActivity onPause", "Starting...")
 
-        unregisterBroadcastReceivers()
+        super.onPause()
+        resumeFromBackground = true
+        // unregisterBroadcastReceivers()
     }
 
     override fun onDestroy() {
+        Log.i("MainActivity onDestroy", "Starting...")
+
         super.onDestroy()
 
         unregisterBroadcastReceivers()
@@ -265,15 +273,19 @@ class MainActivity : AppCompatActivityWrapper() {
     }
 
     private fun registerBroadcastReceivers(forceRegister: Boolean = false) {
+        Log.i("mainActivity > registerBroadcastReceivers", "Starting...")
+
         if ((null == broadcastReceiver) || forceRegister) {
             Log.i("mainActivity > registerBroadcastReceivers", "Registering broadcast receiver...")
             broadcastReceiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
+                    Log.i("mainActivity > registerBroadcastReceivers", "Received broadcast: " + intent.action)
                     // Identify broadcast operation
                     when (intent.action) {
                         BroadcastActions.AUTHENTICATION_FAILED -> displayLoginForm(getString(R.string.messageLoginFailed))
                         BroadcastActions.GLUCOSE_DATA_CHANGED -> performGlucoseDataChange(intent)
                         BroadcastActions.TOASTER_OK_GLUCOSE_VALUE -> disableNotificationSoundForSeconds(intent, appConfiguration.disableNotificationSoundSeconds)
+                        else -> {}
                     }
                 }
             }
@@ -288,7 +300,8 @@ class MainActivity : AppCompatActivityWrapper() {
 
     private fun performGlucoseDataChange(intent: Intent) {
         val glucoseDataString = intent.getStringExtra(getString(R.string.variableNameGenericData)).toString()
-        Log.i("Updating MainActivity views with", glucoseDataString)
+        // Log.i("Updating MainActivity views with", glucoseDataString)
+        Log.i("performGlucoseDataChange", "Updating MainActivity view")
 
         // Update glucose value and trend in the main screen
         val glucoseNotificationData = updateGlucoseInformation(glucoseDataString)
