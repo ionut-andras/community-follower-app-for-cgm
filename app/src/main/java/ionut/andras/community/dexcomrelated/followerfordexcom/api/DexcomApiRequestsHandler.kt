@@ -33,7 +33,7 @@ class DexcomApiRequestsHandler : DexcomConstants() {
      * @return DexcomApiResponse
      */
     fun loginWithAccountId(accountId: String?, password: String) : DexcomApiResponse {
-        var returnValue: DexcomApiResponse = DexcomApiResponse()
+        var returnValue = DexcomApiResponse()
 
         if (null != accountId) {
 
@@ -64,7 +64,7 @@ class DexcomApiRequestsHandler : DexcomConstants() {
      * @return DexcomApiResponse
      */
     fun getLatestGlucoseValues(sessionId: String?, minutes: Int = 1440, count: Int = 1) : DexcomApiResponse {
-        var returnValue: DexcomApiResponse = DexcomApiResponse()
+        var returnValue = DexcomApiResponse()
 
         if (null != sessionId) {
 
@@ -100,7 +100,7 @@ class DexcomApiRequestsHandler : DexcomConstants() {
      * @return DexcomApiResponse
      */
     private fun httpRequest(method: String = "POST", httpHeadersArray: Array<String>, urlString: String, jsonBody: JSONObject?) : DexcomApiResponse {
-        var returnValue = DexcomApiResponse()
+        val returnValue = DexcomApiResponse()
 
         try {
             // Start HTTP Request routine
@@ -125,6 +125,8 @@ class DexcomApiRequestsHandler : DexcomConstants() {
                     connection.outputStream.write(jsonBody.toString().toByteArray())
                 }
 
+                Log.i("httpRequest > responseCode", connection.responseCode.toString())
+
                 if (connection.responseCode == HttpURLConnection.HTTP_OK) {
                     // Receive response as inputStream
                     returnValue.data = connection.inputStream.bufferedReader().readText()
@@ -134,16 +136,18 @@ class DexcomApiRequestsHandler : DexcomConstants() {
                 } else {
                     returnValue.error = connection.responseMessage
                 }
-                Log.i("httpRequest > returnValue", returnValue.toString())
 
             } catch (ex: Exception) {
                 returnValue.exception = ex.localizedMessage
+                returnValue.noInternetConnection = true
             } finally {
                 connection.disconnect()
             }
         } catch (exception: Exception) {
             returnValue.exception = exception.localizedMessage
+            returnValue.noInternetConnection = true
         }
+        Log.i("httpRequest > returnValue", returnValue.toString())
         return returnValue
     }
 

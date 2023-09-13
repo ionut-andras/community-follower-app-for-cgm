@@ -11,7 +11,6 @@ import android.text.Html
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.TextView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.mikephil.charting.charts.LineChart
@@ -92,7 +91,7 @@ class MainActivity : AppCompatActivityWrapper() {
 
     override fun onResume() {
         super.onResume()
-        Log.i("MainActivity onResume", "Resuming main activity. Resume from background: " + resumeFromBackground.toString())
+        Log.i("MainActivity onResume", "Resuming main activity. Resume from background: $resumeFromBackground")
 
         registerBroadcastReceivers(resumeFromBackground)
         resumeFromBackground = false
@@ -364,19 +363,19 @@ class MainActivity : AppCompatActivityWrapper() {
         startActivity(intent)
     }
 
-    fun btn3hOnClick(view: View) {
+    fun btn3hOnClick() {
         appConfiguration.glucoseHistoryNumberOfMetrics = 3 * 12
         forceRefreshGlucoseData()
     }
-    fun btn6hOnClick(view: View) {
+    fun btn6hOnClick() {
         appConfiguration.glucoseHistoryNumberOfMetrics = 6 * 12
         forceRefreshGlucoseData()
     }
-    fun btn12hOnClick(view: View) {
+    fun btn12hOnClick() {
         appConfiguration.glucoseHistoryNumberOfMetrics = 12 * 12
         forceRefreshGlucoseData()
     }
-    fun btn24hOnClick(view: View) {
+    fun btn24hOnClick() {
         appConfiguration.glucoseHistoryNumberOfMetrics = 24 * 12
         forceRefreshGlucoseData()
     }

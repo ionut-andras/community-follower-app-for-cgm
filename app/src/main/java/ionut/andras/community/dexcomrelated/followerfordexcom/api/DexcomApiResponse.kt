@@ -4,6 +4,7 @@ class DexcomApiResponse() {
     var data: String? = null
     var error: String? = null
     var exception: String? = null
+    var noInternetConnection: Boolean = false
 
     fun isSuccess(): Boolean {
         return (null != data)
@@ -17,7 +18,11 @@ class DexcomApiResponse() {
         return (null != exception)
     }
 
+    fun noInternetConnectionError(): Boolean {
+        return noInternetConnection
+    }
+
     override fun toString(): String {
-        return "{data: $data, error: $error, exception: $exception}"
+        return "{data: $data, error: $error, exception: $exception, noInternetConnection: $noInternetConnection}"
     }
 }

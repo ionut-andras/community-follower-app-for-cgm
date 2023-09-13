@@ -259,7 +259,9 @@ class GlucoseValuesUpdateService : Service() {
                 Log.i("authenticateWithUsernamePassword - Response: ", accountId)
             } else {
                 Log.i("authenticateWithUsernamePassword - Failure: ", "Clean authentication data")
-                SharedPreferencesFactory(applicationContext).getInstance().edit().clear().apply()
+                if (!apiResponse.noInternetConnectionError()) {
+                    SharedPreferencesFactory(applicationContext).getInstance().edit().clear().apply()
+                }
             }
         }
         return accountId
@@ -314,7 +316,7 @@ class GlucoseValuesUpdateService : Service() {
      * @param glucoseDataString String
      */
     private fun processGlucoseData(glucoseDataString: String) {
-        Log.i("processGlucoseData:", "Starting..."); //glucoseDataString)
+        Log.i("processGlucoseData:", "Starting...") //glucoseDataString)
 
         val glucoseNotificationData = buildNotificationDataObject(glucoseDataString)
 
