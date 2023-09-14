@@ -18,22 +18,22 @@ internal class DexcomApiResponseTest {
 
     @Test
     fun isSuccess() {
-        assert(false === SUT.isSuccess())
+        assert(!SUT.isSuccess())
         SUT.data = "{}"
-        assert(true === SUT.isSuccess())
+        assert(SUT.isSuccess())
     }
 
     @Test
     fun errorOccurred() {
-        assert(false === SUT.errorOccurred())
+        assert(!SUT.errorOccurred())
         SUT.error = "0000"
-        assert(true === SUT.errorOccurred())
+        assert(SUT.errorOccurred())
     }
 
     @Test
     fun exceptionOccurred() {
-        assert(false === SUT.exceptionOccurred())
+        assert(!SUT.exceptionOccurred())
         SUT.exception = ""
-        assert(true === SUT.exceptionOccurred())
+        assert(SUT.exceptionOccurred())
     }
 }

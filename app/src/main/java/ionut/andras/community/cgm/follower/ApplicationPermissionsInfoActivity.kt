@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
-import ionut.andras.community.dexcomrelated.followerfordexcom.R
 
 class ApplicationPermissionsInfoActivity : AppCompatActivityWrapper() {
     override fun onCreate(savedInstanceState: Bundle?) {

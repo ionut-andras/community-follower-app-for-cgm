@@ -4,7 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.text.Html
 import androidx.core.graphics.drawable.IconCompat
-import ionut.andras.community.dexcomrelated.followerfordexcom.R
+import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.utils.BitmapConversion
 import ionut.andras.community.cgm.follower.utils.DexcomDateTimeConversion

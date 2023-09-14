@@ -11,7 +11,6 @@ import android.widget.Toast
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
-import ionut.andras.community.dexcomrelated.followerfordexcom.R
 
 class LoginActivity : AppCompatActivityWrapper() {
     private lateinit var emailText: TextView

@@ -2,7 +2,7 @@ package ionut.andras.community.cgm.follower.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import ionut.andras.community.dexcomrelated.followerfordexcom.R
+import ionut.andras.community.cgm.follower.R
 
 class SharedPreferencesFactory(private var applicationContext: Context) {
 

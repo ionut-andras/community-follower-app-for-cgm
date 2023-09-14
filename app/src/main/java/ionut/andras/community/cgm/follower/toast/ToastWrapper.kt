@@ -5,7 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
-import ionut.andras.community.dexcomrelated.followerfordexcom.R
+import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastActions
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastSender
 

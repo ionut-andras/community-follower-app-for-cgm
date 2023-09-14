@@ -8,7 +8,7 @@ import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
-import ionut.andras.community.dexcomrelated.followerfordexcom.R
+import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.common.GlucoseValueColorRange
 import ionut.andras.community.cgm.follower.configuration.Configuration
 

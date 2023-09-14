@@ -20,7 +20,7 @@ class ExampleInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
         assertEquals(
-            "ionut.andras.community.dexcomrelated.followerfordexcom",
+            "ionut.andras.community.cgm.follower",
             appContext.packageName
         )
     }

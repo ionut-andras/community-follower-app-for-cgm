@@ -10,7 +10,7 @@ import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
-import ionut.andras.community.dexcomrelated.followerfordexcom.R
+import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.common.GlucoseValueColorRange
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.constants.DexcomConstants

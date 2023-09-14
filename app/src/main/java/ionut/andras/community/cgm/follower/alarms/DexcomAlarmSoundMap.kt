@@ -1,6 +1,6 @@
 package ionut.andras.community.cgm.follower.alarms
 
-import ionut.andras.community.dexcomrelated.followerfordexcom.R
+import ionut.andras.community.cgm.follower.R
 
 class DexcomAlarmSoundMap: DexcomAlarmType() {
     companion object{

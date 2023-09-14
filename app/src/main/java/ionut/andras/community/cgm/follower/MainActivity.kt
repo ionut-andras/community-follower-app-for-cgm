@@ -31,7 +31,6 @@ import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.DateTimeConversion
 import ionut.andras.community.cgm.follower.utils.DexcomDateTimeConversion
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
-import ionut.andras.community.dexcomrelated.followerfordexcom.R
 import org.json.JSONArray
 
 

@@ -12,7 +12,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import ionut.andras.community.cgm.follower.MainActivity
-import ionut.andras.community.dexcomrelated.followerfordexcom.R
+import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.alarms.DexcomAlarmManager
 import ionut.andras.community.cgm.follower.alarms.DexcomAlarmType
 import ionut.andras.community.cgm.follower.api.DexcomApiRequestsHandler

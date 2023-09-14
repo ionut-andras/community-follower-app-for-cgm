@@ -12,7 +12,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.drawable.IconCompat
-import ionut.andras.community.dexcomrelated.followerfordexcom.R
+import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.alarms.DexcomAlarmSoundMap
 import ionut.andras.community.cgm.follower.alarms.DexcomAlarmType
 import java.util.concurrent.atomic.AtomicInteger

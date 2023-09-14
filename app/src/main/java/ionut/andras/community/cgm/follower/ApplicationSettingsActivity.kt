@@ -13,7 +13,6 @@ import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
-import ionut.andras.community.dexcomrelated.followerfordexcom.R
 
 class ApplicationSettingsActivity : AppCompatActivityWrapper() {
     private lateinit var sharedPreferences: SharedPreferences
