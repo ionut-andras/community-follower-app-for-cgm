@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="ionut.andras.community.cgm.follower.MainActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/mainActivityActionToolbar"
@@ -153,7 +153,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="11dp"
         android:layout_marginBottom="9dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -168,4 +168,15 @@
             android:visibility="invisible" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <Button
+        android:id="@+id/btnMainActivityAddEvent"
+        android:layout_width="166dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/textAddEvent"
+        app:layout_constraintBottom_toTopOf="@+id/plotBtn24h"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.906"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
