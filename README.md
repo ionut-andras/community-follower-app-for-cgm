@@ -1,4 +1,4 @@
-# community-follower-app-for-dexcom
+# community-follower-app-for-cgm
 Alternative app to Dexcom Follow
 
 ATTENTION: Please carefully read this before continue.
