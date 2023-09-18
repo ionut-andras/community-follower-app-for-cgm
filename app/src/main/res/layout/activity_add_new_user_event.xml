@@ -3,6 +3,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="ionut.andras.community.cgm.follower.AddNewUserEventActivity">
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    tools:context="ionut.andras.community.cgm.follower.AddNewUserEventActivity"/>

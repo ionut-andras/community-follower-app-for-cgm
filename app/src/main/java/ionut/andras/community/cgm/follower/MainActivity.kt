@@ -386,4 +386,10 @@ class MainActivity : AppCompatActivityWrapper() {
         appConfiguration.glucoseHistoryNumberOfMetrics = 24 * 12
         forceRefreshGlucoseData()
     }
+
+    fun btnAddEventOnClick(view: View) {
+        Log.i("btnAddEventOnClick", "View selected: " + view.id)
+        val intent = Intent(applicationContext, AddNewUserEventActivity::class.java)
+        startActivity(intent)
+    }
 }
