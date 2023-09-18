@@ -169,7 +169,6 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <!--
     <Button
         android:id="@+id/btnMainActivityAddEvent"
         android:layout_width="166dp"
@@ -180,7 +179,6 @@
         app:layout_constraintBottom_toTopOf="@+id/plotBtn24h"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.906"
-        app:layout_constraintStart_toStartOf="parent"
-        />
-        -->
+        app:layout_constraintStart_toStartOf="parent"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

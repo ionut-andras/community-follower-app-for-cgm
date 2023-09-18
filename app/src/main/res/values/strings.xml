@@ -27,6 +27,8 @@
     <string name="text24h">24h</string>
     <string name="checkboxLoginThermsAndConditions">Please agree before continue</string>
     <string name="textAddEvent">Add event</string>
+    <string name="textCarbsCount">Carbohydrates</string>
+    <string name="textInsulinCount">Insulin</string>
 
     <!-- Variables -->
     <string name="variableNameGenericData">data</string>
