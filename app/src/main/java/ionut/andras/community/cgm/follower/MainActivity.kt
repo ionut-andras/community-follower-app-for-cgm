@@ -34,7 +34,7 @@ import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 import org.json.JSONArray
 
 
-class MainActivity : AppCompatActivityWrapper() {
+class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
@@ -57,6 +57,8 @@ class MainActivity : AppCompatActivityWrapper() {
 
         // Setup design elements
         setContentView(R.layout.activity_main)
+
+        // Set Action bar
         setSupportActionBar(findViewById(R.id.mainActivityActionToolbar))
 
         // Check application minimum requirements

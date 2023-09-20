@@ -4,8 +4,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.widget.SwitchCompat
@@ -14,7 +12,7 @@ import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 
-class ApplicationSettingsActivity : AppCompatActivityWrapper() {
+class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_settings_menu) {
     private lateinit var sharedPreferences: SharedPreferences
     private val appConfiguration: Configuration = Configuration()
 
@@ -22,6 +20,8 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_application_settings)
+
+        // Set Action bar
         setSupportActionBar(findViewById(R.id.applicationSettingsActivityActionToolbar))
 
         init()
@@ -66,30 +66,6 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper() {
             btnLogoutOnClick()
         }
 
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.application_settings_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.iconSettingsBack -> {
-                iconSettingsBackOnClick()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun iconSettingsBackOnClick() {
-        val intent = Intent(applicationContext, MainActivity::class.java)
-        startActivity(intent)
     }
 
     private fun btnLogoutOnClick() {
