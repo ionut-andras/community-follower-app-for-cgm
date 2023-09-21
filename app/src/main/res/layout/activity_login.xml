@@ -53,7 +53,7 @@
     <CheckBox
         android:id="@+id/checkboxDisclaimer"
         android:layout_width="318dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="16dp"
         android:clickable="true"
