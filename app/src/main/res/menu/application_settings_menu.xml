@@ -3,5 +3,5 @@
         android:id="@+id/iconBack"
         android:icon="@drawable/back_icon_48"
         app:showAsAction="always"
-        android:title="@string/app_name" />
+        android:title="@string/applicationsSettingsBackText" />
 </menu>

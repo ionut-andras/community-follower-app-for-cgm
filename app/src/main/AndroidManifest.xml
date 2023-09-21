@@ -21,7 +21,9 @@
         <service
             android:name="ionut.andras.community.cgm.follower.services.GlucoseValuesUpdateService"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false"
+            android:foregroundServiceType="dataSync"
+            />
 
         <activity
             android:name="ionut.andras.community.cgm.follower.MainActivity"

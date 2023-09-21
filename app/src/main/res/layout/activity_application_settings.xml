@@ -12,6 +12,7 @@
         android:layout_height="?attr/actionBarSize"
         android:elevation="1sp"
         android:theme="@style/ToolbarStyle"
+        android:contentDescription="@string/applicationsSettingsTitleText"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ToolbarStyle"
         app:title=" ">
