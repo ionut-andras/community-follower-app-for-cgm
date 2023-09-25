@@ -21,4 +21,10 @@ internal class DateTimeConversionTest {
         val result = SUT.getCurrentTimestamp()
         assert(result == (System.currentTimeMillis() / 1000))
     }
+
+    @Test
+    fun getTimestamp() {
+        val result = SUT.getLocalTimestamp(2023, 8,22, 16, 18, 0)
+        assert(result == 1695395760L)
+    }
 }

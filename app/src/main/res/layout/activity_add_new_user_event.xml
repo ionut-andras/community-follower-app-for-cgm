@@ -96,18 +96,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.074" />
 
-    <Button
-        android:id="@+id/btnAddEventSave"
-        android:layout_width="173dp"
-        android:layout_height="48sp"
-        android:layout_marginBottom="36dp"
-        android:text="@string/textSave"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <DatePicker
         android:id="@+id/datePickerEventDate"
         android:layout_width="283dp"
@@ -131,16 +119,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextInsulinCount" />
 
-    <!--
-    <DatePicker
-    android:id="@+id/datePickerEventDate"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
-
-    <TimePicker
-    android:id="@+id/timePickerEventTime"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    />
-    -->
+    <Button
+        android:id="@+id/btnAddEventSave"
+        android:layout_width="173dp"
+        android:layout_height="48sp"
+        android:layout_marginBottom="36dp"
+        android:text="@string/textSave"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

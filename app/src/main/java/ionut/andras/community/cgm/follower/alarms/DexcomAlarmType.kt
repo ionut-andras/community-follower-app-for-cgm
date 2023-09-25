@@ -1,5 +1,7 @@
 package ionut.andras.community.cgm.follower.alarms
 
+import androidx.annotation.Keep
+import ionut.andras.community.cgm.follower.constants.DexcomTrendsConversionMap
 import kotlin.reflect.full.companionObject
 import kotlin.reflect.full.memberProperties
 
@@ -12,15 +14,25 @@ open class DexcomAlarmType {
         const val DROPPING_FAST: String = "Dropping fast"
         const val NORMAL: String = "Normal"
 
+        // Dummy conversion to make the companion variables usable in the class and do not allow code optimization on them when minifying
+        private val convert: MutableMap<String, String> = mutableMapOf(
+            URGENT_LOW to URGENT_LOW,
+            LOW to LOW,
+            HIGH to HIGH,
+            RISING_FAST to RISING_FAST,
+            DROPPING_FAST to DROPPING_FAST,
+            NORMAL to NORMAL
+        )
+
         fun getValues() : List<String> {
-            return DexcomAlarmType::class.companionObject?.memberProperties?.map {
-                it.getter.call(null) as String
-            } ?: mutableListOf()
+            return convert.map {
+                it.value
+            }
         }
         fun getNormalizedValues() : List<String> {
-            return DexcomAlarmType::class.companionObject?.memberProperties?.map {
-                normalizeValue(it.getter.call(null) as String)
-            } ?: mutableListOf()
+            return convert.map {
+                normalizeValue(it.value)
+            }
         }
 
         fun normalizeValue(alarmType: String): String {
@@ -28,9 +40,9 @@ open class DexcomAlarmType {
         }
 
         fun isAlarmType(alarmType: String): Boolean {
-            return DexcomAlarmType::class.companionObject?.memberProperties?.any {
-                it.getter.call(null) == alarmType
-            } ?: false
+            return convert.any {
+                it.value == alarmType
+            }
         }
     }
 }

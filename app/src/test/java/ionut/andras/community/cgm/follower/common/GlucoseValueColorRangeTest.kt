@@ -2,6 +2,7 @@ package ionut.andras.community.cgm.follower.common
 
 import android.graphics.Color
 import ionut.andras.community.cgm.follower.configuration.Configuration
+import ionut.andras.community.cgm.follower.utils.GlucoseValueColorRange
 
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach

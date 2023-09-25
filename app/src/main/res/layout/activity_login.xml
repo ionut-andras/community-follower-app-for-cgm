@@ -50,31 +50,27 @@
         app:layout_constraintStart_toStartOf="@+id/loginPassword"
         app:layout_constraintTop_toBottomOf="@+id/loginPassword" />
 
+    <!--
     <CheckBox
         android:id="@+id/checkboxDisclaimer"
         android:layout_width="318dp"
         android:layout_height="48dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="44dp"
         android:clickable="true"
         android:longClickable="false"
         android:onClick="checkboxDisclaimerChanged"
         android:text="@string/checkboxLoginThermsAndConditions"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/loginDisclaimerScrollView"
-        app:layout_constraintHorizontal_bias="0.476"
-        app:layout_constraintStart_toStartOf="@+id/loginDisclaimerScrollView"
-        app:layout_constraintTop_toBottomOf="@+id/loginDisclaimerScrollView"
-        app:layout_constraintVertical_bias="0.0" />
-
+        app:layout_constraintStart_toStartOf="@+id/loginDisclaimerScrollView" />
+-->
     <ScrollView
         android:id="@+id/loginDisclaimerScrollView"
-        android:layout_width="360dp"
-        android:layout_height="400dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="369dp"
+        android:layout_height="513dp"
+        android:layout_marginTop="48dp"
         android:scrollbarStyle="insideOverlay"
         app:layout_constraintEnd_toEndOf="@+id/btnLogin"
-        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="@+id/btnLogin"
         app:layout_constraintTop_toBottomOf="@+id/btnLogin">
 
@@ -86,8 +82,20 @@
             <TextView
                 android:id="@+id/loginDisclaimerTextView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="420dp"
                 android:text="@string/limitedResponsibility" />
+
+            <CheckBox
+                android:id="@+id/checkboxDisclaimer"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginBottom="44dp"
+                android:clickable="true"
+                android:longClickable="false"
+                android:onClick="checkboxDisclaimerChanged"
+                android:text="@string/checkboxLoginThermsAndConditions"
+                app:layout_constraintStart_toStartOf="@+id/loginDisclaimerScrollView" />
+
         </LinearLayout>
     </ScrollView>
 

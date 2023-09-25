@@ -1,5 +1,6 @@
 package ionut.andras.community.cgm.follower.services
 
+import android.app.AlertDialog.Builder
 import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
@@ -11,6 +12,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.alarms.DexcomAlarmManager
@@ -21,6 +23,7 @@ import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.constants.DexcomTrendsConversionMap
 import ionut.andras.community.cgm.follower.notifications.GlucoseNotificationData
 import ionut.andras.community.cgm.follower.notifications.NotificationsManager
+import ionut.andras.community.cgm.follower.permissions.PermissionHandler
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastActions
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastSender
 import ionut.andras.community.cgm.follower.utils.DateTimeConversion
@@ -33,6 +36,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import java.io.Serializable
+
 
 class GlucoseValuesUpdateService : Service() {
     private lateinit var appConfiguration: Configuration
@@ -100,10 +104,6 @@ class GlucoseValuesUpdateService : Service() {
         val serviceAction = intent?.getStringExtra(ACTION)
 
         Log.i("onStartCommand", "Action: $serviceAction")
-        /*appConfiguration = getSerializableExtra(intent, "appConfiguration", Configuration::class.java)
-        if (appConfiguration.dexcomSessionID.isNotEmpty()) {
-            glucoseRetrievalSession = appConfiguration.dexcomSessionID
-        }*/
 
         parseBroadcastExtraInfo(intent)
 
