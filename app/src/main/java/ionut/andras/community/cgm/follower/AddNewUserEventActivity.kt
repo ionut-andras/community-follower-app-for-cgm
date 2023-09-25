@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.DatePicker
+import android.widget.EditText
 import android.widget.TimePicker
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.toast.ToastWrapper
@@ -31,12 +32,10 @@ class AddNewUserEventActivity : AppCompatActivityWrapper(R.menu.add_new_user_eve
     }
 
     private fun btnAddEventSaveOnClick() {
-        // Save data locally
-        // @TODO
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
         val timePicker = findViewById<View>(R.id.timePickerEventTime) as TimePicker
         val datePicker = findViewById<View>(R.id.datePickerEventDate) as DatePicker
+        val carbsCountEditText = findViewById<EditText>(R.id.editTextCarbsCount)
+        val insulinCountEditText = findViewById<EditText>(R.id.editTextInsulinCount)
 
         val dateTimeObject = DateTimeObject(
             datePicker.year,
@@ -49,8 +48,13 @@ class AddNewUserEventActivity : AppCompatActivityWrapper(R.menu.add_new_user_eve
 
         val timestamp =  DateTimeConversion(dateTimeObject).getLocalTimestamp()
 
-        ToastWrapper(applicationContext).displayMessageToast(findViewById(R.id.btnAddEventSave), "${dateTimeObject.toString()} = $timestamp")
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////// */
+        val insulin = insulinCountEditText.text.toString().toFloatOrNull()
+        val carbs = carbsCountEditText.text.toString().toIntOrNull()
+
+        ToastWrapper(applicationContext).displayMessageToast(findViewById(R.id.btnAddEventSave), "Insulin: $insulin / Carbs: $carbs")
+
+        // Save data locally in the same way dexcom does
+        // @TODO
 
         // Redirect to main view
         // val intent = Intent(applicationContext, MainActivity::class.java)

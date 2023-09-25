@@ -52,14 +52,6 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
     private var resumeFromBackground: Boolean = false
 
-    companion object {
-        private var instance: MainActivity? = null
-
-        fun getInstance(): MainActivity? {
-            return instance
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -98,8 +90,6 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
             Log.i("MainActivity onCreate", "Login needed. Display login form...")
             displayLoginForm()
         }
-
-        instance = this
     }
 
     override fun onResume() {

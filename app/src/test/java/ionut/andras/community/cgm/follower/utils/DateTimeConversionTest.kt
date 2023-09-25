@@ -9,7 +9,7 @@ internal class DateTimeConversionTest {
 
     @BeforeEach
     fun setUp() {
-        SUT = DateTimeConversion()
+        SUT = DateTimeConversion(DateTimeObject(2023, 8,22, 16, 18, 0))
     }
 
     @AfterEach
@@ -24,7 +24,7 @@ internal class DateTimeConversionTest {
 
     @Test
     fun getTimestamp() {
-        val result = SUT.getLocalTimestamp(2023, 8,22, 16, 18, 0)
+        val result = SUT.getLocalTimestamp()
         assert(result == 1695395760L)
     }
 }
