@@ -1,6 +1,5 @@
 package ionut.andras.community.cgm.follower.services
 
-import android.app.AlertDialog.Builder
 import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
@@ -12,7 +11,6 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
-import androidx.core.app.ActivityCompat
 import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.alarms.DexcomAlarmManager
@@ -23,7 +21,6 @@ import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.constants.DexcomTrendsConversionMap
 import ionut.andras.community.cgm.follower.notifications.GlucoseNotificationData
 import ionut.andras.community.cgm.follower.notifications.NotificationsManager
-import ionut.andras.community.cgm.follower.permissions.PermissionHandler
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastActions
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastSender
 import ionut.andras.community.cgm.follower.utils.DateTimeConversion
@@ -428,30 +425,38 @@ class GlucoseValuesUpdateService : Service() {
             // val sharedPreferences = applicationContext.getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
             val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
             appConfiguration.autoCancelNotifications = sharedPreferences.getBoolean(UserPreferences.autoCancelNotifications, appConfiguration.autoCancelNotifications)
+            appConfiguration.disableNotification = sharedPreferences.getBoolean(UserPreferences.disableNotifications, appConfiguration.disableNotification)
 
             // Set the flag for NotificationManager
             notificationManager.setAutoCancelNotificationFlag(appConfiguration.autoCancelNotifications)
 
-            // Trigger notification
-            if (!appConfiguration.autoCancelNotifications) {
-                // Log.i(">>>>>>>>>>>>>>>", "Trigger Notification - No auto cancel")
-                notificationManager.triggerNotification(
-                    glucoseNotificationData.toNotificationTitle(),
-                    glucoseNotificationData.toNotificationMessage(
-                        applicationContext,
-                        appConfiguration
+            Log.i("triggerNotification", "appConfiguration.disableNotification: ${appConfiguration.disableNotification}")
+            if (!appConfiguration.disableNotification) {
+                Log.i("triggerNotification", "Sending notification...")
+
+                // Trigger notification
+                if (!appConfiguration.autoCancelNotifications) {
+                    // Log.i(">>>>>>>>>>>>>>>", "Trigger Notification - No auto cancel")
+                    notificationManager.triggerNotification(
+                        glucoseNotificationData.toNotificationTitle(),
+                        glucoseNotificationData.toNotificationMessage(
+                            applicationContext,
+                            appConfiguration
+                        )
                     )
-                )
+                } else {
+                    // Log.i(">>>>>>>>>>>>>>>", "Trigger Notification - Auto cancel")
+                    notificationManager.triggerAutoCancelNotification(
+                        glucoseNotificationData.toNotificationTitle(),
+                        glucoseNotificationData.toNotificationMessage(
+                            applicationContext,
+                            appConfiguration
+                        ),
+                        appConfiguration.autoCancelDelayMillis
+                    )
+                }
             } else {
-                // Log.i(">>>>>>>>>>>>>>>", "Trigger Notification - Auto cancel")
-                notificationManager.triggerAutoCancelNotification(
-                    glucoseNotificationData.toNotificationTitle(),
-                    glucoseNotificationData.toNotificationMessage(
-                        applicationContext,
-                        appConfiguration
-                    ),
-                    appConfiguration.autoCancelDelayMillis
-                )
+                Log.i("triggerNotification", "Notifications disabled by user. Skip sending notification...")
             }
             // Stamp notification timestamp
             lastNotificationTimestamp = DateTimeConversion().getCurrentTimestamp()

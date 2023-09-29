@@ -35,8 +35,11 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
 
         val autoCancelNotifications = findViewById<SwitchCompat>(R.id.autoCancelNotifications)
         autoCancelNotifications.isChecked = sharedPreferences.getBoolean(UserPreferences.autoCancelNotifications, appConfiguration.autoCancelNotifications)
-
         Log.i("Settings: autoCancelNotifications.isChecked", autoCancelNotifications.isChecked.toString())
+
+        val disableNotifications = findViewById<SwitchCompat>(R.id.disableNotifications)
+        disableNotifications.isChecked = sharedPreferences.getBoolean(UserPreferences.disableNotifications, appConfiguration.disableNotification)
+        Log.i("Settings: disableNotifications.isChecked", disableNotifications.isChecked.toString())
 
         findViewById<EditText>(R.id.minDisplayableGlucoseValue).setText(appConfiguration.minDisplayableGlucoseValue.toString())
         findViewById<EditText>(R.id.maxDisplayableGlucoseValue).setText(appConfiguration.maxDisplayableGlucoseValue.toString())
@@ -48,6 +51,7 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
 
     private fun enableSettingsActivityListeners() {
         val autoCancelNotifications = findViewById<SwitchCompat>(R.id.autoCancelNotifications)
+        val disableNotifications = findViewById<SwitchCompat>(R.id.disableNotifications)
         // sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
         sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
 
@@ -58,6 +62,16 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
             } else {
                 Log.i("SettingsActivityListener: UserPreferences.autoCancelNotifications", false.toString())
                 sharedPreferences.edit().putBoolean(UserPreferences.autoCancelNotifications, false).apply()
+            }
+        }
+
+        disableNotifications.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                Log.i("SettingsActivityListener: UserPreferences.disableNotifications", true.toString())
+                sharedPreferences.edit().putBoolean(UserPreferences.disableNotifications, true).apply()
+            } else {
+                Log.i("SettingsActivityListener: UserPreferences.disableNotifications", false.toString())
+                sharedPreferences.edit().putBoolean(UserPreferences.disableNotifications, false).apply()
             }
         }
 

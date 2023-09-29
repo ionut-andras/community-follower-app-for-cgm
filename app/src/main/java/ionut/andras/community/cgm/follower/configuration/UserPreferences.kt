@@ -7,4 +7,5 @@ object UserPreferences {
     const val dexcomAccountId = "dexcomAccountId"
     const val dexcomSessionId = "dexcomSessionId"
     const val lastToastDisplayTimestamp = "lastToastDisplayTimestamp"
+    const val disableNotifications = "disableNotifications"
 }
