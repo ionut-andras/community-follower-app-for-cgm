@@ -8,6 +8,14 @@
         />
 
     <item
+        android:id="@+id/iconInviteFollower"
+        android:icon="@drawable/invite_follower_icon_48"
+        app:showAsAction="always"
+        android:title="@string/applicationsInviteFollowerTitleText"
+        app:iconPadding="0sp"
+        />
+
+    <item
         android:id="@+id/iconSettings"
         android:icon="@drawable/settings_icon_48"
         app:showAsAction="always"

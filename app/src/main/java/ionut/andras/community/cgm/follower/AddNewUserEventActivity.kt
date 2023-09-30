@@ -1,6 +1,5 @@
 package ionut.andras.community.cgm.follower
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
@@ -21,10 +20,10 @@ class AddNewUserEventActivity : AppCompatActivityWrapper(R.menu.add_new_user_eve
         // Set Action bar
         setSupportActionBar(findViewById(R.id.addUserEventActivityActionToolbar))
 
-        enableAddEventActivityListeners()
+        enableActivityListeners()
     }
 
-    private fun enableAddEventActivityListeners() {
+    private fun enableActivityListeners() {
         val logoutButton = findViewById<Button>(R.id.btnAddEventSave)
         logoutButton.setOnClickListener{
             btnAddEventSaveOnClick()

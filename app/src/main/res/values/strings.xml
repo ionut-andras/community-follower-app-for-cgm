@@ -20,6 +20,7 @@
     <string name="disableNotifications">Disable notifications</string>
     <string name="buttonLoginText">Login</string>
     <string name="applicationsSettingsTitleText">Settings</string>
+    <string name="applicationsInviteFollowerTitleText">Invite follower</string>
     <string name="applicationsSettingsBackText">Back</string>
     <string name="myAccountTitleText">My Account</string>
     <string name="logoutTitleText">Log out</string>
@@ -33,6 +34,7 @@
     <string name="textInsulinCount">Insulin</string>
     <string name="defaultValueCarbsCount">0</string>
     <string name="defaultValueInsulinCount">0.0</string>
+    <string name="textInviteFollowers">Invite followers</string>
 
     <!-- Variables -->
     <string name="variableNameGenericData">data</string>

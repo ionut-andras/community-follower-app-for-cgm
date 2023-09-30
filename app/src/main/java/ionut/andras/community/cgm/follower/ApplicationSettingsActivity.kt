@@ -26,7 +26,7 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
 
         init()
 
-        enableSettingsActivityListeners()
+        enableActivityListeners()
     }
 
     private fun init() {
@@ -49,7 +49,7 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
         findViewById<EditText>(R.id.glucoseHighThresholdValue).setText(appConfiguration.glucoseHighThreshold.toString())
     }
 
-    private fun enableSettingsActivityListeners() {
+    private fun enableActivityListeners() {
         val autoCancelNotifications = findViewById<SwitchCompat>(R.id.autoCancelNotifications)
         val disableNotifications = findViewById<SwitchCompat>(R.id.disableNotifications)
         // sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)

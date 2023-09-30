@@ -10,10 +10,10 @@ class ApplicationPermissionsInfoActivity : AppCompatActivityWrapper() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_application_permissions_info)
 
-        enablePermissionsInfoActivityListeners()
+        enableActivityListeners()
     }
 
-    private fun enablePermissionsInfoActivityListeners() {
+    private fun enableActivityListeners() {
         val logoutButton = findViewById<Button>(R.id.btnPermissionsInfoOk)
         logoutButton.setOnClickListener{
             btnPermissionsInfoOkOnClick()

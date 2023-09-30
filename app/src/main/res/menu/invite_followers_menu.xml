@@ -1,0 +1,7 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/iconBack"
+        android:icon="@drawable/back_icon_48"
+        app:showAsAction="always"
+        android:title="@string/applicationsSettingsBackText" />
+</menu>

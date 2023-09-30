@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
             enableSwipeToRefresh()
 
-            enableMainActivityListeners()
+            enableActivityListeners()
 
             registerBroadcastReceivers()
         } else {
@@ -135,6 +135,10 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         return when (item.itemId) {
             R.id.iconSettings -> {
                 iconSettingsOnClick()
+                true
+            }
+            R.id.iconInviteFollower -> {
+                iconInviteFollowerOnClick()
                 true
             }
             R.id.iconInfo -> {
@@ -272,7 +276,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         }
     }
 
-    private fun enableMainActivityListeners() {
+    private fun enableActivityListeners() {
        // Placeholder
     }
 
@@ -360,6 +364,11 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
     private fun iconSettingsOnClick() {
         val intent = Intent(applicationContext, ApplicationSettingsActivity::class.java)
+        startActivity(intent)
+    }
+
+    private fun iconInviteFollowerOnClick() {
+        val intent = Intent(applicationContext, InviteFollowerActivity::class.java)
         startActivity(intent)
     }
 
