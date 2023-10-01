@@ -184,7 +184,7 @@
         android:id="@+id/btnSettingsLogout"
         android:layout_width="325dp"
         android:layout_height="48sp"
-        android:layout_marginBottom="28dp"
+        android:layout_marginBottom="30dp"
         android:text="@string/logoutTitleText"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/glucoseHighThresholdValue"

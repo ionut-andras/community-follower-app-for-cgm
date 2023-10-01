@@ -35,7 +35,7 @@
         android:id="@+id/btnPermissionsInfoOk"
         android:layout_width="173dp"
         android:layout_height="48sp"
-        android:layout_marginBottom="36dp"
+        android:layout_marginBottom="30dp"
         android:text="@string/textOk"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"

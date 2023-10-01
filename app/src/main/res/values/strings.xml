@@ -35,6 +35,9 @@
     <string name="defaultValueCarbsCount">0</string>
     <string name="defaultValueInsulinCount">0.0</string>
     <string name="textInviteFollowers">Invite followers</string>
+    <string name="textSendInviteToFollower">Send invite</string>
+    <string name="textFollowerInvitePhoneNo">Phone number of the person to invite</string>
+    <string name="textPhoneHint">+40 711 111 111</string>
 
     <!-- Variables -->
     <string name="variableNameGenericData">data</string>

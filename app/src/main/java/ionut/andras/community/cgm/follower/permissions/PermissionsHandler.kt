@@ -20,12 +20,24 @@ class PermissionHandler(private val context: Context) {
         val result1 = ContextCompat.checkSelfPermission(context, Manifest.permission.FOREGROUND_SERVICE)
         val result2 = ContextCompat.checkSelfPermission(context, Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
         val result3 = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
+        val result4 = ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS)
+        val result5 = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_SMS)
+        val result6 = ContextCompat.checkSelfPermission(context, Manifest.permission.RECEIVE_SMS)
+        val result7 = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE)
         Log.i("PermissionHandler > checkPermissions", result1.toString())
         Log.i("PermissionHandler > checkPermissions", result2.toString())
         Log.i("PermissionHandler > checkPermissions", result3.toString())
+        Log.i("PermissionHandler > checkPermissions", result4.toString())
+        Log.i("PermissionHandler > checkPermissions", result5.toString())
+        Log.i("PermissionHandler > checkPermissions", result6.toString())
+        Log.i("PermissionHandler > checkPermissions", result7.toString())
         return result1 == PackageManager.PERMISSION_GRANTED
                 && result2 == PackageManager.PERMISSION_GRANTED
                 && result3 == PackageManager.PERMISSION_GRANTED
+                && result4 == PackageManager.PERMISSION_GRANTED
+                && result5 == PackageManager.PERMISSION_GRANTED
+                && result6 == PackageManager.PERMISSION_GRANTED
+                && result7 == PackageManager.PERMISSION_GRANTED
     }
 
     fun requestPermissions(activity: Activity) {
@@ -34,7 +46,11 @@ class PermissionHandler(private val context: Context) {
             arrayOf(
                 Manifest.permission.FOREGROUND_SERVICE,
                 Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                Manifest.permission.POST_NOTIFICATIONS
+                Manifest.permission.POST_NOTIFICATIONS,
+                Manifest.permission.SEND_SMS,
+                Manifest.permission.READ_SMS,
+                Manifest.permission.RECEIVE_SMS,
+                Manifest.permission.READ_PHONE_STATE
             ),
             REQUEST_CODE
         )

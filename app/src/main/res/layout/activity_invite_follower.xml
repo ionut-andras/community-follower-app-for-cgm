@@ -23,4 +23,39 @@
             android:text="@string/textInviteFollowers" />
     </androidx.appcompat.widget.Toolbar>
 
+    <TextView
+        android:id="@+id/inviteFollowersPhoneLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:text="@string/textFollowerInvitePhoneNo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.169"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inviteFollowerActivityActionToolbar" />
+
+    <EditText
+        android:id="@+id/sendInviteToFollowerPhoneEditText"
+        android:layout_width="338dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:ems="10"
+        android:hint="@string/textPhoneHint"
+        android:inputType="phone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/inviteFollowersPhoneLabel"
+        android:autofillHints="phoneNumber" />
+
+    <Button
+        android:id="@+id/btnSendInviteToFollower"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:text="@string/textSendInviteToFollower"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
