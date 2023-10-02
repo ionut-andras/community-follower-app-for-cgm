@@ -34,8 +34,4 @@ class Configuration: Serializable {
     var disableNotificationSoundSeconds = 1800 // 30 mins
 
     var disableNotification = false
-
-    companion object {
-        const val REQUEST_CODE_PERMISSION_NOTIFICATIONS = 100
-    }
 }

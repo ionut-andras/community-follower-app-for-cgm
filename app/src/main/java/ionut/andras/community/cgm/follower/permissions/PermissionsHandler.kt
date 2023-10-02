@@ -1,66 +1,56 @@
 package ionut.andras.community.cgm.follower.permissions
 
-import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import android.util.Log
+import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import ionut.andras.community.cgm.follower.R
+import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
+import ionut.andras.community.cgm.follower.toast.ToastWrapper
 
-class PermissionHandler(private val context: Context) {
-    companion object {
-        const val REQUEST_CODE = 200
+class PermissionHandler(private val activity: AppCompatActivityWrapper,private val context: Context) {
+    fun checkPermission(androidPermissionCode: String, permissionFriendlyName: String, permissionRequestCode: Int){
+        when {
+            // Case 1: Permissions already granted
+            ContextCompat.checkSelfPermission(context, androidPermissionCode) == PackageManager.PERMISSION_GRANTED -> {
+                ToastWrapper(context).displayInfoToast("$permissionFriendlyName " + context.getString(R.string.textPermissionGranted))
+            }
+
+            // Case 2:  Permissions should be explained
+            ActivityCompat.shouldShowRequestPermissionRationale(activity, androidPermissionCode) -> {
+                showDialog(androidPermissionCode, permissionFriendlyName, permissionRequestCode)
+            }
+
+            //  Case default: Permission should be requested
+            else -> {
+                ActivityCompat.requestPermissions(
+                    activity,
+                    arrayOf(androidPermissionCode),
+                    permissionRequestCode
+                )
+            }
+        }
     }
 
-    /**
-     * Check if minimum permissions needed by the application are requested from the user.
-     */
-    fun checkPermissions(): Boolean {
-        val result1 = ContextCompat.checkSelfPermission(context, Manifest.permission.FOREGROUND_SERVICE)
-        val result2 = ContextCompat.checkSelfPermission(context, Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-        val result3 = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
-        val result4 = ContextCompat.checkSelfPermission(context, Manifest.permission.SEND_SMS)
-        val result5 = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_SMS)
-        val result6 = ContextCompat.checkSelfPermission(context, Manifest.permission.RECEIVE_SMS)
-        val result7 = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE)
-        Log.i("PermissionHandler > checkPermissions", result1.toString())
-        Log.i("PermissionHandler > checkPermissions", result2.toString())
-        Log.i("PermissionHandler > checkPermissions", result3.toString())
-        Log.i("PermissionHandler > checkPermissions", result4.toString())
-        Log.i("PermissionHandler > checkPermissions", result5.toString())
-        Log.i("PermissionHandler > checkPermissions", result6.toString())
-        Log.i("PermissionHandler > checkPermissions", result7.toString())
-        return result1 == PackageManager.PERMISSION_GRANTED
-                && result2 == PackageManager.PERMISSION_GRANTED
-                && result3 == PackageManager.PERMISSION_GRANTED
-                && result4 == PackageManager.PERMISSION_GRANTED
-                && result5 == PackageManager.PERMISSION_GRANTED
-                && result6 == PackageManager.PERMISSION_GRANTED
-                && result7 == PackageManager.PERMISSION_GRANTED
+    fun onRequestPermissionResult(permissionFriendlyName: String, grantResults: IntArray) {
+        if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+            ToastWrapper(context).displayInfoToast("$permissionFriendlyName " + context.getString(R.string.textPermissionDenied))
+        } else {
+            ToastWrapper(context).displayInfoToast("$permissionFriendlyName " + context.getString(R.string.textPermissionGranted))
+        }
     }
 
-    fun requestPermissions(activity: Activity) {
-        ActivityCompat.requestPermissions(
-            activity,
-            arrayOf(
-                Manifest.permission.FOREGROUND_SERVICE,
-                Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
-                Manifest.permission.POST_NOTIFICATIONS,
-                Manifest.permission.SEND_SMS,
-                Manifest.permission.READ_SMS,
-                Manifest.permission.RECEIVE_SMS,
-                Manifest.permission.READ_PHONE_STATE
-            ),
-            REQUEST_CODE
-        )
+    private fun showDialog(androidPermissionCode: String, permissionFriendlyName: String, permissionRequestCode: Int) {
+        val title = context.getString(R.string.textPermissionRequired)
+        val text = context.getString(R.string.textPermissionsRequiredToUseInviteFollowerFunction) + ": $permissionFriendlyName"
+
+        ToastWrapper(context).showDialog(title, text) { dialog, which ->
+            ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(androidPermissionCode),
+                permissionRequestCode
+            )
+        }
     }
-//
-//    fun handleBatteryOptimizations() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
-//            intent.data = Uri.parse("package:" + context.packageName)
-//            context.startActivity(intent)
-//        }
-//    }
 }

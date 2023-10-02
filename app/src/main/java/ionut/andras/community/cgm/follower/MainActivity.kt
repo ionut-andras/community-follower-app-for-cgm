@@ -1,11 +1,11 @@
 package ionut.andras.community.cgm.follower
 
+import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Html
 import android.util.Log
@@ -23,6 +23,7 @@ import ionut.andras.community.cgm.follower.constants.DexcomTrendsConversionMap
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.notifications.GlucoseNotificationData
 import ionut.andras.community.cgm.follower.permissions.PermissionHandler
+import ionut.andras.community.cgm.follower.permissions.PermissionRequestCodes
 import ionut.andras.community.cgm.follower.plot.PlotGlucoseHistoricValues
 import ionut.andras.community.cgm.follower.services.GlucoseValuesUpdateService
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastActions
@@ -160,9 +161,16 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
     }
 
     private fun checkApplicationMinimumRequirements() {
-        if (!PermissionHandler(applicationContext).checkPermissions()){
-            PermissionHandler(applicationContext).requestPermissions(this)
-        }
+        /**
+         * Check if minimum permissions needed by the application are requested from the user.
+         */
+
+        PermissionHandler(this, applicationContext)
+            .checkPermission(Manifest.permission.FOREGROUND_SERVICE, getString(R.string.permissionFriendlyNameForegroundService), PermissionRequestCodes.FOREGROUND_SERVICE)
+        PermissionHandler(this, applicationContext)
+            .checkPermission(Manifest.permission.POST_NOTIFICATIONS, getString(R.string.permissionFriendlyNamePostNotifications), PermissionRequestCodes.GLUCOSE_VALUE_NOTIFICATION)
+        PermissionHandler(this, applicationContext)
+            .checkPermission(Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, getString(R.string.permissionFriendlyNameDisableBatteryOptimization), PermissionRequestCodes.BATTERY_OPTIMIZATION)
     }
 
     // Handle the permission result in onRequestPermissionsResult()
@@ -172,19 +180,6 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == Configuration.REQUEST_CODE_PERMISSION_NOTIFICATIONS) {
-
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // The user granted the permission.
-                // You can now send notifications.
-                Log.i("onRequestPermissionsResult", "Notifications permissions granted.")
-            } else {
-                // The user denied the permission.
-                // You cannot send notifications.
-                Log.i("onRequestPermissionsResult", "Notifications permissions denied.")
-            }
-        }
     }
 
     private fun displayLoginFormNeeded(): Boolean {
@@ -344,7 +339,8 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
                 glucoseNotificationData.toNotificationMessage(applicationContext, appConfiguration)
             ToastWrapper(applicationContext).displayMessageToast(
                 findViewById(R.id.glucoseValue),
-                toastText
+                toastText,
+                BroadcastActions.TOASTER_OK_GLUCOSE_VALUE
             )
             lastToastDisplayTimestamp = DateTimeConversion().getCurrentTimestamp()
             sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()

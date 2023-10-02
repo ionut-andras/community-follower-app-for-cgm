@@ -1,12 +1,12 @@
 package ionut.andras.community.cgm.follower.toast
 
+import android.app.AlertDialog
 import android.content.Context
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import ionut.andras.community.cgm.follower.R
-import ionut.andras.community.cgm.follower.services.broadcast.BroadcastActions
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastSender
 
 class ToastWrapper(context: Context?) : Toast(context) {
@@ -22,14 +22,30 @@ class ToastWrapper(context: Context?) : Toast(context) {
         }
     }
 
-    fun displayMessageToast(view: View, text: String) {
+    fun displayMessageToast(view: View, text: String, action: String? = null) {
         val customToast = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE)
         customToast.setAction("OK") {
             Log.i("displayMessageToast", "OK button clicked")
-            BroadcastSender(appContext, BroadcastActions.TOASTER_OK_GLUCOSE_VALUE)
-                .addInfo(appContext.getString(R.string.variableNameGenericData), "OK")
-                .broadcast()
+            action?.let {
+                BroadcastSender(appContext, it)
+                    .addInfo(appContext.getString(R.string.variableNameGenericData), "OK")
+                    .broadcast()
+            }
         }
         customToast.show()
+    }
+
+    fun displayInfoToast(text: String) {
+        makeText(appContext, text, LENGTH_SHORT).show()
+    }
+
+    fun showDialog(title: String, text: String, onClickListener: android.content.DialogInterface.OnClickListener) {
+        val builder = AlertDialog.Builder(appContext)
+        builder.apply {
+            setTitle(title)
+            setMessage(text)
+            setPositiveButton(context.getString(R.string.textOk), onClickListener)
+        }
+        builder.create().show()
     }
 }

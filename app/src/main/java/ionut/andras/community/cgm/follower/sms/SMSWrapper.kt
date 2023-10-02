@@ -7,24 +7,28 @@ import android.content.IntentFilter
 import android.os.Build
 import android.telephony.SmsManager
 import android.telephony.TelephonyManager
+import android.util.Log
 
 class SMSWrapper(private val applicationContext: Context) {
 
     private val smsReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
+            Log.i("SMSWrapper > smsReceiver", intent.toString())
+            /*
             val bundle = intent.extras
             if (bundle != null) {
-                /*val pdus = bundle["pdus"] as Array<*>
+                val pdus = bundle["pdus"] as Array<*>
                 val messages = pdus.map { SmsMessage.createFromPdu(it as ByteArray) }
                 for (message in messages) {
                     val binaryMessage = message.messageBody.toByteArray(Charsets.UTF_8)
                     // Process the binary message here
-                }*/
+                }
             }
+            */
         }
     }
 
-    init {
+    fun registerSmsBroadcastReceiver() {
         val filter = IntentFilter()
         filter.addAction("android.provider.Telephony.SMS_RECEIVED")
         applicationContext.registerReceiver(smsReceiver, filter)
