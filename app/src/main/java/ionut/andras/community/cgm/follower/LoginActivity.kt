@@ -2,6 +2,7 @@ package ionut.andras.community.cgm.follower
 
 import android.Manifest
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.util.Log
@@ -14,7 +15,7 @@ import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.permissions.PermissionHandler
 import ionut.andras.community.cgm.follower.permissions.PermissionRequestCodes
-import ionut.andras.community.cgm.follower.sms.SMSWrapper
+import ionut.andras.community.cgm.follower.sms.SmsBroadcastReceiver
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 
 class LoginActivity : AppCompatActivityWrapper() {
@@ -31,9 +32,17 @@ class LoginActivity : AppCompatActivityWrapper() {
 
         showToastIfMessageAvailable(intent)
 
-        registerBroadcastReceivers()
-
         checkApplicationOptionalRequirements()
+
+        //////////////////////////////////////////////////////////////
+
+        Log.i("AppCompatActivityWrapper > onCreate", "Register SMS Receiver 1")
+        try {
+            registerReceiver(SmsBroadcastReceiver(), IntentFilter("android.provider.Telephony.SMS_RECEIVED"), RECEIVER_EXPORTED)
+        } catch (e: Exception) {
+            Log.i("AppCompatActivityWrapper > onCreate # Exception", e.toString())
+        }
+        //////////////////////////////////////////////////////////////
     }
 
     private fun initializeView() {
@@ -47,13 +56,6 @@ class LoginActivity : AppCompatActivityWrapper() {
 
         loginButton = findViewById<Button>(R.id.btnLogin)
         loginButton.isEnabled = false
-    }
-
-    private fun registerBroadcastReceivers() {
-        Log.i("loginActivity > registerBroadcastReceivers", "Starting...")
-
-        // Register for receiving Binary SMS via the SMSWrapper class
-        SMSWrapper(applicationContext).registerSmsBroadcastReceiver()
     }
 
     fun checkboxDisclaimerChanged(view: View) {
@@ -92,11 +94,11 @@ class LoginActivity : AppCompatActivityWrapper() {
          * Check if minimum permissions needed by the application are requested from the user.
          */
         PermissionHandler(this, applicationContext)
-            .checkPermission(Manifest.permission.SEND_SMS, getString(R.string.permissionFriendlyNameSendSms), PermissionRequestCodes.SEND_SMS)
-        PermissionHandler(this, applicationContext)
             .checkPermission(Manifest.permission.RECEIVE_SMS, getString(R.string.permissionFriendlyNameReceiveSms), PermissionRequestCodes.RECEIVE_SMS)
         PermissionHandler(this, applicationContext)
             .checkPermission(Manifest.permission.READ_SMS, getString(R.string.permissionFriendlyNameReadSms), PermissionRequestCodes.READ_SMS)
+        PermissionHandler(this, applicationContext)
+            .checkPermission(Manifest.permission.SEND_SMS, getString(R.string.permissionFriendlyNameSendSms), PermissionRequestCodes.SEND_SMS)
         PermissionHandler(this, applicationContext)
             .checkPermission(Manifest.permission.READ_PHONE_STATE, getString(R.string.permissionFriendlyNameReadPhoneState), PermissionRequestCodes.READ_PHONE_STATE)
     }

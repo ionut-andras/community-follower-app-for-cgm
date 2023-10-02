@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import ionut.andras.community.cgm.follower.toast.ToastWrapper
 
 class SmsBroadcastReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -20,6 +21,8 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
             }
         }
         */
-        Log.i("SmsBroadcastReceiver", intent.toString())
+        ToastWrapper(context).displayInfoToast("SMS Received")
+
+        Log.i("SmsBroadcastReceiver", "Received SMS")
     }
 }

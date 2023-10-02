@@ -34,4 +34,6 @@ class Configuration: Serializable {
     var disableNotificationSoundSeconds = 1800 // 30 mins
 
     var disableNotification = false
+
+    var smsWakeupTriggerString = "CGMFOLLOWERSTART"
 }

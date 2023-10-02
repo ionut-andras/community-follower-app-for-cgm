@@ -66,13 +66,17 @@
 -->
     <ScrollView
         android:id="@+id/loginDisclaimerScrollView"
-        android:layout_width="369dp"
-        android:layout_height="513dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="48dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
         android:scrollbarStyle="insideOverlay"
-        app:layout_constraintEnd_toEndOf="@+id/btnLogin"
-        app:layout_constraintStart_toStartOf="@+id/btnLogin"
-        app:layout_constraintTop_toBottomOf="@+id/btnLogin">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnLogin">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -82,8 +86,10 @@
             <TextView
                 android:id="@+id/loginDisclaimerTextView"
                 android:layout_width="match_parent"
-                android:layout_height="420dp"
-                android:text="@string/limitedResponsibility" />
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal|fill_horizontal"
+                android:text="@string/limitedResponsibility"
+                android:textAlignment="gravity" />
 
             <CheckBox
                 android:id="@+id/checkboxDisclaimer"

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.sms.SMSWrapper
@@ -57,23 +58,12 @@ class InviteFollowerActivity : AppCompatActivityWrapper(R.menu.invite_followers_
         val dexcomSessionId = sharedPreferences.getString(UserPreferences.dexcomSessionId, null).toString()
 
         if (dexcomSessionId.isNotEmpty()) {
-            // Register the BroadcastReceiver
-            /*val broadcastReceiver = SmsBroadcastReceiver()
-            val intentFilter = IntentFilter()
-            intentFilter.addAction(Telephony.Sms.Intents.SMS_SENT_ACTION)
-            applicationContext.registerReceiver(broadcastReceiver, intentFilter)*/
-            //////////////////////////////////////////////////////////////////////////////////////////////////
-
-            // DexcomSessionId-EnableDisableNotificationsOnFollower
-            val binarySMS = "$dexcomSessionId-N1"
+            // SMSWAKEUPMESSAGE:DexcomSessionId-EnableDisableNotificationsOnFollower
+            val binarySMS = Configuration().smsWakeupTriggerString + ":$dexcomSessionId-N1"
             // ToastWrapper(applicationContext).displayMessageToast(findViewById(R.id.btnSendInviteToFollower), "SMS: $binarySMS")
             //ToastWrapper(applicationContext).displayMessageToast(findViewById(R.id.btnSendInviteToFollower), "Phone No: $phoneNo")
             SMSWrapper(applicationContext).sendBinarySms(phoneNo, binarySMS)
             inviteSent = true
-
-            // Unregister the BroadcastReceiver
-            /*applicationContext.unregisterReceiver(broadcastReceiver)*/
-            //////////////////////////////////////////////////////////////////////////////////////////////////
         }
 
         return inviteSent

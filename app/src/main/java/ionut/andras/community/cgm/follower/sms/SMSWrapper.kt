@@ -10,30 +10,6 @@ import android.telephony.TelephonyManager
 import android.util.Log
 
 class SMSWrapper(private val applicationContext: Context) {
-
-    private val smsReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            Log.i("SMSWrapper > smsReceiver", intent.toString())
-            /*
-            val bundle = intent.extras
-            if (bundle != null) {
-                val pdus = bundle["pdus"] as Array<*>
-                val messages = pdus.map { SmsMessage.createFromPdu(it as ByteArray) }
-                for (message in messages) {
-                    val binaryMessage = message.messageBody.toByteArray(Charsets.UTF_8)
-                    // Process the binary message here
-                }
-            }
-            */
-        }
-    }
-
-    fun registerSmsBroadcastReceiver() {
-        val filter = IntentFilter()
-        filter.addAction("android.provider.Telephony.SMS_RECEIVED")
-        applicationContext.registerReceiver(smsReceiver, filter)
-    }
-
     fun sendBinarySms(phoneNumber: String, message: String) {
         val telephonyManager = applicationContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
@@ -48,6 +24,7 @@ class SMSWrapper(private val applicationContext: Context) {
             SmsManager.getDefault()
         }
 
+        /*
         val binaryMessage = message.toByteArray(Charsets.UTF_8)
 
         smsManager.sendDataMessage(
@@ -55,6 +32,15 @@ class SMSWrapper(private val applicationContext: Context) {
             null,  // Service Center Address (use null for default)
             0,     // Port (use 0 for default)
             binaryMessage,
+            null,
+            null
+        )
+        */
+
+        smsManager.sendTextMessage(
+            phoneNumber,
+            null,
+            message,
             null,
             null
         )
