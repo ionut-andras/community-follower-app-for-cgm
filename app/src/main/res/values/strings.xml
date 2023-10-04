@@ -67,12 +67,12 @@
     <string name="hintEditGlucoseLowThreshold">Edit glucose low threshold</string>
     <string name="hintGlucoseHighThreshold">Glucose high threshold</string>
     <string name="hintEditGlucoseHighThreshold">Edit glucose high threshold</string>
-    <string name="textPhoneHint">+40 711 111 111</string>
+    <string name="textPhoneHint">+40 111 111 111</string>
     <!-- Long messages -->
     <string name="limitedResponsibility">ATTENTION: Please carefully read this before continue.\n\nThis application is NOT an official Dexcom Application and is NOT related in any way with Dexcom.\n\nThe application is for informational purposes only and is not intended to be a substitute for professional medical advice, diagnosis, or treatment.\nThe app\'s creators and publishers are not responsible for any adverse effects or consequences that may result from the use of this app.\n\nThe app is provided \"as is\" and without any warranties, express or implied.\nThe app\'s creators and publishers disclaim all liability for any direct or indirect damages caused by the use of this app.\n\nPlease use at your own risk.\n\nPlease read our <a href="https://sites.google.com/view/cgmfollower">Terms and conditions </a> very carefully.\n\nBy using this app, you agree to these terms and conditions.</string>
     <string name="minimumRequirements">ATTENTION: For the app to work correctly you need to make sure the following settings are enabled for your application:\n\n1. Notifications are allowed\n2. The app is NOT paused if unused\n3. The permissions are NOT removed if app unused\n4. Application has unrestricted data usage\n5. Application has unrestricted battery usage\n\nPlease reffer to your device configuration for each settings.</string>
     <string name="requiredPermissionsList">Recommended settings for this application:\n\n1. Notifications are allowed\n\n2. Uncheck \"Pause app activity if unused\" checkbox under application permissions\n\n3. Uncheck \"Remove perissions if app unused\" checkbox\n\n4. Battery settings for the application is set to \"Unrestricted\"\n\n5. Mobile data is allowed for background data and while \"Data saver\" is on\n</string>
     <string name="infoEventSavedLocally">NOTE:\n\nThe current version of the application saves the events locally only for the last 24h display purpose.\nYou will not see these events in your glucose history manager.</string>
     <!-- Regular expressions -->
-    <string name="regexSmsWakeupMessage">^([A-Z]+):(.+?)\\-N\\d\\-P([\\+\\d]{9-15}) (.+)$</string>
+    <string name="regexSmsWakeupMessage">^(.+?):(.+?)\\-N(.+?)\\-P(.+?) (.*)$</string>
 </resources>

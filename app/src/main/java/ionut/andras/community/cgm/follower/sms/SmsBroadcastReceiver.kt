@@ -34,26 +34,43 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
                     // Get SMS message contents
                     val message = extras.getString(SmsRetriever.EXTRA_SMS_MESSAGE) ?: return
 
-                    // SMSWAKEUPMESSAGE:DexcomSessionId-EnableDisableNotificationsOnFollower GOOGLE_PLAY_11_CHARACTERS_HASH
-                    val action:String? = getWakeupMessageElements(message)?.get(1)
-                    val sessionId:String? = getWakeupMessageElements(message)?.get(2)
-                    val senderPhoneNo:String? = getWakeupMessageElements(message)?.get(3)
+                    // <SMSWAKEUPMESSAGE>:<DexcomSessionId>-N<EnableDisableNotificationsOnFollower>-P<Sender Phone No> GOOGLE_PLAY_11_CHARACTERS_HASH
+                    val receivedMessageComponents = getWakeupMessageElements(message)
+                    val action:String? = receivedMessageComponents?.get(1)
+                    val sessionId:String? = receivedMessageComponents?.get(2)
+                    val notificationsEnabled:String? = receivedMessageComponents?.get(3)
+                    val senderPhoneNo:String? = receivedMessageComponents?.get(4)
 
                     // Extract one-time code from the message and complete verification
                     // by sending the code back to your server.
                     // ToastWrapper(context).displayInfoToast(message)
                     ToastWrapper(context).displayInfoToast("Extracted action = $action")
                     ToastWrapper(context).displayInfoToast("Extracted Session Id = $sessionId")
+                    ToastWrapper(context).displayInfoToast("Extracted Notifications Flag = $notificationsEnabled")
                     ToastWrapper(context).displayInfoToast("Extracted senderPhoneNo = $senderPhoneNo")
 
+                    val sharedPreferences = SharedPreferencesFactory(context).getInstance()
                     if (!sessionId.isNullOrEmpty()) {
-                        val sharedPreferences = SharedPreferencesFactory(context).getInstance()
+                        // Setup shared session
                         sharedPreferences.edit()
                             .putString(UserPreferences.dexcomSessionId, sessionId.toString())
                             .apply()
+
+                        // Enable / Disable notifications
+                        if ("1" == notificationsEnabled) {
+                            sharedPreferences.edit()
+                                .putBoolean(UserPreferences.disableNotifications, true)
+                                .apply()
+                        } else {
+                            sharedPreferences.edit()
+                                .putBoolean(UserPreferences.disableNotifications, false)
+                                .apply()
+                        }
                     }
 
-                    val redirectIntent = Intent(context, MainActivity::class.java)
+                    val redirectIntent = Intent(context, MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    }
                     context.startActivity(redirectIntent)
                 }
                 CommonStatusCodes.TIMEOUT -> {
