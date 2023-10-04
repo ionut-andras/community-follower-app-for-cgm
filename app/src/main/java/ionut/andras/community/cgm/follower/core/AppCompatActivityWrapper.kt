@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import ionut.andras.community.cgm.follower.LoginActivity
 import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.R
 
@@ -45,6 +46,18 @@ open class AppCompatActivityWrapper(private val menuLayoutId: Int? = null): AppC
 
     fun switchToMainActivity() {
         val intent = Intent(applicationContext, MainActivity::class.java)
+        startActivity(intent)
+    }
+
+    fun displayLoginForm(message: String? = null) {
+        val intent = Intent(applicationContext, LoginActivity::class.java)
+        intent.putExtra(
+            getString(R.string.variableNameLoginFormMessage),
+            message
+        ).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        finish()
         startActivity(intent)
     }
 }

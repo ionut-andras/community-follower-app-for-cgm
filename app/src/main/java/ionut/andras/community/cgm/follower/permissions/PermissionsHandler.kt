@@ -2,7 +2,6 @@ package ionut.andras.community.cgm.follower.permissions
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import ionut.andras.community.cgm.follower.R
@@ -14,7 +13,7 @@ class PermissionHandler(private val activity: AppCompatActivityWrapper,private v
         when {
             // Case 1: Permissions already granted
             ContextCompat.checkSelfPermission(context, androidPermissionCode) == PackageManager.PERMISSION_GRANTED -> {
-                ToastWrapper(context).displayInfoToast("$permissionFriendlyName " + context.getString(R.string.textPermissionGranted))
+                // ToastWrapper(context).displayInfoToast("$permissionFriendlyName " + context.getString(R.string.textPermissionGranted))
             }
 
             // Case 2:  Permissions should be explained
@@ -35,9 +34,9 @@ class PermissionHandler(private val activity: AppCompatActivityWrapper,private v
 
     fun onRequestPermissionResult(permissionFriendlyName: String, grantResults: IntArray) {
         if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-            ToastWrapper(context).displayInfoToast("$permissionFriendlyName " + context.getString(R.string.textPermissionDenied))
+            // ToastWrapper(context).displayInfoToast("$permissionFriendlyName " + context.getString(R.string.textPermissionDenied))
         } else {
-            ToastWrapper(context).displayInfoToast("$permissionFriendlyName " + context.getString(R.string.textPermissionGranted))
+            // ToastWrapper(context).displayInfoToast("$permissionFriendlyName " + context.getString(R.string.textPermissionGranted))
         }
     }
 

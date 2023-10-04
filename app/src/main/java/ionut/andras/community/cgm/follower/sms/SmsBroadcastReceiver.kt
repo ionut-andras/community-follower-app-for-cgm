@@ -9,7 +9,6 @@ import com.google.android.gms.common.api.Status
 import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
-import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 
 /**
@@ -21,7 +20,7 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
     private lateinit var smsWakeupMessageRegex: Regex
 
     override fun onReceive(context: Context, intent: Intent) {
-        ToastWrapper(context).displayInfoToast("SMS Received")
+        // ToastWrapper(context).displayInfoToast("SMS Received")
 
         if (SmsRetriever.SMS_RETRIEVED_ACTION == intent.action) {
             val extras = intent.extras ?: return
@@ -39,8 +38,8 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
 
                     // Extract one-time code from the message and complete verification
                     // by sending the code back to your server.
-                    ToastWrapper(context).displayInfoToast(message)
-                    ToastWrapper(context).displayInfoToast("Extracted Session Id = $sessionId")
+                    // ToastWrapper(context).displayInfoToast(message)
+                    // ToastWrapper(context).displayInfoToast("Extracted Session Id = $sessionId")
 
                     if (!sessionId.isNullOrEmpty()) {
                         val sharedPreferences = SharedPreferencesFactory(context).getInstance()
@@ -54,7 +53,7 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
                 }
                 CommonStatusCodes.TIMEOUT -> {
                     // Waiting for SMS timed out (5 minutes)
-                    ToastWrapper(context).displayInfoToast("SMS Timeout")
+                    // ToastWrapper(context).displayInfoToast("SMS Timeout")
                 }
             }
         }

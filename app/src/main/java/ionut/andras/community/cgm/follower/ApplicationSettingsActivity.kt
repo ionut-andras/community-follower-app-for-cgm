@@ -1,6 +1,5 @@
 package ionut.andras.community.cgm.follower
 
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -79,7 +78,6 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
         logoutButton.setOnClickListener{
             btnLogoutOnClick()
         }
-
     }
 
     private fun btnLogoutOnClick() {
@@ -102,8 +100,6 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
         Log.i("displayLoginFormNeeded > password", password.toString())
         Log.i("displayLoginFormNeeded > dexcomSessionID", dexcomSessionID.toString())
 
-
-        val intent = Intent(applicationContext, LoginActivity::class.java)
-        startActivity(intent)
+        displayLoginForm()
     }
 }

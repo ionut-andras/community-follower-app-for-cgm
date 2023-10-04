@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -57,12 +56,6 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Setup design elements
-        setContentView(R.layout.activity_main)
-
-        // Set Action bar
-        setSupportActionBar(findViewById(R.id.mainActivityActionToolbar))
-
         // Check application minimum requirements
         checkApplicationMinimumRequirements()
 
@@ -71,6 +64,11 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
         if (!displayLoginFormNeeded()) {
             Log.i("MainActivity onCreate", "Display form not needed. Continue...")
+            // Setup design elements
+            setContentView(R.layout.activity_main)
+
+            // Set Action bar
+            setSupportActionBar(findViewById(R.id.mainActivityActionToolbar))
 
             // Display some default values before showing a loading screen
             viewGlucoseValue = findViewById(R.id.glucoseValue)
@@ -195,18 +193,6 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         Log.i("displayLoginFormNeeded > password", password.toString())
         Log.i("displayLoginFormNeeded > dexcomSessionID", dexcomSessionID.toString())
         return (dexcomSessionID.isNullOrEmpty() && (email.isNullOrEmpty() || password.isNullOrEmpty()))
-    }
-
-    private fun displayLoginForm(message: String? = null) {
-        val intent = Intent(applicationContext, LoginActivity::class.java)
-        intent.putExtra(
-            getString(R.string.variableNameLoginFormMessage),
-            message
-        ).apply {
-            flags = FLAG_ACTIVITY_CLEAR_TASK
-        }
-        finish()
-        startActivity(intent)
     }
 
     private fun startServiceGetAndProcessGlucoseData() {
