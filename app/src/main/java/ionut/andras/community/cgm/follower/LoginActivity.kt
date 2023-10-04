@@ -2,10 +2,8 @@ package ionut.andras.community.cgm.follower
 
 import android.Manifest
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
@@ -15,7 +13,7 @@ import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.permissions.PermissionHandler
 import ionut.andras.community.cgm.follower.permissions.PermissionRequestCodes
-import ionut.andras.community.cgm.follower.sms.SmsBroadcastReceiver
+import ionut.andras.community.cgm.follower.sms.OtpSmsListener
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 
 class LoginActivity : AppCompatActivityWrapper() {
@@ -34,15 +32,8 @@ class LoginActivity : AppCompatActivityWrapper() {
 
         checkApplicationOptionalRequirements()
 
-        //////////////////////////////////////////////////////////////
-
-        Log.i("AppCompatActivityWrapper > onCreate", "Register SMS Receiver 1")
-        try {
-            registerReceiver(SmsBroadcastReceiver(), IntentFilter("android.provider.Telephony.SMS_RECEIVED"), RECEIVER_EXPORTED)
-        } catch (e: Exception) {
-            Log.i("AppCompatActivityWrapper > onCreate # Exception", e.toString())
-        }
-        //////////////////////////////////////////////////////////////
+        // Start One Time PIN SMS listener
+        OtpSmsListener(applicationContext)
     }
 
     private fun initializeView() {
@@ -74,11 +65,6 @@ class LoginActivity : AppCompatActivityWrapper() {
         switchToMainActivity()
     }
 
-    private fun switchToMainActivity() {
-        val intent = Intent(applicationContext, MainActivity::class.java)
-        startActivity(intent)
-    }
-
     private fun showToastIfMessageAvailable(intent: Intent?) {
         if (null != intent) {
             val toastMessage = intent.getStringExtra(getString(R.string.variableNameLoginFormMessage))
@@ -93,10 +79,6 @@ class LoginActivity : AppCompatActivityWrapper() {
         /**
          * Check if minimum permissions needed by the application are requested from the user.
          */
-        PermissionHandler(this, applicationContext)
-            .checkPermission(Manifest.permission.RECEIVE_SMS, getString(R.string.permissionFriendlyNameReceiveSms), PermissionRequestCodes.RECEIVE_SMS)
-        PermissionHandler(this, applicationContext)
-            .checkPermission(Manifest.permission.READ_SMS, getString(R.string.permissionFriendlyNameReadSms), PermissionRequestCodes.READ_SMS)
         PermissionHandler(this, applicationContext)
             .checkPermission(Manifest.permission.SEND_SMS, getString(R.string.permissionFriendlyNameSendSms), PermissionRequestCodes.SEND_SMS)
         PermissionHandler(this, applicationContext)
@@ -115,16 +97,6 @@ class LoginActivity : AppCompatActivityWrapper() {
             PermissionRequestCodes.SEND_SMS -> {
                 PermissionHandler(this,applicationContext)
                     .onRequestPermissionResult(getString(R.string.permissionFriendlyNameSendSms), grantResults)
-            }
-
-            PermissionRequestCodes.RECEIVE_SMS -> {
-                PermissionHandler(this,applicationContext)
-                    .onRequestPermissionResult(getString(R.string.permissionFriendlyNameReceiveSms), grantResults)
-            }
-
-            PermissionRequestCodes.READ_SMS -> {
-                PermissionHandler(this,applicationContext)
-                    .onRequestPermissionResult(getString(R.string.permissionFriendlyNameReadSms), grantResults)
             }
 
             PermissionRequestCodes.READ_PHONE_STATE -> {

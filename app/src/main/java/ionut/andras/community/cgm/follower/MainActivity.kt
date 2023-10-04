@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -15,7 +16,6 @@ import android.view.View
 import android.widget.TextView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.mikephil.charting.charts.LineChart
-import ionut.andras.community.cgm.follower.utils.GlucoseValueColorRange
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.constants.DexcomConstants
@@ -31,6 +31,7 @@ import ionut.andras.community.cgm.follower.services.broadcast.BroadcastSender
 import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.DateTimeConversion
 import ionut.andras.community.cgm.follower.utils.DexcomDateTimeConversion
+import ionut.andras.community.cgm.follower.utils.GlucoseValueColorRange
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 import org.json.JSONArray
 
@@ -164,9 +165,10 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         /**
          * Check if minimum permissions needed by the application are requested from the user.
          */
-
         PermissionHandler(this, applicationContext)
             .checkPermission(Manifest.permission.FOREGROUND_SERVICE, getString(R.string.permissionFriendlyNameForegroundService), PermissionRequestCodes.FOREGROUND_SERVICE)
+        PermissionHandler(this, applicationContext)
+            .checkPermission(Manifest.permission.FOREGROUND_SERVICE_DATA_SYNC, getString(R.string.permissionFriendlyNameForegroundService), PermissionRequestCodes.FOREGROUND_SERVICE_DATA_SYNC)
         PermissionHandler(this, applicationContext)
             .checkPermission(Manifest.permission.POST_NOTIFICATIONS, getString(R.string.permissionFriendlyNamePostNotifications), PermissionRequestCodes.GLUCOSE_VALUE_NOTIFICATION)
         PermissionHandler(this, applicationContext)
@@ -200,7 +202,10 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         intent.putExtra(
             getString(R.string.variableNameLoginFormMessage),
             message
-        )
+        ).apply {
+            flags = FLAG_ACTIVITY_CLEAR_TASK
+        }
+        finish()
         startActivity(intent)
     }
 

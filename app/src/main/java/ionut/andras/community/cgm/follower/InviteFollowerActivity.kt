@@ -58,8 +58,8 @@ class InviteFollowerActivity : AppCompatActivityWrapper(R.menu.invite_followers_
         val dexcomSessionId = sharedPreferences.getString(UserPreferences.dexcomSessionId, null).toString()
 
         if (dexcomSessionId.isNotEmpty()) {
-            // SMSWAKEUPMESSAGE:DexcomSessionId-EnableDisableNotificationsOnFollower
-            val binarySMS = Configuration().smsWakeupTriggerString + ":$dexcomSessionId-N1"
+            // SMSWAKEUPMESSAGE:DexcomSessionId-EnableDisableNotificationsOnFollower GOOGLE_PLAY_11_CHARACTERS_HASH
+            val binarySMS = Configuration().smsWakeupTriggerString + ":$dexcomSessionId-N1 " + Configuration().smsGooglePlayVerificationHash
             // ToastWrapper(applicationContext).displayMessageToast(findViewById(R.id.btnSendInviteToFollower), "SMS: $binarySMS")
             //ToastWrapper(applicationContext).displayMessageToast(findViewById(R.id.btnSendInviteToFollower), "Phone No: $phoneNo")
             SMSWrapper(applicationContext).sendBinarySms(phoneNo, binarySMS)

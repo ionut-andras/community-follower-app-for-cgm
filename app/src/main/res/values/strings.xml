@@ -43,8 +43,6 @@
     <string name="permissionFriendlyNamePostNotifications">Receive Glucose Value Notifications</string>
     <string name="permissionFriendlyNameDisableBatteryOptimization">Disable Battery Battery Optimization</string>
     <string name="permissionFriendlyNameSendSms">Send SMS</string>
-    <string name="permissionFriendlyNameReceiveSms">Receive SMS</string>
-    <string name="permissionFriendlyNameReadSms">Read SMS</string>
     <string name="permissionFriendlyNameReadPhoneState">Read Phone Status</string>
     <!-- Variables -->
     <string name="variableNameGenericData">data</string>
@@ -75,4 +73,6 @@
     <string name="minimumRequirements">ATTENTION: For the app to work correctly you need to make sure the following settings are enabled for your application:\n\n1. Notifications are allowed\n2. The app is NOT paused if unused\n3. The permissions are NOT removed if app unused\n4. Application has unrestricted data usage\n5. Application has unrestricted battery usage\n\nPlease reffer to your device configuration for each settings.</string>
     <string name="requiredPermissionsList">Recommended settings for this application:\n\n1. Notifications are allowed\n\n2. Uncheck \"Pause app activity if unused\" checkbox under application permissions\n\n3. Uncheck \"Remove perissions if app unused\" checkbox\n\n4. Battery settings for the application is set to \"Unrestricted\"\n\n5. Mobile data is allowed for background data and while \"Data saver\" is on\n</string>
     <string name="infoEventSavedLocally">NOTE:\n\nThe current version of the application saves the events locally only for the last 24h display purpose.\nYou will not see these events in your glucose history manager.</string>
+    <!-- Regular expressions -->
+    <string name="regexSmsWakeupMessage">^CGMFOLLOWERSTART:(.+?)\\-N\\d (.+)$</string>
 </resources>

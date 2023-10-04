@@ -10,8 +10,8 @@ android {
         applicationId "ionut.andras.community.cgm.follower"
         minSdk 28
         targetSdk 34
-        versionCode 30
-        versionName '1.3.5'
+        versionCode 38
+        versionName '1.4.6'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testFunctionalTest false
@@ -66,4 +66,8 @@ dependencies {
 
     // Enable object reflection
     implementation 'org.jetbrains.kotlin:kotlin-reflect:1.8.10'
+
+    // Google Play services dependency for the SMS Retriever API
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:18.0.1'
 }

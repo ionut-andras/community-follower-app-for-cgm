@@ -6,13 +6,12 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.READ_SMS" />
 
     <application
         android:allowBackup="true"
@@ -90,13 +89,23 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
+        <!--
+        Important: You can detect that the broadcast intent is from SMS Retriever API by adding the
+        com.google.android.gms.auth.api.phone.permission.SEND
+        permission to your receiver. This permission setting is available in Google Play services version 19.8.31 or higher.
+
+        Important: Do not add the permission
+        com.google.android.gms.auth.api.phone.permission.SEND
+        to your app.
+        This permission should only be used to detect the intent is from the SMS Retriever API on the broadcast receiver.
+        -->
         <receiver
             android:name=".sms.SmsBroadcastReceiver"
             android:exported="true"
             android:enabled="true"
-            android:permission="android.permission.BROADCAST_SMS">
-            <intent-filter android:priority="999">
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            android:permission="com.google.android.gms.auth.api.phone.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
             </intent-filter>
         </receiver>
     </application>

@@ -40,6 +40,10 @@ open class AppCompatActivityWrapper(private val menuLayoutId: Int? = null): AppC
     }
 
     private fun iconBackOnClick() {
+        switchToMainActivity()
+    }
+
+    fun switchToMainActivity() {
         val intent = Intent(applicationContext, MainActivity::class.java)
         startActivity(intent)
     }
