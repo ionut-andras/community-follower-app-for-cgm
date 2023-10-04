@@ -35,6 +35,6 @@ class Configuration: Serializable {
 
     var disableNotification = false
 
-    var smsWakeupTriggerString = "CGMFOLLOWERSTART"
+    var smsWakeupTriggerString = "ST"
     var smsGooglePlayVerificationHash = "IeIw2DQg0Io"
 }

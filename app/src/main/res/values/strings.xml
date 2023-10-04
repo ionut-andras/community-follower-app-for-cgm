@@ -74,5 +74,5 @@
     <string name="requiredPermissionsList">Recommended settings for this application:\n\n1. Notifications are allowed\n\n2. Uncheck \"Pause app activity if unused\" checkbox under application permissions\n\n3. Uncheck \"Remove perissions if app unused\" checkbox\n\n4. Battery settings for the application is set to \"Unrestricted\"\n\n5. Mobile data is allowed for background data and while \"Data saver\" is on\n</string>
     <string name="infoEventSavedLocally">NOTE:\n\nThe current version of the application saves the events locally only for the last 24h display purpose.\nYou will not see these events in your glucose history manager.</string>
     <!-- Regular expressions -->
-    <string name="regexSmsWakeupMessage">^CGMFOLLOWERSTART:(.+?)\\-N\\d (.+)$</string>
+    <string name="regexSmsWakeupMessage">^([A-Z]+):(.+?)\\-N\\d\\-P([\\+\\d]{9-15}) (.+)$</string>
 </resources>

@@ -9,6 +9,7 @@ import com.google.android.gms.common.api.Status
 import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
+import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 
 /**
@@ -34,12 +35,16 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
                     val message = extras.getString(SmsRetriever.EXTRA_SMS_MESSAGE) ?: return
 
                     // SMSWAKEUPMESSAGE:DexcomSessionId-EnableDisableNotificationsOnFollower GOOGLE_PLAY_11_CHARACTERS_HASH
-                    val sessionId:String? = getWakeupMessageElements(message)?.get(1)
+                    val action:String? = getWakeupMessageElements(message)?.get(1)
+                    val sessionId:String? = getWakeupMessageElements(message)?.get(2)
+                    val senderPhoneNo:String? = getWakeupMessageElements(message)?.get(3)
 
                     // Extract one-time code from the message and complete verification
                     // by sending the code back to your server.
                     // ToastWrapper(context).displayInfoToast(message)
-                    // ToastWrapper(context).displayInfoToast("Extracted Session Id = $sessionId")
+                    ToastWrapper(context).displayInfoToast("Extracted action = $action")
+                    ToastWrapper(context).displayInfoToast("Extracted Session Id = $sessionId")
+                    ToastWrapper(context).displayInfoToast("Extracted senderPhoneNo = $senderPhoneNo")
 
                     if (!sessionId.isNullOrEmpty()) {
                         val sharedPreferences = SharedPreferencesFactory(context).getInstance()
