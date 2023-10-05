@@ -58,7 +58,7 @@
 
     <TextView
         android:id="@+id/minDisplayableGlucoseValueText"
-        android:layout_width="241dp"
+        android:layout_width="wrap_content"
         android:layout_height="24dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="88dp"
@@ -112,7 +112,7 @@
 
     <TextView
         android:id="@+id/glucoseLowThresholdText"
-        android:layout_width="241dp"
+        android:layout_width="wrap_content"
         android:layout_height="24dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="12dp"
@@ -150,7 +150,7 @@
 
     <TextView
         android:id="@+id/glucoseHighThresholdText"
-        android:layout_width="241dp"
+        android:layout_width="wrap_content"
         android:layout_height="24dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="44dp"
@@ -160,7 +160,7 @@
 
     <TextView
         android:id="@+id/glucoseUrgentLowThresholdText"
-        android:layout_width="241dp"
+        android:layout_width="wrap_content"
         android:layout_height="24dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="60dp"
@@ -170,7 +170,7 @@
 
     <TextView
         android:id="@+id/maxDisplayableGlucoseValueText"
-        android:layout_width="241dp"
+        android:layout_width="wrap_content"
         android:layout_height="24dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="32dp"

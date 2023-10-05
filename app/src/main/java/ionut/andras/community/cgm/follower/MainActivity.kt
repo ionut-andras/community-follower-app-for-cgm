@@ -62,8 +62,11 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         // Initialize application settings
         initApplicationSettings()
 
+        // Start the Glucose monitoring service
+        startServiceGetAndProcessGlucoseData()
+
         if (!displayLoginFormNeeded()) {
-            Log.i("MainActivity onCreate", "Display form not needed. Continue...")
+            Log.i("MainActivity > onCreate", "Display form not needed. Continue...")
             // Setup design elements
             setContentView(R.layout.activity_main)
 
@@ -77,24 +80,20 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
             // Get chart to fill in later
             glucoseHistoricChart = findViewById(R.id.lineChart)
 
-            // getAndProcessGlucoseData()
-
-            startServiceGetAndProcessGlucoseData()
-
             enableSwipeToRefresh()
 
             enableActivityListeners()
 
             registerBroadcastReceivers()
         } else {
-            Log.i("MainActivity onCreate", "Login needed. Display login form...")
+            Log.i("MainActivity > onCreate", "Login needed. Display login form...")
             displayLoginForm()
         }
     }
 
     override fun onResume() {
         super.onResume()
-        Log.i("MainActivity onResume", "Resuming main activity. Resume from background: $resumeFromBackground")
+        Log.i("MainActivity > onResume", "Resuming main activity. Resume from background: $resumeFromBackground")
 
         registerBroadcastReceivers(resumeFromBackground)
         resumeFromBackground = false
@@ -107,7 +106,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
     }
 
     override fun onPause() {
-        Log.i("MainActivity onPause", "Starting...")
+        Log.i("MainActivity > onPause", "Starting...")
 
         super.onPause()
         resumeFromBackground = true
@@ -115,7 +114,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
     }
 
     override fun onDestroy() {
-        Log.i("MainActivity onDestroy", "Starting...")
+        Log.i("MainActivity > onDestroy", "Starting...")
 
         super.onDestroy()
 
@@ -153,9 +152,9 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         // sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
         sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
 
-        appConfiguration.username = sharedPreferences.getString(UserPreferences.loginEmail, null).toString()
-        appConfiguration.password = sharedPreferences.getString(UserPreferences.loginPassword, null).toString()
-        appConfiguration.dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null).toString()
+        appConfiguration.username = sharedPreferences.getString(UserPreferences.loginEmail, null)
+        appConfiguration.password = sharedPreferences.getString(UserPreferences.loginPassword, null)
+        appConfiguration.dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
         lastToastDisplayTimestamp = sharedPreferences.getLong(UserPreferences.lastToastDisplayTimestamp, 0)
     }
 
@@ -189,9 +188,9 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         val email = sharedPreferences.getString(UserPreferences.loginEmail, null)
         val password = sharedPreferences.getString(UserPreferences.loginPassword, null)
         val dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
-        Log.i("displayLoginFormNeeded > email", email.toString())
-        Log.i("displayLoginFormNeeded > password", password.toString())
-        Log.i("displayLoginFormNeeded > dexcomSessionID", dexcomSessionID.toString())
+        Log.i("displayLoginFormNeeded", "email: ${email.toString()}")
+        Log.i("displayLoginFormNeeded", "password: ${password.toString()}")
+        Log.i("displayLoginFormNeeded", "dexcomSessionID: ${dexcomSessionID.toString()}")
         return (dexcomSessionID.isNullOrEmpty() && (email.isNullOrEmpty() || password.isNullOrEmpty()))
     }
 
@@ -237,7 +236,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
     }
 
     private fun plotGlucoseData(chartJsonDataAsString: String) {
-        Log.i("mainActivity > plotGlucoseData", "Starting")
+        Log.i("MainActivity > plotGlucoseData", "Starting")
         val plotGlucoseHistoricValues = PlotGlucoseHistoricValues(appConfiguration, JSONArray(chartJsonDataAsString))
         plotGlucoseHistoricValues.start(applicationContext, glucoseHistoricChart,
             R.layout.glucose_plot_marker_view
@@ -267,13 +266,13 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
     }
 
     private fun registerBroadcastReceivers(forceRegister: Boolean = false) {
-        Log.i("mainActivity > registerBroadcastReceivers", "Starting...")
+        Log.i("MainActivity > registerBroadcastReceivers", "Starting...")
 
         if ((null == broadcastReceiver) || forceRegister) {
-            Log.i("mainActivity > registerBroadcastReceivers", "Registering broadcast receiver...")
+            Log.i("MainActivity > registerBroadcastReceivers", "Registering broadcast receiver...")
             broadcastReceiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
-                    Log.i("mainActivity > registerBroadcastReceivers", "Received broadcast: " + intent.action)
+                    Log.i("MainActivity > registerBroadcastReceivers", "Received broadcast: " + intent.action)
                     // Identify broadcast operation
                     when (intent.action) {
                         BroadcastActions.AUTHENTICATION_FAILED -> displayLoginForm(getString(R.string.messageLoginFailed))
@@ -288,7 +287,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
             registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.GLUCOSE_DATA_CHANGED), RECEIVER_NOT_EXPORTED)
             registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TOASTER_OK_GLUCOSE_VALUE), RECEIVER_NOT_EXPORTED)
         } else {
-            Log.i("mainActivity > registerBroadcastReceivers", "Skip broadcast receiver registration...")
+            Log.i("MainActivity > registerBroadcastReceivers", "Skip broadcast receiver registration...")
         }
     }
 

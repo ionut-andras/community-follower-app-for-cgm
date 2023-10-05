@@ -1,16 +1,12 @@
 package ionut.andras.community.cgm.follower.sms
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.os.Build
 import android.telephony.SmsManager
 import android.telephony.TelephonyManager
-import android.util.Log
 
 class SMSWrapper(private val applicationContext: Context) {
-    fun sendBinarySms(phoneNumber: String, message: String) {
+    fun sendTextSms(phoneNumber: String, message: String) {
         val telephonyManager = applicationContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
         if (telephonyManager.simState != TelephonyManager.SIM_STATE_READY) {

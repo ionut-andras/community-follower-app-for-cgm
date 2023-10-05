@@ -8,6 +8,7 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
 import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.R
+import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
@@ -19,8 +20,10 @@ import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
  */
 class SmsBroadcastReceiver: BroadcastReceiver() {
     private lateinit var smsWakeupMessageRegex: Regex
+    private lateinit var applicationContext: Context
 
     override fun onReceive(context: Context, intent: Intent) {
+        applicationContext = context
         // ToastWrapper(context).displayInfoToast("SMS Received")
 
         if (SmsRetriever.SMS_RETRIEVED_ACTION == intent.action) {
@@ -33,45 +36,22 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
 
                     // Get SMS message contents
                     val message = extras.getString(SmsRetriever.EXTRA_SMS_MESSAGE) ?: return
-
-                    // <SMSWAKEUPMESSAGE>:<DexcomSessionId>-N<EnableDisableNotificationsOnFollower>-P<Sender Phone No> GOOGLE_PLAY_11_CHARACTERS_HASH
+                    
+                    // <SMSWAKEUPMESSAGE>:<DexcomSessionId>-N<EnableDisableNotificationsOnFollower>-PS<Sender Phone No>-PR<Receiver Phone No> GOOGLE_PLAY_11_CHARACTERS_HASH
                     val receivedMessageComponents = getWakeupMessageElements(message)
                     val action:String? = receivedMessageComponents?.get(1)
-                    val sessionId:String? = receivedMessageComponents?.get(2)
-                    val notificationsEnabled:String? = receivedMessageComponents?.get(3)
-                    val senderPhoneNo:String? = receivedMessageComponents?.get(4)
 
-                    // Extract one-time code from the message and complete verification
-                    // by sending the code back to your server.
-                    // ToastWrapper(context).displayInfoToast(message)
-                    ToastWrapper(context).displayInfoToast("Extracted action = $action")
-                    ToastWrapper(context).displayInfoToast("Extracted Session Id = $sessionId")
-                    ToastWrapper(context).displayInfoToast("Extracted Notifications Flag = $notificationsEnabled")
-                    ToastWrapper(context).displayInfoToast("Extracted senderPhoneNo = $senderPhoneNo")
-
-                    val sharedPreferences = SharedPreferencesFactory(context).getInstance()
-                    if (!sessionId.isNullOrEmpty()) {
-                        // Setup shared session
-                        sharedPreferences.edit()
-                            .putString(UserPreferences.dexcomSessionId, sessionId.toString())
-                            .apply()
-
-                        // Enable / Disable notifications
-                        if ("1" == notificationsEnabled) {
-                            sharedPreferences.edit()
-                                .putBoolean(UserPreferences.disableNotifications, true)
-                                .apply()
-                        } else {
-                            sharedPreferences.edit()
-                                .putBoolean(UserPreferences.disableNotifications, false)
-                                .apply()
+                    when (action) {
+                        Configuration().smsWakeupTriggerString -> {
+                            processWakeUpSmsAction(receivedMessageComponents)
                         }
-                    }
 
-                    val redirectIntent = Intent(context, MainActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        Configuration().smsRefreshAuthenticationString -> {
+                            val senderPhoneNo: String = receivedMessageComponents[4]
+                            SmsAuthenticationWrapper(applicationContext).sendAuthenticationSms(senderPhoneNo)
+                        }
+
                     }
-                    context.startActivity(redirectIntent)
                 }
                 CommonStatusCodes.TIMEOUT -> {
                     // Waiting for SMS timed out (5 minutes)
@@ -79,6 +59,46 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
                 }
             }
         }
+    }
+
+    private fun processWakeUpSmsAction(receivedMessageComponents: List<String>?) {
+        val action:String? = receivedMessageComponents?.get(1)
+        val sessionId:String? = receivedMessageComponents?.get(2)
+        val notificationsEnabled:String? = receivedMessageComponents?.get(3)
+        val senderPhoneNo:String? = receivedMessageComponents?.get(4)
+
+        // Extract one-time code from the message and complete verification
+        // by sending the code back to your server.
+        // ToastWrapper(context).displayInfoToast(message)
+        ToastWrapper(applicationContext).displayInfoToast("Extracted action = $action")
+        ToastWrapper(applicationContext).displayInfoToast("Extracted Session Id = $sessionId")
+        ToastWrapper(applicationContext).displayInfoToast("Extracted Notifications Flag = $notificationsEnabled")
+        ToastWrapper(applicationContext).displayInfoToast("Extracted senderPhoneNo = $senderPhoneNo")
+
+
+        val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
+        if (!sessionId.isNullOrEmpty()) {
+            // Setup shared session
+            sharedPreferences.edit()
+                .putString(UserPreferences.dexcomSessionId, sessionId)
+                .apply()
+
+            // Enable / Disable notifications
+            if ("1" == notificationsEnabled) {
+                sharedPreferences.edit()
+                    .putBoolean(UserPreferences.disableNotifications, false)
+                    .apply()
+            } else {
+                sharedPreferences.edit()
+                    .putBoolean(UserPreferences.disableNotifications, true)
+                    .apply()
+            }
+        }
+
+        val redirectIntent = Intent(applicationContext, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        applicationContext.startActivity(redirectIntent)
     }
 
     private fun getWakeupMessageElements(smsWakeUpMessage: String): List<String>? {

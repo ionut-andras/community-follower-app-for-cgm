@@ -23,6 +23,7 @@ import ionut.andras.community.cgm.follower.notifications.GlucoseNotificationData
 import ionut.andras.community.cgm.follower.notifications.NotificationsManager
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastActions
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastSender
+import ionut.andras.community.cgm.follower.sms.OtpSmsListener
 import ionut.andras.community.cgm.follower.utils.DateTimeConversion
 import ionut.andras.community.cgm.follower.utils.DexcomDateTimeConversion
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
@@ -71,6 +72,7 @@ class GlucoseValuesUpdateService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        Log.i("GlucoseValuesUpdateService", "Creating the service...")
 
         broadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
@@ -88,16 +90,27 @@ class GlucoseValuesUpdateService : Service() {
         registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.STOP_FOREGROUND_SERVICE), RECEIVER_NOT_EXPORTED)
         registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.USER_REQUEST_REFRESH), RECEIVER_NOT_EXPORTED)
         registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND), RECEIVER_NOT_EXPORTED)
+
+        // Send the notification needed by OS in order to start a foreground service
+        val title = "Starting " + applicationContext.getString(R.string.app_name) + " in background"
+        sendInitialNotificationAndStartForegroundService(GlucoseNotificationData(title, "", "now"))
+
+        // Start One Time PIN SMS listener
+        OtpSmsListener(applicationContext)
     }
 
     private fun parseBroadcastExtraInfo(intent: Intent?) {
         appConfiguration = getSerializableExtra(intent, "appConfiguration", Configuration::class.java)
-        if (appConfiguration.dexcomSessionID.isNotEmpty()) {
+
+        if (!appConfiguration.dexcomSessionID.isNullOrEmpty()) {
+            Log.i("parseBroadcastExtraInfo", "SessionID available: ${appConfiguration.dexcomSessionID}")
             glucoseRetrievalSession = appConfiguration.dexcomSessionID
         }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
+
         val serviceAction = intent?.getStringExtra(ACTION)
 
         Log.i("onStartCommand", "Action: $serviceAction")
@@ -116,8 +129,8 @@ class GlucoseValuesUpdateService : Service() {
             Log.i("startServiceInForeground", "Starting...")
 
             // Send the notification needed by OS in order to start a foreground service
-            val title = "Starting " + applicationContext.getString(R.string.app_name) + " in background"
-            sendInitialNotificationAndStartForegroundService(GlucoseNotificationData(title, "", "now"))
+            /*val title = "Starting " + applicationContext.getString(R.string.app_name) + " in background"
+            sendInitialNotificationAndStartForegroundService(GlucoseNotificationData(title, "", "now"))*/
 
             // Get initial values to fill in the main activity fields
             getAuthenticatedUserGlucoseData()
@@ -162,12 +175,12 @@ class GlucoseValuesUpdateService : Service() {
     private fun getAuthenticatedUserGlucoseData() {
         var glucoseDataString: String?
         // Check if we have a valid session
-        if (null != glucoseRetrievalSession) {
-
+        if (!glucoseRetrievalSession.isNullOrEmpty()) {
+            Log.i("getAuthenticatedUserGlucoseData", "Session available. Running authenticated flow...")
             // If a session valid, skip authentication and authorization
             GlobalScope.launch (defaultDispatcher) {
                 glucoseDataString = getGlucoseData(glucoseRetrievalSession!!)
-                if (null == glucoseDataString) {
+                if (glucoseDataString.isNullOrEmpty()) {
 
                     // If the retrieval failed, try to get glucose data by running a full flow
                     getAndProcessUserGlucoseData()
@@ -180,6 +193,7 @@ class GlucoseValuesUpdateService : Service() {
                 }
             }
         } else {
+            Log.i("getAuthenticatedUserGlucoseData", "Session NOT available. Running full flow...")
             getAndProcessUserGlucoseData()
         }
     }
@@ -196,10 +210,10 @@ class GlucoseValuesUpdateService : Service() {
 
             // Authenticate
             val accountId: String? = authenticate()
-            if (null != accountId) {
+            if (!accountId.isNullOrEmpty()) {
                 saveDexcomAccountId(accountId)
             }
-            if (null != accountId) {
+            if (!accountId.isNullOrEmpty()) {
                 GlobalScope.launch (defaultDispatcher) {
                     // Authorize
                     glucoseRetrievalSession = authorize(accountId)
@@ -249,10 +263,10 @@ class GlucoseValuesUpdateService : Service() {
     private fun authenticate(): String? {
         Log.i("Authenticate", "Running Authenticate routine")
         var accountId: String? = null
-        if (appConfiguration.username.isNotEmpty() && appConfiguration.password.isNotEmpty()) {
+        if (!appConfiguration.username.isNullOrEmpty() && !appConfiguration.password.isNullOrEmpty()) {
             val apiResponse = dexcomHandler.authenticateWithUsernamePassword(
-                appConfiguration.username,
-                appConfiguration.password
+                appConfiguration.username!!,
+                appConfiguration.password!!
             )
             if (apiResponse.isSuccess()) {
                 accountId = apiResponse.data.toString().trim('"')
@@ -275,10 +289,10 @@ class GlucoseValuesUpdateService : Service() {
     private fun authorize(accountId: String): String? {
         Log.i("Authorize", "Running Authorize routine")
         var sessionId: String? = null
-        if(accountId.isNotEmpty() && appConfiguration.password.isNotEmpty()) {
+        if(accountId.isNotEmpty() && !appConfiguration.password.isNullOrEmpty()) {
             val apiResponse = dexcomHandler.loginWithAccountId(
                 accountId,
-                appConfiguration.password
+                appConfiguration.password!!
             )
             if (apiResponse.isSuccess()) {
                 sessionId = apiResponse.data.toString().trim('"')
@@ -291,11 +305,11 @@ class GlucoseValuesUpdateService : Service() {
     /**
      * Uses the Session Id - obtained from a call to authorize() - to get the glucose data.
      */
-    private fun getGlucoseData(sessionId: String): String? {
+    private fun getGlucoseData(sessionId: String? = null): String? {
         Log.i("getGlucoseData", "Running Get Glucose Data routine")
 
         var glucoseDataString: String? = null
-        if (sessionId.isNotEmpty()) {
+        if (!sessionId.isNullOrEmpty()) {
             val apiResponse = dexcomHandler.getLatestGlucoseValues(
                 sessionId,
                 appConfiguration.glucoseHistoryMinutesBack,
@@ -496,7 +510,9 @@ class GlucoseValuesUpdateService : Service() {
         // val sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
         val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
 
-        sharedPreferences.edit().putString(UserPreferences.dexcomSessionId, glucoseRetrievalSession.toString()).apply()
+        sharedPreferences.edit()
+            .putString(UserPreferences.dexcomSessionId, glucoseRetrievalSession)
+            .apply()
     }
 
     private fun broadcastLoginFailed() {

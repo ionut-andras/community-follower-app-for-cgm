@@ -3,10 +3,10 @@ package ionut.andras.community.cgm.follower.configuration
 import java.io.Serializable
 
 class Configuration: Serializable {
-    var username = ""
-    var password = ""
+    var username: String? = null
+    var password: String? = null
 
-    var dexcomSessionID = ""
+    var dexcomSessionID:String? = null
 
     var minDisplayableGlucoseValue: Int = 1
     var maxDisplayableGlucoseValue: Int = 401
@@ -36,5 +36,8 @@ class Configuration: Serializable {
     var disableNotification = false
 
     var smsWakeupTriggerString = "ST"
+    var smsRefreshAuthenticationString = "RT"
+    var smsSecurityDelayWindow = 3600*12 // 12 hours
+
     var smsGooglePlayVerificationHash = "IeIw2DQg0Io"
 }

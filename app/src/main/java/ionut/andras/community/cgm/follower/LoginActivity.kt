@@ -13,7 +13,6 @@ import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.permissions.PermissionHandler
 import ionut.andras.community.cgm.follower.permissions.PermissionRequestCodes
-import ionut.andras.community.cgm.follower.sms.OtpSmsListener
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 
 class LoginActivity : AppCompatActivityWrapper() {
@@ -33,7 +32,27 @@ class LoginActivity : AppCompatActivityWrapper() {
         checkApplicationOptionalRequirements()
 
         // Start One Time PIN SMS listener
-        OtpSmsListener(applicationContext)
+        // OtpSmsListener(applicationContext)
+        /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        val smsWakeupMessageRegex = Regex(getString(R.string.regexSmsWakeupMessage))
+        val message = "ST:141a2fd9-a415-421f-81e5-c014a522e3c9-N0-PS-PR0765339459 IeIw2DQg0Io"
+        val match = smsWakeupMessageRegex.find(message)
+        val receivedMessageComponents = match?.groupValues
+        val action:String? = receivedMessageComponents?.get(1)
+        val sessionId:String? = receivedMessageComponents?.get(2)
+        val notificationsEnabled:String? = receivedMessageComponents?.get(3)
+        val senderPhoneNo:String? = receivedMessageComponents?.get(4)
+        val receiverPhoneNo:String? = receivedMessageComponents?.get(5)
+
+        // Extract one-time code from the message and complete verification
+        // by sending the code back to your server.
+        // ToastWrapper(context).displayInfoToast(message)
+        ToastWrapper(applicationContext).displayInfoToast("Extracted action = $action")
+        ToastWrapper(applicationContext).displayInfoToast("Extracted Session Id = $sessionId")
+        ToastWrapper(applicationContext).displayInfoToast("Extracted Notifications Flag = $notificationsEnabled")
+        ToastWrapper(applicationContext).displayInfoToast("Extracted senderPhoneNo = $senderPhoneNo")
+        ToastWrapper(applicationContext).displayInfoToast("Extracted receiverPhoneNo = $receiverPhoneNo")
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
     }
 
     private fun initializeView() {

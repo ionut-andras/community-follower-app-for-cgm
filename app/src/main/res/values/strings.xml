@@ -36,6 +36,7 @@
     <string name="textInviteFollowers">Invite followers</string>
     <string name="textSendInviteToFollower">Send invite</string>
     <string name="textFollowerInvitePhoneNo">Phone number of the person to invite</string>
+    <string name="textSenderPhoneNo">Your phone number</string>
     <string name="checkboxLoginThermsAndConditions">Please agree before continue</string>
     <string name="textInvitationSent">The invite has been sent</string>
     <!-- Permission names -->
@@ -74,5 +75,5 @@
     <string name="requiredPermissionsList">Recommended settings for this application:\n\n1. Notifications are allowed\n\n2. Uncheck \"Pause app activity if unused\" checkbox under application permissions\n\n3. Uncheck \"Remove perissions if app unused\" checkbox\n\n4. Battery settings for the application is set to \"Unrestricted\"\n\n5. Mobile data is allowed for background data and while \"Data saver\" is on\n</string>
     <string name="infoEventSavedLocally">NOTE:\n\nThe current version of the application saves the events locally only for the last 24h display purpose.\nYou will not see these events in your glucose history manager.</string>
     <!-- Regular expressions -->
-    <string name="regexSmsWakeupMessage">^(.+?):(.+?)\\-N(.+?)\\-P(.+?) (.*)$</string>
+    <string name="regexSmsWakeupMessage">^(.+?):(.+?)\\-N(.+?)\\-PS(.*?)\\-PR(.+?) (.*)$</string>
 </resources>
