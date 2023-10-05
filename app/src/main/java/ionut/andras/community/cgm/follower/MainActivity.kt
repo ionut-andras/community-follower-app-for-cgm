@@ -17,6 +17,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.mikephil.charting.charts.LineChart
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
+import ionut.andras.community.cgm.follower.constants.ApplicationRunMode
 import ionut.andras.community.cgm.follower.constants.DexcomConstants
 import ionut.andras.community.cgm.follower.constants.DexcomTrendsConversionMap
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
@@ -27,7 +28,9 @@ import ionut.andras.community.cgm.follower.plot.PlotGlucoseHistoricValues
 import ionut.andras.community.cgm.follower.services.GlucoseValuesUpdateService
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastActions
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastSender
+import ionut.andras.community.cgm.follower.sms.SmsAuthenticationWrapper
 import ionut.andras.community.cgm.follower.toast.ToastWrapper
+import ionut.andras.community.cgm.follower.utils.ApplicationRunModesHelper
 import ionut.andras.community.cgm.follower.utils.DateTimeConversion
 import ionut.andras.community.cgm.follower.utils.DexcomDateTimeConversion
 import ionut.andras.community.cgm.follower.utils.GlucoseValueColorRange
@@ -67,11 +70,15 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
         if (!displayLoginFormNeeded()) {
             Log.i("MainActivity > onCreate", "Display form not needed. Continue...")
+
             // Setup design elements
             setContentView(R.layout.activity_main)
 
             // Set Action bar
             setSupportActionBar(findViewById(R.id.mainActivityActionToolbar))
+
+            // Enable Main Application mode
+            ApplicationRunModesHelper(applicationContext).switchRunModeTo(ApplicationRunMode.MAIN_APPLICATION)
 
             // Display some default values before showing a loading screen
             viewGlucoseValue = findViewById(R.id.glucoseValue)
@@ -275,7 +282,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
                     Log.i("MainActivity > registerBroadcastReceivers", "Received broadcast: " + intent.action)
                     // Identify broadcast operation
                     when (intent.action) {
-                        BroadcastActions.AUTHENTICATION_FAILED -> displayLoginForm(getString(R.string.messageLoginFailed))
+                        BroadcastActions.AUTHENTICATION_FAILED -> handleFailedAuthentication()
                         BroadcastActions.GLUCOSE_DATA_CHANGED -> performGlucoseDataChange(intent)
                         BroadcastActions.TOASTER_OK_GLUCOSE_VALUE -> disableNotificationSoundForSeconds(intent, appConfiguration.disableNotificationSoundSeconds)
                         else -> {}
@@ -288,6 +295,17 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
             registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TOASTER_OK_GLUCOSE_VALUE), RECEIVER_NOT_EXPORTED)
         } else {
             Log.i("MainActivity > registerBroadcastReceivers", "Skip broadcast receiver registration...")
+        }
+    }
+
+    private fun handleFailedAuthentication() {
+        val runModeHelper = ApplicationRunModesHelper(applicationContext)
+
+        if (runModeHelper.getRunMode(ApplicationRunMode.MAIN_APPLICATION) == ApplicationRunMode.MAIN_APPLICATION) {
+            // Main Application mode
+            displayLoginForm(getString(R.string.messageLoginFailed))
+        } else {
+            SmsAuthenticationWrapper(applicationContext).sendRequestAuthenticationRenewSms()
         }
     }
 

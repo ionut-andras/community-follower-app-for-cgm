@@ -10,7 +10,9 @@ import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
+import ionut.andras.community.cgm.follower.constants.ApplicationRunMode
 import ionut.andras.community.cgm.follower.toast.ToastWrapper
+import ionut.andras.community.cgm.follower.utils.ApplicationRunModesHelper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 
 /**
@@ -43,12 +45,15 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
 
                     when (action) {
                         Configuration().smsWakeupTriggerString -> {
-                            processWakeUpSmsAction(receivedMessageComponents)
+                            if (ApplicationRunModesHelper(applicationContext).getRunMode(ApplicationRunMode.FOLLOWER) == ApplicationRunMode.FOLLOWER) {
+                                processWakeUpSmsAction(receivedMessageComponents)
+                            }
                         }
 
                         Configuration().smsRefreshAuthenticationString -> {
+                            val receiverPhoneNo: String = receivedMessageComponents[5]
                             val senderPhoneNo: String = receivedMessageComponents[4]
-                            SmsAuthenticationWrapper(applicationContext).sendAuthenticationSms(senderPhoneNo)
+                            SmsAuthenticationWrapper(applicationContext).sendAuthenticationSms(receiverPhoneNo, senderPhoneNo)
                         }
 
                     }
@@ -66,6 +71,7 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
         val sessionId:String? = receivedMessageComponents?.get(2)
         val notificationsEnabled:String? = receivedMessageComponents?.get(3)
         val senderPhoneNo:String? = receivedMessageComponents?.get(4)
+        val receiverPhoneNo:String? = receivedMessageComponents?.get(5)
 
         // Extract one-time code from the message and complete verification
         // by sending the code back to your server.
@@ -74,26 +80,43 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
         ToastWrapper(applicationContext).displayInfoToast("Extracted Session Id = $sessionId")
         ToastWrapper(applicationContext).displayInfoToast("Extracted Notifications Flag = $notificationsEnabled")
         ToastWrapper(applicationContext).displayInfoToast("Extracted senderPhoneNo = $senderPhoneNo")
+        ToastWrapper(applicationContext).displayInfoToast("Extracted receiverPhoneNo = $receiverPhoneNo")
 
 
         val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
+        val runModeHelper = ApplicationRunModesHelper(applicationContext)
+
+
+        // Setup shared session
         if (!sessionId.isNullOrEmpty()) {
-            // Setup shared session
             sharedPreferences.edit()
                 .putString(UserPreferences.dexcomSessionId, sessionId)
                 .apply()
-
-            // Enable / Disable notifications
-            if ("1" == notificationsEnabled) {
-                sharedPreferences.edit()
-                    .putBoolean(UserPreferences.disableNotifications, false)
-                    .apply()
-            } else {
-                sharedPreferences.edit()
-                    .putBoolean(UserPreferences.disableNotifications, true)
-                    .apply()
-            }
         }
+
+        // Enable / Disable notifications
+        if ("1" == notificationsEnabled) {
+            sharedPreferences.edit()
+                .putBoolean(UserPreferences.disableNotifications, false)
+                .apply()
+        } else {
+            sharedPreferences.edit()
+                .putBoolean(UserPreferences.disableNotifications, true)
+                .apply()
+        }
+
+        // Save phone numbers from the Follower perspective
+        // - Sender is now the Follower (old receiver)
+        // - Receiver is now the Master (old sender)
+        if (!senderPhoneNo.isNullOrEmpty() && !receiverPhoneNo.isNullOrEmpty()) {
+            sharedPreferences.edit()
+                .putString(UserPreferences.receiverPhoneNo, senderPhoneNo)
+                .putString(UserPreferences.senderPhoneNo, receiverPhoneNo)
+                .apply()
+        }
+
+        // Enable Follower Mode
+        runModeHelper.switchRunModeTo(ApplicationRunMode.FOLLOWER)
 
         val redirectIntent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK

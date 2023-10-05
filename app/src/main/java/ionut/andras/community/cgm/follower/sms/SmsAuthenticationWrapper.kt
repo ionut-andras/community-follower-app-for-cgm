@@ -34,24 +34,22 @@ class SmsAuthenticationWrapper(context: Context) {
         }
     }
 
-    fun sendAuthenticationRenewSms() {
+    fun sendRequestAuthenticationRenewSms() {
         val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
-        val sessionId = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
         val senderPhoneNo = sharedPreferences.getString(UserPreferences.senderPhoneNo, "")
         val receiverPhoneNo = sharedPreferences.getString(UserPreferences.receiverPhoneNo, "")
         val nextAllowedSmsRequestTs = sharedPreferences.getLong(UserPreferences.smsSecurityDelayWindow, DateTimeConversion().getLocalTimestamp())
 
         // Allow a security delay window between 2 SMS
-        if (nextAllowedSmsRequestTs <= DateTimeConversion().getLocalTimestamp()) {
+        //if (nextAllowedSmsRequestTs <= DateTimeConversion().getLocalTimestamp()) {
             // <SMSWAKEUPMESSAGE>:<DexcomSessionId>-N<EnableDisableNotificationsOnFollower>-PS<Sender Phone No>-PR<Receiver Phone No> GOOGLE_PLAY_11_CHARACTERS_HASH
-            val smsText =
-                Configuration().smsRefreshAuthenticationString + ":$sessionId-N0-PS$senderPhoneNo-PR$receiverPhoneNo " + Configuration().smsGooglePlayVerificationHash
+            val smsText = Configuration().smsRefreshAuthenticationString + ":NULL-N0-PS$senderPhoneNo-PR$receiverPhoneNo " + Configuration().smsGooglePlayVerificationHash
             // ToastWrapper(applicationContext).displayMessageToast(findViewById(R.id.btnSendInviteToFollower), "SMS: $binarySMS")
             //ToastWrapper(applicationContext).displayMessageToast(findViewById(R.id.btnSendInviteToFollower), "Phone No: $phoneNo")
             if (!receiverPhoneNo.isNullOrEmpty()) {
                 SMSWrapper(applicationContext).sendTextSms(receiverPhoneNo, smsText)
             }
-        }
+        //}
         sharedPreferences.edit()
             .putLong(UserPreferences.smsSecurityDelayWindow, DateTimeConversion().getLocalTimestamp() + Configuration().smsSecurityDelayWindow)
             .apply()
