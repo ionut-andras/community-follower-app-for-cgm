@@ -9,8 +9,12 @@
 
     <ScrollView
         android:id="@+id/permissionsInfoScrollView"
-        android:layout_width="379dp"
-        android:layout_height="591dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="96dp"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
