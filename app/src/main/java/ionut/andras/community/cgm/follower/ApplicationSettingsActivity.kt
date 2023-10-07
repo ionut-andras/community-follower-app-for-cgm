@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
+import ionut.andras.community.cgm.follower.constants.ApplicationRunMode
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 
@@ -40,12 +42,16 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
         disableNotifications.isChecked = sharedPreferences.getBoolean(UserPreferences.disableNotifications, appConfiguration.disableNotification)
         Log.i("Settings: disableNotifications.isChecked", disableNotifications.isChecked.toString())
 
+        val runModeValue = sharedPreferences.getInt(UserPreferences.runMode, ApplicationRunMode.MAIN_APPLICATION)
+
         findViewById<EditText>(R.id.minDisplayableGlucoseValue).setText(appConfiguration.minDisplayableGlucoseValue.toString())
         findViewById<EditText>(R.id.maxDisplayableGlucoseValue).setText(appConfiguration.maxDisplayableGlucoseValue.toString())
 
         findViewById<EditText>(R.id.glucoseUrgentLowThresholdValue).setText(appConfiguration.glucoseUrgentLowThreshold.toString())
         findViewById<EditText>(R.id.glucoseLowThresholdValue).setText(appConfiguration.glucoseLowThreshold.toString())
         findViewById<EditText>(R.id.glucoseHighThresholdValue).setText(appConfiguration.glucoseHighThreshold.toString())
+
+        findViewById<TextView>(R.id.runModeValueText).text = ApplicationRunMode.convert[runModeValue]
     }
 
     private fun enableActivityListeners() {

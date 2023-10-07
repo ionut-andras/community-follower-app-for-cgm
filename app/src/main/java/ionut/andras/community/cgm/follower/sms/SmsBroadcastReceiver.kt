@@ -3,6 +3,7 @@ package ionut.andras.community.cgm.follower.sms
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
@@ -27,6 +28,7 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         applicationContext = context
         // ToastWrapper(context).displayInfoToast("SMS Received")
+        Log.i("SmsBroadcastReceiver", "SMS received: ${intent}")
 
         if (SmsRetriever.SMS_RETRIEVED_ACTION == intent.action) {
             val extras = intent.extras ?: return
@@ -46,7 +48,7 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
                     when (action) {
                         Configuration().smsWakeupTriggerString -> {
                             if (ApplicationRunModesHelper(applicationContext).getRunMode(ApplicationRunMode.FOLLOWER) == ApplicationRunMode.FOLLOWER) {
-                                processWakeUpSmsAction(receivedMessageComponents)
+                                processWakeUpSmsActionSessionSet(receivedMessageComponents)
                             }
                         }
 
@@ -66,7 +68,7 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
         }
     }
 
-    private fun processWakeUpSmsAction(receivedMessageComponents: List<String>?) {
+    private fun processWakeUpSmsActionSessionSet(receivedMessageComponents: List<String>?) {
         val action:String? = receivedMessageComponents?.get(1)
         val sessionId:String? = receivedMessageComponents?.get(2)
         val notificationsEnabled:String? = receivedMessageComponents?.get(3)
@@ -116,6 +118,7 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
         }
 
         // Enable Follower Mode
+        Log.i("SmsBroadCastReceiver > processWakeUpSmsActionSessionSet", "Switching application mode to FOLLOWER ...")
         runModeHelper.switchRunModeTo(ApplicationRunMode.FOLLOWER)
 
         val redirectIntent = Intent(applicationContext, MainActivity::class.java).apply {

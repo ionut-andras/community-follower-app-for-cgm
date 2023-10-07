@@ -69,16 +69,13 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         startServiceGetAndProcessGlucoseData()
 
         if (!displayLoginFormNeeded()) {
-            Log.i("MainActivity > onCreate", "Display form not needed. Continue...")
+            Log.i("MainActivity > onCreate", "Login form not needed. Continue...")
 
             // Setup design elements
             setContentView(R.layout.activity_main)
 
             // Set Action bar
             setSupportActionBar(findViewById(R.id.mainActivityActionToolbar))
-
-            // Enable Main Application mode
-            ApplicationRunModesHelper(applicationContext).switchRunModeTo(ApplicationRunMode.MAIN_APPLICATION)
 
             // Display some default values before showing a loading screen
             viewGlucoseValue = findViewById(R.id.glucoseValue)
@@ -163,6 +160,14 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         appConfiguration.password = sharedPreferences.getString(UserPreferences.loginPassword, null)
         appConfiguration.dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
         lastToastDisplayTimestamp = sharedPreferences.getLong(UserPreferences.lastToastDisplayTimestamp, 0)
+
+        if (appConfiguration.dexcomSessionID.isNullOrEmpty()) {
+            // Enable Main Application mode
+            ApplicationRunModesHelper(applicationContext).switchRunModeTo(ApplicationRunMode.MAIN_APPLICATION)
+        } else {
+            // Enable FOLLOWER mode
+            ApplicationRunModesHelper(applicationContext).switchRunModeTo(ApplicationRunMode.FOLLOWER)
+        }
     }
 
     private fun checkApplicationMinimumRequirements() {
@@ -195,9 +200,11 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         val email = sharedPreferences.getString(UserPreferences.loginEmail, null)
         val password = sharedPreferences.getString(UserPreferences.loginPassword, null)
         val dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
+        val runMode = sharedPreferences.getInt(UserPreferences.runMode, -1)
         Log.i("displayLoginFormNeeded", "email: ${email.toString()}")
         Log.i("displayLoginFormNeeded", "password: ${password.toString()}")
         Log.i("displayLoginFormNeeded", "dexcomSessionID: ${dexcomSessionID.toString()}")
+        Log.i("displayLoginFormNeeded", "runMode: $runMode")
         return (dexcomSessionID.isNullOrEmpty() && (email.isNullOrEmpty() || password.isNullOrEmpty()))
     }
 
@@ -299,12 +306,15 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
     }
 
     private fun handleFailedAuthentication() {
+        Log.i("MainActivity > handleFailedAuthentication", "Starting ...")
         val runModeHelper = ApplicationRunModesHelper(applicationContext)
 
         if (runModeHelper.getRunMode(ApplicationRunMode.MAIN_APPLICATION) == ApplicationRunMode.MAIN_APPLICATION) {
+            Log.i("MainActivity > handleFailedAuthentication", "Run mode: MAIN_APPLICATION. Redirecting to login form...")
             // Main Application mode
             displayLoginForm(getString(R.string.messageLoginFailed))
         } else {
+            Log.i("MainActivity > handleFailedAuthentication", "Run mode: FOLLOWER. Sending SMS...")
             SmsAuthenticationWrapper(applicationContext).sendRequestAuthenticationRenewSms()
         }
     }

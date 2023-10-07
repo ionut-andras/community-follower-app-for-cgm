@@ -13,6 +13,7 @@
         android:elevation="1sp"
         android:theme="@style/ToolbarStyle"
         android:contentDescription="@string/app_name"
+        android:autofillHints="@string/app_name"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ToolbarStyle"
         app:title=" ">
