@@ -128,6 +128,21 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main_menu, menu)
+
+        val buttonInviteFollower = menu.findItem(R.id.iconInviteFollower)
+
+        // Hide this button in follower mode
+        try {
+            if (sharedPreferences.getInt(
+                    UserPreferences.runMode,
+                    ApplicationRunMode.UNDEFINED
+                ) == ApplicationRunMode.FOLLOWER
+            ) {
+                buttonInviteFollower.isVisible = false
+            }
+        } catch (e: Exception) {
+        }
+
         return true
     }
 
@@ -161,12 +176,17 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         appConfiguration.dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
         lastToastDisplayTimestamp = sharedPreferences.getLong(UserPreferences.lastToastDisplayTimestamp, 0)
 
-        if (appConfiguration.dexcomSessionID.isNullOrEmpty()) {
-            // Enable Main Application mode
-            ApplicationRunModesHelper(applicationContext).switchRunModeTo(ApplicationRunMode.MAIN_APPLICATION)
+        if (!appConfiguration.dexcomSessionID.isNullOrEmpty()) {
+            if (!appConfiguration.username.isNullOrEmpty() && !appConfiguration.password.isNullOrEmpty()) {
+                // Enable Main Application mode if session not empty and credentials not empty
+                ApplicationRunModesHelper(applicationContext).switchRunModeTo(ApplicationRunMode.OWNER)
+            } else {
+                // Enable UNDEFINED mode if session not empty and credentials in undefined state
+                ApplicationRunModesHelper(applicationContext).switchRunModeTo(ApplicationRunMode.FOLLOWER)
+            }
         } else {
-            // Enable FOLLOWER mode
-            ApplicationRunModesHelper(applicationContext).switchRunModeTo(ApplicationRunMode.FOLLOWER)
+            // Enable UNDEFINED mode if session is null
+            ApplicationRunModesHelper(applicationContext).switchRunModeTo(ApplicationRunMode.UNDEFINED)
         }
     }
 
@@ -200,7 +220,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         val email = sharedPreferences.getString(UserPreferences.loginEmail, null)
         val password = sharedPreferences.getString(UserPreferences.loginPassword, null)
         val dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
-        val runMode = sharedPreferences.getInt(UserPreferences.runMode, -1)
+        val runMode = sharedPreferences.getInt(UserPreferences.runMode, ApplicationRunMode.UNDEFINED)
         Log.i("displayLoginFormNeeded", "email: ${email.toString()}")
         Log.i("displayLoginFormNeeded", "password: ${password.toString()}")
         Log.i("displayLoginFormNeeded", "dexcomSessionID: ${dexcomSessionID.toString()}")
@@ -309,8 +329,8 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         Log.i("MainActivity > handleFailedAuthentication", "Starting ...")
         val runModeHelper = ApplicationRunModesHelper(applicationContext)
 
-        if (runModeHelper.getRunMode(ApplicationRunMode.MAIN_APPLICATION) == ApplicationRunMode.MAIN_APPLICATION) {
-            Log.i("MainActivity > handleFailedAuthentication", "Run mode: MAIN_APPLICATION. Redirecting to login form...")
+        if (runModeHelper.getRunMode(ApplicationRunMode.UNDEFINED) == ApplicationRunMode.OWNER) {
+            Log.i("MainActivity > handleFailedAuthentication", "Run mode: OWNER. Redirecting to login form...")
             // Main Application mode
             displayLoginForm(getString(R.string.messageLoginFailed))
         } else {

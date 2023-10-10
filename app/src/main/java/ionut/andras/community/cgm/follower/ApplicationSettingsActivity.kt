@@ -42,7 +42,7 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
         disableNotifications.isChecked = sharedPreferences.getBoolean(UserPreferences.disableNotifications, appConfiguration.disableNotification)
         Log.i("Settings: disableNotifications.isChecked", disableNotifications.isChecked.toString())
 
-        val runModeValue = sharedPreferences.getInt(UserPreferences.runMode, ApplicationRunMode.MAIN_APPLICATION)
+        val runModeValue = sharedPreferences.getInt(UserPreferences.runMode, ApplicationRunMode.OWNER)
 
         findViewById<EditText>(R.id.minDisplayableGlucoseValue).setText(appConfiguration.minDisplayableGlucoseValue.toString())
         findViewById<EditText>(R.id.maxDisplayableGlucoseValue).setText(appConfiguration.maxDisplayableGlucoseValue.toString())

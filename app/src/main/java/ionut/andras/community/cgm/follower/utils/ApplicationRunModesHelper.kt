@@ -1,7 +1,9 @@
 package ionut.andras.community.cgm.follower.utils
 
 import android.content.Context
+import android.util.Log
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
+import ionut.andras.community.cgm.follower.constants.ApplicationRunMode
 
 class ApplicationRunModesHelper(private var applicationContext: Context) {
 
@@ -9,6 +11,7 @@ class ApplicationRunModesHelper(private var applicationContext: Context) {
         // Enable Follower Mode
         val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
 
+        Log.i("ApplicationRunModesHelper", "Switching application mode to " + ApplicationRunMode.convert[runMode])
         sharedPreferences.edit()
             .putInt(UserPreferences.runMode, runMode)
             .apply()

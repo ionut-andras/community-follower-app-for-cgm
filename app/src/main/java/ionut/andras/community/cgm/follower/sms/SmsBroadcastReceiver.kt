@@ -44,18 +44,31 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
                     // <SMSWAKEUPMESSAGE>:<DexcomSessionId>-N<EnableDisableNotificationsOnFollower>-PS<Sender Phone No>-PR<Receiver Phone No> GOOGLE_PLAY_11_CHARACTERS_HASH
                     val receivedMessageComponents = getWakeupMessageElements(message)
                     val action:String? = receivedMessageComponents?.get(1)
+                    val runMode = ApplicationRunModesHelper(applicationContext).getRunMode(ApplicationRunMode.UNDEFINED)
 
+                    Log.i("SmsBroadcastReceiver", "Processing $action ...")
                     when (action) {
                         Configuration().smsWakeupTriggerString -> {
-                            if (ApplicationRunModesHelper(applicationContext).getRunMode(ApplicationRunMode.FOLLOWER) == ApplicationRunMode.FOLLOWER) {
+                            Log.i("SmsBroadcastReceiver", "Checking run mode $runMode ...")
+                            if (runMode != ApplicationRunMode.OWNER) {
+                                Log.i("SmsBroadcastReceiver", "Start processing SMS  ...")
                                 processWakeUpSmsActionSessionSet(receivedMessageComponents)
                             }
                         }
 
                         Configuration().smsRefreshAuthenticationString -> {
-                            val receiverPhoneNo: String = receivedMessageComponents[5]
-                            val senderPhoneNo: String = receivedMessageComponents[4]
-                            SmsAuthenticationWrapper(applicationContext).sendAuthenticationSms(receiverPhoneNo, senderPhoneNo)
+                            Log.i("SmsBroadcastReceiver", "Checking run mode $runMode ...")
+                            if (runMode == ApplicationRunMode.OWNER) {
+                                val receiverPhoneNo: String = receivedMessageComponents[5]
+                                val senderPhoneNo: String = receivedMessageComponents[4]
+                                Log.i("SmsBroadcastReceiver", "Sending SMS from $senderPhoneNo to $receiverPhoneNo ...")
+
+                                // Now the sender becomes receiver and vice-versa
+                                SmsAuthenticationWrapper(applicationContext).sendAuthenticationSms(
+                                    senderPhoneNo,
+                                    receiverPhoneNo
+                                )
+                            }
                         }
 
                     }
