@@ -1,17 +1,11 @@
 package ionut.andras.community.cgm.follower.api
 
 import android.util.Log
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
 open class HttpRequestHandler {
-    private var defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-
     /**
      * Performs a HTTP POST request
      *
@@ -34,22 +28,6 @@ open class HttpRequestHandler {
      */
     fun postHttpRequest(httpHeadersArray: Array<String>, urlString: String, jsonBody:JSONObject?) : ApiResponse {
         return httpRequest("POST", httpHeadersArray, urlString, jsonBody)
-    }
-
-    /**
-     * Performs a HTTP POST request
-     *
-     * @param httpHeadersArray Array<String>
-     * @param urlString String
-     * @param jsonBody String
-     * @return DexcomApiResponse
-     */
-    fun postHttpAsyncRequest(httpHeadersArray: Array<String>, urlString: String, jsonBody:JSONObject?) : ApiResponse {
-        var apiCallResponse = ApiResponse()
-        GlobalScope.launch(defaultDispatcher) {
-            apiCallResponse = httpRequest("POST", httpHeadersArray, urlString, jsonBody)
-        }
-        return apiCallResponse
     }
 
     /**
@@ -89,14 +67,18 @@ open class HttpRequestHandler {
 
                 Log.i("httpRequest > responseCode", connection.responseCode.toString())
 
-                if (connection.responseCode == HttpsURLConnection.HTTP_OK) {
-                    // Receive response as inputStream
-                    returnValue.data = connection.inputStream.bufferedReader().readText()
-                } else if (connection.responseCode == HttpsURLConnection.HTTP_INTERNAL_ERROR) {
-                    // Receive response as inputStream
-                    returnValue.error = connection.errorStream.bufferedReader().readText()
-                } else {
-                    returnValue.error = connection.responseMessage
+                when (connection.responseCode) {
+                    HttpsURLConnection.HTTP_OK -> {
+                        // Receive response as inputStream
+                        returnValue.data = connection.inputStream.bufferedReader().readText()
+                    }
+                    HttpsURLConnection.HTTP_INTERNAL_ERROR -> {
+                        // Receive response as inputStream
+                        returnValue.error = connection.errorStream.bufferedReader().readText()
+                    }
+                    else -> {
+                        returnValue.error = connection.responseMessage
+                    }
                 }
 
             } catch (exception1: Exception) {

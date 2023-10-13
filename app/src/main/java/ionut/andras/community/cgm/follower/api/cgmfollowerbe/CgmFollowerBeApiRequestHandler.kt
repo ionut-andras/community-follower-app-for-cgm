@@ -51,7 +51,7 @@ class CgmFollowerBeApiRequestHandler(private val applicationContext: Context): H
             // Build the complete URL
             val urlString = cgmFollowerBeConstants.baseUrl + cgmFollowerBeConstants.sessionManagementEndpoint
             // Perform the HTTP call
-            returnValue = postHttpAsyncRequest(cgmFollowerBeConstants.httpHeadersArray, urlString, jsonBody)
+            returnValue = postHttpRequest(cgmFollowerBeConstants.httpHeadersArray, urlString, jsonBody)
         } else {
             returnValue.error = applicationContext.getString(R.string.textPhoneNumberNullEmptyInvalid)
         }

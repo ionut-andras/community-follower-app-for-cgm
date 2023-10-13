@@ -11,9 +11,16 @@ import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.sms.SmsAuthenticationWrapper
 import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 class InviteFollowerActivity : AppCompatActivityWrapper(R.menu.invite_followers_menu) {
+    private var defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private var mainDispatcher: CoroutineDispatcher = Dispatchers.Main
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,21 +55,26 @@ class InviteFollowerActivity : AppCompatActivityWrapper(R.menu.invite_followers_
         val senderPhoneNumber = findViewById<EditText>(R.id.personalPhoneEditText).text.toString()
 
         if (receiverPhoneNumber.isNotEmpty() && senderPhoneNumber.isNotEmpty()) {
-            if (sendInviteToFollow(receiverPhoneNumber, senderPhoneNumber)) {
-                // Hide the button
-                button.visibility = View.INVISIBLE
+            GlobalScope.launch(defaultDispatcher) {
+                if (sendInviteToFollow(receiverPhoneNumber, senderPhoneNumber)) {
+                    // Hide the button
+                    button.visibility = View.INVISIBLE
 
-                ToastWrapper(applicationContext).displayMessageToast(
-                    button,
-                    getString(R.string.textInvitationSent)
-                )
-            } else {
-                ToastWrapper(applicationContext).displayMessageToast(
-                    button,
-                    getString(R.string.textInvitationNotSent)
-                )
+                    withContext(mainDispatcher) {
+                        ToastWrapper(applicationContext).displayMessageToast(
+                            button,
+                            getString(R.string.textInvitationSent)
+                        )
+                    }
+                } else {
+                    withContext(mainDispatcher) {
+                        ToastWrapper(applicationContext).displayMessageToast(
+                            button,
+                            getString(R.string.textInvitationNotSent)
+                        )
+                    }
+                }
             }
-
             // Save phone number
             val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
             sharedPreferences.edit()
