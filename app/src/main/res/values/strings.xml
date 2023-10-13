@@ -81,5 +81,6 @@
     <string name="infoEventSavedLocally">NOTE:\n\nThe current version of the application saves the events locally only for the last 24h display purpose.\nYou will not see these events in your glucose history manager.</string>
     <string name="infoFollowerMustStartAppFirst">"IMPORTANT:\nPlease ask the follower to start the app after installation\nin order to subscribe automatically to receive invites "</string>
     <!-- Regular expressions -->
-    <string name="regexSmsWakeupMessage">^(.+?):(.+?)\\-N(.+?)\\-PS(.*?)\\-PR(.+?) (.*)$</string>
+    <string name="regexSmsWakeupMessageDeprecated">^(.+?):(.+?)\\-N(.+?)\\-PS(.*?)\\-PR(.+?) (.*)$</string>
+    <string name="regexSmsWakeupMessage">^(.+?):(.+?) (.*)$</string>
 </resources>

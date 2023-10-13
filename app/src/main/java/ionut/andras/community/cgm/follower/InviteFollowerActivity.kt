@@ -11,16 +11,12 @@ import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.sms.SmsAuthenticationWrapper
 import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 class InviteFollowerActivity : AppCompatActivityWrapper(R.menu.invite_followers_menu) {
-    private var defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-    private var mainDispatcher: CoroutineDispatcher = Dispatchers.Main
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,12 +51,32 @@ class InviteFollowerActivity : AppCompatActivityWrapper(R.menu.invite_followers_
         val senderPhoneNumber = findViewById<EditText>(R.id.personalPhoneEditText).text.toString()
 
         if (receiverPhoneNumber.isNotEmpty() && senderPhoneNumber.isNotEmpty()) {
+            // Save phone number
+            val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
+            sharedPreferences.edit()
+                .putString(UserPreferences.senderPhoneNo, senderPhoneNumber)
+                .apply()
+
             GlobalScope.launch(defaultDispatcher) {
                 if (sendInviteToFollow(receiverPhoneNumber, senderPhoneNumber)) {
-                    // Hide the button
-                    button.visibility = View.INVISIBLE
+                    // Check if any receiver still exists
+                    var receiversListRO = sharedPreferences.getStringSet(UserPreferences.receiverPhoneNoList, null)
+                    if (null == receiversListRO) {
+                        // Initialize receivers list if null
+                        receiversListRO = mutableSetOf()
+                    }
+                    val receiversList = HashSet<String>(receiversListRO)
+                    // Add receiver
+                    receiversList.add(receiverPhoneNumber)
+
+                    sharedPreferences.edit()
+                        .putStringSet(UserPreferences.receiverPhoneNoList, receiversList)
+                        .apply()
 
                     withContext(mainDispatcher) {
+                        // Hide the button
+                        button.visibility = View.INVISIBLE
+
                         ToastWrapper(applicationContext).displayMessageToast(
                             button,
                             getString(R.string.textInvitationSent)
@@ -75,11 +91,6 @@ class InviteFollowerActivity : AppCompatActivityWrapper(R.menu.invite_followers_
                     }
                 }
             }
-            // Save phone number
-            val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
-            sharedPreferences.edit()
-                .putString(UserPreferences.senderPhoneNo, senderPhoneNumber)
-                .apply()
         } else {
             ToastWrapper(applicationContext).displayInfoToast(getString(R.string.textPhoneNumberNullEmptyInvalid))
         }

@@ -9,12 +9,19 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
 import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.R
+import ionut.andras.community.cgm.follower.api.cgmfollowerbe.CgmFollowerBeApiRequestHandler
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.constants.ApplicationRunMode
 import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.ApplicationRunModesHelper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 /**
  * BroadcastReceiver to wait for SMS messages. This can be registered either
@@ -24,6 +31,9 @@ import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 class SmsBroadcastReceiver: BroadcastReceiver() {
     private lateinit var smsWakeupMessageRegex: Regex
     private lateinit var applicationContext: Context
+
+    private var defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private var mainDispatcher: CoroutineDispatcher = Dispatchers.Main
 
     override fun onReceive(context: Context, intent: Intent) {
         applicationContext = context
@@ -82,62 +92,92 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
     }
 
     private fun processWakeUpSmsActionSessionSet(receivedMessageComponents: List<String>?) {
-        val action:String? = receivedMessageComponents?.get(1)
-        val sessionId:String? = receivedMessageComponents?.get(2)
-        val notificationsEnabled:String? = receivedMessageComponents?.get(3)
-        val senderPhoneNo:String? = receivedMessageComponents?.get(4)
-        val receiverPhoneNo:String? = receivedMessageComponents?.get(5)
+        // <SMSWAKEUPMESSAGE>:<USERKEY> GOOGLE_PLAY_11_CHARACTERS_HASH
 
-        // Extract one-time code from the message and complete verification
-        // by sending the code back to your server.
-        // ToastWrapper(context).displayInfoToast(message)
-        ToastWrapper(applicationContext).displayInfoToast("Extracted action = $action")
-        ToastWrapper(applicationContext).displayInfoToast("Extracted Session Id = $sessionId")
-        ToastWrapper(applicationContext).displayInfoToast("Extracted Notifications Flag = $notificationsEnabled")
-        ToastWrapper(applicationContext).displayInfoToast("Extracted senderPhoneNo = $senderPhoneNo")
-        ToastWrapper(applicationContext).displayInfoToast("Extracted receiverPhoneNo = $receiverPhoneNo")
+        val userKey:String? = receivedMessageComponents?.get(2)
+        ToastWrapper(applicationContext).displayInfoToast("SMS Extracted userKey = $userKey")
 
+        userKey?.let {
+            GlobalScope.launch(defaultDispatcher) {
+                val authenticationData = CgmFollowerBeApiRequestHandler(applicationContext).getSession(it)
+                if (!authenticationData.errorOccurred()) {
+                    authenticationData.data?.let {
+                        withContext(mainDispatcher) {
+                            /*{
+                                "session": "8dfe387c-a322-430f-9b82-c23965d427b8",
+                                "notifications_enabled_flag": "0",
+                                "phone_sender": "+40111111111",
+                                "phone_receiver": "+40222222222",
+                                "app_hash": "5de6329f620f38f0eaddb58cbafce54f"
+                            }*/
+                            val authenticationJson = JSONObject(it)
+                            if (!authenticationJson.isNull("session")) {
+                                val sessionId: String? = authenticationJson.getString("session")
+                                val notificationsEnabled: String? =
+                                    authenticationJson.getString("notifications_enabled_flag")
+                                val senderPhoneNo: String? =
+                                    authenticationJson.getString("phone_sender")
+                                val receiverPhoneNo: String? =
+                                    authenticationJson.getString("phone_receiver")
 
-        val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
-        val runModeHelper = ApplicationRunModesHelper(applicationContext)
+                                // Extract one-time code from the message and complete verification
+                                // by sending the code back to your server.
+                                // ToastWrapper(context).displayInfoToast(message)
+                                ToastWrapper(applicationContext).displayInfoToast("Extracted Session Id = $sessionId")
+                                ToastWrapper(applicationContext).displayInfoToast("Extracted Notifications Flag = $notificationsEnabled")
+                                ToastWrapper(applicationContext).displayInfoToast("Extracted senderPhoneNo = $senderPhoneNo")
+                                ToastWrapper(applicationContext).displayInfoToast("Extracted receiverPhoneNo = $receiverPhoneNo")
 
+                                val sharedPreferences =
+                                    SharedPreferencesFactory(applicationContext).getInstance()
+                                val runModeHelper = ApplicationRunModesHelper(applicationContext)
 
-        // Setup shared session
-        if (!sessionId.isNullOrEmpty()) {
-            sharedPreferences.edit()
-                .putString(UserPreferences.dexcomSessionId, sessionId)
-                .apply()
+                                // Setup shared session
+                                if (!sessionId.isNullOrEmpty()) {
+                                    sharedPreferences.edit()
+                                        .putString(UserPreferences.dexcomSessionId, sessionId)
+                                        .apply()
+                                }
+
+                                // Enable / Disable notifications
+                                if ("1" == notificationsEnabled) {
+                                    sharedPreferences.edit()
+                                        .putBoolean(UserPreferences.disableNotifications, false)
+                                        .apply()
+                                } else {
+                                    sharedPreferences.edit()
+                                        .putBoolean(UserPreferences.disableNotifications, true)
+                                        .apply()
+                                }
+
+                                // Save phone numbers from the Follower perspective
+                                // - Sender is now the Follower (old receiver)
+                                // - Receiver is now the Master (old sender)
+                                if (!senderPhoneNo.isNullOrEmpty() && !receiverPhoneNo.isNullOrEmpty()) {
+                                    sharedPreferences.edit()
+                                        .putString(UserPreferences.receiverPhoneNo, senderPhoneNo)
+                                        .putString(UserPreferences.senderPhoneNo, receiverPhoneNo)
+                                        .apply()
+                                }
+
+                                // Enable Follower Mode
+                                Log.i(
+                                    "SmsBroadCastReceiver > processWakeUpSmsActionSessionSet",
+                                    "Switching application mode to FOLLOWER ..."
+                                )
+                                runModeHelper.switchRunModeTo(ApplicationRunMode.FOLLOWER)
+
+                                val redirectIntent =
+                                    Intent(applicationContext, MainActivity::class.java).apply {
+                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                    }
+                                applicationContext.startActivity(redirectIntent)
+                            }
+                        }
+                    }
+                }
+            }
         }
-
-        // Enable / Disable notifications
-        if ("1" == notificationsEnabled) {
-            sharedPreferences.edit()
-                .putBoolean(UserPreferences.disableNotifications, false)
-                .apply()
-        } else {
-            sharedPreferences.edit()
-                .putBoolean(UserPreferences.disableNotifications, true)
-                .apply()
-        }
-
-        // Save phone numbers from the Follower perspective
-        // - Sender is now the Follower (old receiver)
-        // - Receiver is now the Master (old sender)
-        if (!senderPhoneNo.isNullOrEmpty() && !receiverPhoneNo.isNullOrEmpty()) {
-            sharedPreferences.edit()
-                .putString(UserPreferences.receiverPhoneNo, senderPhoneNo)
-                .putString(UserPreferences.senderPhoneNo, receiverPhoneNo)
-                .apply()
-        }
-
-        // Enable Follower Mode
-        Log.i("SmsBroadCastReceiver > processWakeUpSmsActionSessionSet", "Switching application mode to FOLLOWER ...")
-        runModeHelper.switchRunModeTo(ApplicationRunMode.FOLLOWER)
-
-        val redirectIntent = Intent(applicationContext, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-        applicationContext.startActivity(redirectIntent)
     }
 
     private fun getWakeupMessageElements(smsWakeUpMessage: String): List<String>? {

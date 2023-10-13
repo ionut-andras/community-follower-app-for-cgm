@@ -512,6 +512,7 @@ class GlucoseValuesUpdateService : Service() {
 
         sharedPreferences.edit()
             .putString(UserPreferences.dexcomSessionId, glucoseRetrievalSession)
+            .putBoolean(UserPreferences.dexcomSessionIdUpdated, true)
             .apply()
     }
 

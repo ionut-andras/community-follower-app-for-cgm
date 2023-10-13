@@ -31,28 +31,16 @@ class LoginActivity : AppCompatActivityWrapper() {
 
         checkApplicationOptionalRequirements()
 
-        // Start One Time PIN SMS listener
-        // OtpSmsListener(applicationContext)
-        /*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        val smsWakeupMessageRegex = Regex(getString(R.string.regexSmsWakeupMessage))
-        val message = "ST:141a2fd9-a415-421f-81e5-c014a522e3c9-N0-PS-PR0765339459 IeIw2DQg0Io"
-        val match = smsWakeupMessageRegex.find(message)
-        val receivedMessageComponents = match?.groupValues
-        val action:String? = receivedMessageComponents?.get(1)
-        val sessionId:String? = receivedMessageComponents?.get(2)
-        val notificationsEnabled:String? = receivedMessageComponents?.get(3)
-        val senderPhoneNo:String? = receivedMessageComponents?.get(4)
-        val receiverPhoneNo:String? = receivedMessageComponents?.get(5)
+        /*// Trigger SMS Received event manually for debug purpose only
+        // Create a new Intent object and specify the action.
+        val intent = Intent(SmsRetriever.SMS_RETRIEVED_ACTION)
+        intent.putExtra(SmsRetriever.EXTRA_SMS_MESSAGE, "ST:a7bf19cbe19a149e8a52b5a0042bd690 IeIw2DQg0Io")
+        val status = Status(CommonStatusCodes.SUCCESS)
+        // CommonStatusCodes.SUCCESS as Status)
+        intent.putExtra(SmsRetriever.EXTRA_STATUS,status)
+        // Send the broadcast.
+        applicationContext.sendBroadcast(intent)*/
 
-        // Extract one-time code from the message and complete verification
-        // by sending the code back to your server.
-        // ToastWrapper(context).displayInfoToast(message)
-        ToastWrapper(applicationContext).displayInfoToast("Extracted action = $action")
-        ToastWrapper(applicationContext).displayInfoToast("Extracted Session Id = $sessionId")
-        ToastWrapper(applicationContext).displayInfoToast("Extracted Notifications Flag = $notificationsEnabled")
-        ToastWrapper(applicationContext).displayInfoToast("Extracted senderPhoneNo = $senderPhoneNo")
-        ToastWrapper(applicationContext).displayInfoToast("Extracted receiverPhoneNo = $receiverPhoneNo")
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// */
     }
 
     private fun initializeView() {

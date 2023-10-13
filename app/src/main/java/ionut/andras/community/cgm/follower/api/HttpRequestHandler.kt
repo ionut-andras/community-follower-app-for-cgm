@@ -50,6 +50,8 @@ open class HttpRequestHandler {
 
             try {
                 connection.requestMethod = method
+                Log.i("httpRequest > method", connection.requestMethod)
+
                 httpHeadersArray.map { header ->
                     val (key, value) = header.split(":").map { str -> str.trim() }
                     connection.setRequestProperty(key, value)
@@ -59,9 +61,13 @@ open class HttpRequestHandler {
                     Log.i("httpRequest > httpHeadersArray > $it", it.trim())
                 }
 
-                connection.doOutput = true
-                Log.i("httpRequest > jsonBody", jsonBody.toString())
+                // There is a known issue in the Android Kotlin HttpsURLConnection class
+                // where the request method is set to POST even if the connection.requestMethod property is set to GET.
+                // This issue was reported in 2019 and is still present in the latest version of the Android SDK (Android 13).
+                connection.doOutput = (method == "POST")
+
                 if (null != jsonBody) {
+                    Log.i("httpRequest > jsonBody", jsonBody.toString())
                     connection.outputStream.write(jsonBody.toString().toByteArray())
                 }
 

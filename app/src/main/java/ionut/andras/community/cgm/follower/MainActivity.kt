@@ -36,6 +36,8 @@ import ionut.andras.community.cgm.follower.utils.DateTimeConversion
 import ionut.andras.community.cgm.follower.utils.DexcomDateTimeConversion
 import ionut.andras.community.cgm.follower.utils.GlucoseValueColorRange
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.json.JSONArray
 
 
@@ -355,6 +357,9 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
         // Display the informational toast
         displayToastGlucoseValue(glucoseNotificationData)
+
+        // Trigger online session update
+        updateFollowersAuthenticationInCloud()
     }
 
     fun disableNotificationSoundForSeconds(intent: Intent, seconds: Int) {
@@ -388,6 +393,37 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
             sharedPreferences.edit().putLong(UserPreferences.lastToastDisplayTimestamp, lastToastDisplayTimestamp).apply()
         } else {
             Log.i("displayToastGlucoseValue", "Conditions for displaying toast not meet.")
+        }
+    }
+
+    private fun updateFollowersAuthenticationInCloud() {
+        val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
+
+        val sessionIdUpdated = sharedPreferences.getBoolean(UserPreferences.dexcomSessionIdUpdated, false)
+        if (sessionIdUpdated) {
+            val ownPhoneNo = sharedPreferences.getString(UserPreferences.senderPhoneNo, null)
+            val receiverPhoneNoList = sharedPreferences.getStringSet(UserPreferences.receiverPhoneNoList, null)
+            Log.i("receiverPhoneNoList", receiverPhoneNoList.toString())
+
+            receiverPhoneNoList?.map { receiverPhoneNo ->
+                ownPhoneNo?.let {
+                    GlobalScope.launch(defaultDispatcher) {
+                        Log.i(
+                            "updateFollowersAuthenticationInCloud",
+                            "$ownPhoneNo -> $receiverPhoneNo"
+                        )
+                        CgmFollowerBeApiRequestHandler(applicationContext).setSession(
+                            receiverPhoneNo,
+                            it
+                        )
+                    }
+                }
+
+            }
+
+            sharedPreferences.edit()
+                .putBoolean(UserPreferences.dexcomSessionIdUpdated, false)
+                .apply()
         }
     }
 
