@@ -1,6 +1,6 @@
 package ionut.andras.community.cgm.follower.api
 
-class DexcomApiResponse() {
+class ApiResponse() {
     var data: String? = null
     var error: String? = null
     var exception: String? = null
@@ -11,7 +11,7 @@ class DexcomApiResponse() {
     }
 
     fun errorOccurred(): Boolean {
-        return ((null != error) && (null != exception))
+        return ((null != error) || (null != exception) || (noInternetConnection))
     }
 
     fun exceptionOccurred(): Boolean{

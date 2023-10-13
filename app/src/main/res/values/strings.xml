@@ -39,6 +39,7 @@
     <string name="textSenderPhoneNo">Your phone number</string>
     <string name="checkboxLoginThermsAndConditions">Please agree before continue</string>
     <string name="textInvitationSent">The invite has been sent</string>
+    <string name="textInvitationNotSent">The invite could not be sent</string>
     <!-- Permission names -->
     <string name="permissionFriendlyNameForegroundService">Glucose Monitoring Service</string>
     <string name="permissionFriendlyNamePostNotifications">Receive Glucose Value Notifications</string>
@@ -56,7 +57,9 @@
     <string name="textPermissionDenied">permission denied</string>
     <string name="textPermissionRequired">Permission required</string>
     <string name="textPermissionsRequiredToUseInviteFollowerFunction">The following permissions are required in order to run the Follow functionality</string>
-    <string name="textPhoneNumberNullOrEmpty">Please type in a valid phone number</string>
+    <string name="textPhoneNumberNullEmptyInvalid">Please type in a valid phone number</string>
+    <string name="messageInvalidUserKey">Invalid user key</string>
+    <string name="messageUserKeyUnavailable">Could not recover user key from the cloud</string>
     <!-- Labels / Hints -->
     <string name="hintGlucoseMinValueChart">Glucose min value (Chart)</string>
     <string name="hintEditGlucoseMinValueChart">Edit glucose min value (Chart)</string>

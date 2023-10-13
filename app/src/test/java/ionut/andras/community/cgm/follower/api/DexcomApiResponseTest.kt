@@ -5,11 +5,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class DexcomApiResponseTest {
-    private lateinit var SUT: DexcomApiResponse
+    private lateinit var SUT: ApiResponse
 
     @BeforeEach
     fun setUp() {
-        SUT = DexcomApiResponse()
+        SUT = ApiResponse()
     }
 
     @AfterEach

@@ -1,10 +1,9 @@
 package ionut.andras.community.cgm.follower.sms
 
 import android.content.Context
+import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.configuration.Configuration
-import ionut.andras.community.cgm.follower.configuration.UserPreferences
-import ionut.andras.community.cgm.follower.utils.DateTimeConversion
-import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
+import ionut.andras.community.cgm.follower.toast.ToastWrapper
 
 class SmsAuthenticationWrapper(context: Context) {
     private var applicationContext: Context
@@ -13,45 +12,15 @@ class SmsAuthenticationWrapper(context: Context) {
         applicationContext = context
     }
 
-    fun sendAuthenticationSms(receiverPhoneNo: String = "", senderPhoneNo: String = "") {
-        val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
-        val sessionId = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
-        var senderPhoneNumber = senderPhoneNo
-        // If no senderPhoneNumber specified, try to get it from SharedPreferences
-        if (senderPhoneNo.isEmpty()) {
-            senderPhoneNumber =
-                sharedPreferences.getString(UserPreferences.senderPhoneNo, "").toString()
-        }
-
+    fun sendAuthenticationSms(receiverPhoneNo: String = "", userKey: String? = "") {
         // Send SMS only if receiverPhoneNo is available
-        if (receiverPhoneNo.isNotEmpty()) {
-            // <SMSWAKEUPMESSAGE>:<DexcomSessionId>-N<EnableDisableNotificationsOnFollower>-PS<Sender Phone No>-PR<Receiver Phone No> GOOGLE_PLAY_11_CHARACTERS_HASH
+        if (receiverPhoneNo.isNotEmpty() && !userKey.isNullOrEmpty()) {
+            // <SMSWAKEUPMESSAGE>:<USERKEY> GOOGLE_PLAY_11_CHARACTERS_HASH
             val smsText =
-                Configuration().smsWakeupTriggerString + ":$sessionId-N0-PS$senderPhoneNumber-PR$receiverPhoneNo " + Configuration().smsGooglePlayVerificationHash
-            // ToastWrapper(applicationContext).displayMessageToast(findViewById(R.id.btnSendInviteToFollower), "SMS: $binarySMS")
-            //ToastWrapper(applicationContext).displayMessageToast(findViewById(R.id.btnSendInviteToFollower), "Phone No: $phoneNo")
+                Configuration().smsWakeupTriggerString + ":$userKey " + Configuration().smsGooglePlayVerificationHash
             SMSWrapper(applicationContext).sendTextSms(receiverPhoneNo, smsText)
+        } else {
+            ToastWrapper(applicationContext).displayInfoToast(applicationContext.getString(R.string.messageUserKeyUnavailable))
         }
-    }
-
-    fun sendRequestAuthenticationRenewSms() {
-        val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
-        val senderPhoneNo = sharedPreferences.getString(UserPreferences.senderPhoneNo, "")
-        val receiverPhoneNo = sharedPreferences.getString(UserPreferences.receiverPhoneNo, "")
-        val nextAllowedSmsRequestTs = sharedPreferences.getLong(UserPreferences.smsSecurityDelayWindow, DateTimeConversion().getLocalTimestamp())
-
-        // Allow a security delay window between 2 SMS
-        //if (nextAllowedSmsRequestTs <= DateTimeConversion().getLocalTimestamp()) {
-            // <SMSWAKEUPMESSAGE>:<DexcomSessionId>-N<EnableDisableNotificationsOnFollower>-PS<Sender Phone No>-PR<Receiver Phone No> GOOGLE_PLAY_11_CHARACTERS_HASH
-            val smsText = Configuration().smsRefreshAuthenticationString + ":NULL-N0-PS$senderPhoneNo-PR$receiverPhoneNo " + Configuration().smsGooglePlayVerificationHash
-            // ToastWrapper(applicationContext).displayMessageToast(findViewById(R.id.btnSendInviteToFollower), "SMS: $binarySMS")
-            //ToastWrapper(applicationContext).displayMessageToast(findViewById(R.id.btnSendInviteToFollower), "Phone No: $phoneNo")
-            if (!receiverPhoneNo.isNullOrEmpty()) {
-                SMSWrapper(applicationContext).sendTextSms(receiverPhoneNo, smsText)
-            }
-        //}
-        sharedPreferences.edit()
-            .putLong(UserPreferences.smsSecurityDelayWindow, DateTimeConversion().getLocalTimestamp() + Configuration().smsSecurityDelayWindow)
-            .apply()
     }
 }

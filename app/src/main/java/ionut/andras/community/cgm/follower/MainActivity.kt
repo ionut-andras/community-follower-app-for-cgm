@@ -15,12 +15,14 @@ import android.view.View
 import android.widget.TextView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.mikephil.charting.charts.LineChart
+import ionut.andras.community.cgm.follower.api.cgmfollowerbe.CgmFollowerBeApiRequestHandler
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.constants.ApplicationRunMode
 import ionut.andras.community.cgm.follower.constants.DexcomConstants
 import ionut.andras.community.cgm.follower.constants.DexcomTrendsConversionMap
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
+import ionut.andras.community.cgm.follower.core.SessionManager
 import ionut.andras.community.cgm.follower.notifications.GlucoseNotificationData
 import ionut.andras.community.cgm.follower.permissions.PermissionHandler
 import ionut.andras.community.cgm.follower.permissions.PermissionRequestCodes
@@ -28,7 +30,6 @@ import ionut.andras.community.cgm.follower.plot.PlotGlucoseHistoricValues
 import ionut.andras.community.cgm.follower.services.GlucoseValuesUpdateService
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastActions
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastSender
-import ionut.andras.community.cgm.follower.sms.SmsAuthenticationWrapper
 import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.ApplicationRunModesHelper
 import ionut.andras.community.cgm.follower.utils.DateTimeConversion
@@ -141,6 +142,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
                 buttonInviteFollower.isVisible = false
             }
         } catch (e: Exception) {
+            Log.i("onCreateOptionsMenu Exception", e.toString())
         }
 
         return true
@@ -334,8 +336,9 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
             // Main Application mode
             displayLoginForm(getString(R.string.messageLoginFailed))
         } else {
-            Log.i("MainActivity > handleFailedAuthentication", "Run mode: FOLLOWER. Sending SMS...")
-            SmsAuthenticationWrapper(applicationContext).sendRequestAuthenticationRenewSms()
+            Log.i("MainActivity > handleFailedAuthentication", "Run mode: FOLLOWER. Sending trying to recover session...")
+            SessionManager(applicationContext).recoverSessionsFromBackend(
+                CgmFollowerBeApiRequestHandler(applicationContext))
         }
     }
 
