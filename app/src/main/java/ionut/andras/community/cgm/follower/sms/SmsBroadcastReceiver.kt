@@ -7,7 +7,6 @@ import android.util.Log
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
-import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.constants.ApplicationRunMode
 import ionut.andras.community.cgm.follower.core.SessionManager
@@ -19,7 +18,6 @@ import ionut.andras.community.cgm.follower.utils.ApplicationRunModesHelper
  * SmsRetriever.SMS_RETRIEVED_ACTION.
  */
 class SmsBroadcastReceiver: BroadcastReceiver() {
-    private lateinit var smsWakeupMessageRegex: Regex
     private lateinit var applicationContext: Context
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -33,13 +31,11 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
 
             when (status.statusCode) {
                 CommonStatusCodes.SUCCESS -> {
-                    smsWakeupMessageRegex = Regex(context.getString(R.string.regexSmsWakeupMessage))
-
                     // Get SMS message contents
                     val message = extras.getString(SmsRetriever.EXTRA_SMS_MESSAGE) ?: return
                     
-                    // cgmfollower://login?<SMSWAKEUPMESSAGE>=<userKey> GOOGLE_PLAY_11_CHARACTERS_HASH
-                    val receivedMessageComponents = getWakeupMessageElements(message)
+                    // https://cgmfollower/login?<SMSWAKEUPMESSAGE>=<userKey> GOOGLE_PLAY_11_CHARACTERS_HASH
+                    val receivedMessageComponents = SmsProcessor(applicationContext).getWakeupMessageElements(message)
                     val action:String? = receivedMessageComponents?.get(2)
                     val runMode = ApplicationRunModesHelper(applicationContext).getRunMode(ApplicationRunMode.UNDEFINED)
 
@@ -76,10 +72,5 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
                 }
             }
         }
-    }
-
-    private fun getWakeupMessageElements(smsWakeUpMessage: String): List<String>? {
-        val match = smsWakeupMessageRegex.find(smsWakeUpMessage)
-        return match?.groupValues
     }
 }

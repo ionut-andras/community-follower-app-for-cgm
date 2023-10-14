@@ -16,7 +16,7 @@ class SmsAuthenticationWrapper(context: Context) {
     fun sendAuthenticationSms(receiverPhoneNo: String = "", userKey: String? = "") {
         // Send SMS only if receiverPhoneNo is available
         if (receiverPhoneNo.isNotEmpty() && !userKey.isNullOrEmpty()) {
-            // cgmfollower://login?<SMSWAKEUPMESSAGE>=<USERKEY> GOOGLE_PLAY_11_CHARACTERS_HASH
+            // https://cgmfollower/login?<SMSWAKEUPMESSAGE>=<USERKEY> GOOGLE_PLAY_11_CHARACTERS_HASH
 
             val smsText =
                 applicationContext.getString(R.string.autologinUrlPrefix) +

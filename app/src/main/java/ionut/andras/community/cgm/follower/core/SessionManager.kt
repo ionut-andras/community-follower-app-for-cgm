@@ -43,7 +43,7 @@ class SessionManager (private val applicationContext: Context) {
     }
 
     fun recoverSessionFromSmsKey(receivedMessageComponents: List<String>?) {
-        // cgmfollower://login?<SMSWAKEUPMESSAGE>=<USERKEY> GOOGLE_PLAY_11_CHARACTERS_HASH
+        // https://cgmfollower/login?<SMSWAKEUPMESSAGE>=<USERKEY> GOOGLE_PLAY_11_CHARACTERS_HASH
 
         val userKey:String? = receivedMessageComponents?.get(3)
         ToastWrapper(applicationContext).displayInfoToast("SMS Extracted userKey = $userKey")

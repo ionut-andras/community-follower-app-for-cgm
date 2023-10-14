@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
+import ionut.andras.community.cgm.follower.core.SessionManager
 import ionut.andras.community.cgm.follower.permissions.PermissionHandler
 import ionut.andras.community.cgm.follower.permissions.PermissionRequestCodes
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
@@ -96,12 +97,18 @@ class LoginActivity : AppCompatActivityWrapper() {
     }
 
     private fun checkStartedByIntent() {
-        val action: String? = intent?.action
+        // val action: String? = intent?.action
         val data: Uri? = intent?.data
 
         data?.let {
             val userKey = it.query
             Log.i("checkStartedByIntent", "$userKey")
+            val receivedMessageComponents = mutableListOf(
+                "login",
+                "ST",
+                userKey.toString()
+            )
+            SessionManager(applicationContext).recoverSessionFromSmsKey(receivedMessageComponents)
         }
     }
 
