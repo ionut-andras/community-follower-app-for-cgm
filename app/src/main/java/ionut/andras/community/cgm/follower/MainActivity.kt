@@ -22,6 +22,7 @@ import ionut.andras.community.cgm.follower.constants.ApplicationRunMode
 import ionut.andras.community.cgm.follower.constants.DexcomConstants
 import ionut.andras.community.cgm.follower.constants.DexcomTrendsConversionMap
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
+import ionut.andras.community.cgm.follower.core.AsyncDispatcher
 import ionut.andras.community.cgm.follower.core.SessionManager
 import ionut.andras.community.cgm.follower.notifications.GlucoseNotificationData
 import ionut.andras.community.cgm.follower.permissions.PermissionHandler
@@ -407,7 +408,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
             receiverPhoneNoList?.map { receiverPhoneNo ->
                 ownPhoneNo?.let {
-                    GlobalScope.launch(defaultDispatcher) {
+                    GlobalScope.launch(AsyncDispatcher.default) {
                         Log.i(
                             "updateFollowersAuthenticationInCloud",
                             "$ownPhoneNo -> $receiverPhoneNo"

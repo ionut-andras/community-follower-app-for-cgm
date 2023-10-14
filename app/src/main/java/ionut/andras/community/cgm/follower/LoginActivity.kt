@@ -2,8 +2,10 @@ package ionut.andras.community.cgm.follower
 
 import android.Manifest
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
@@ -31,6 +33,7 @@ class LoginActivity : AppCompatActivityWrapper() {
 
         checkApplicationOptionalRequirements()
 
+        checkStartedByIntent()
         /*// Trigger SMS Received event manually for debug purpose only
         // Create a new Intent object and specify the action.
         val intent = Intent(SmsRetriever.SMS_RETRIEVED_ACTION)
@@ -90,6 +93,16 @@ class LoginActivity : AppCompatActivityWrapper() {
             .checkPermission(Manifest.permission.SEND_SMS, getString(R.string.permissionFriendlyNameSendSms), PermissionRequestCodes.SEND_SMS)
         PermissionHandler(this, applicationContext)
             .checkPermission(Manifest.permission.READ_PHONE_STATE, getString(R.string.permissionFriendlyNameReadPhoneState), PermissionRequestCodes.READ_PHONE_STATE)
+    }
+
+    private fun checkStartedByIntent() {
+        val action: String? = intent?.action
+        val data: Uri? = intent?.data
+
+        data?.let {
+            val userKey = it.query
+            Log.i("checkStartedByIntent", "$userKey")
+        }
     }
 
     // Handle the permission result in onRequestPermissionsResult()

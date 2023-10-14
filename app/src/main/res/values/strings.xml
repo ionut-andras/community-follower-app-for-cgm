@@ -50,6 +50,7 @@
     <string name="variableNameGenericData">data</string>
     <string name="variableNameLoginFailed">loginFailed</string>
     <string name="variableNameLoginFormMessage">loginFormMessage</string>
+    <string name="autologinUrlPrefix">cgmfollower://login</string>
     <!-- Messages -->
     <string name="messageLoginFailed">Invalid username or password. Please try again!</string>
     <string name="messageSupportedRegions">Currently, we support Dexcom Accounts from USA only!</string>
@@ -82,5 +83,5 @@
     <string name="infoFollowerMustStartAppFirst">"IMPORTANT:\nPlease ask the follower to start the app after installation\nin order to subscribe automatically to receive invites "</string>
     <!-- Regular expressions -->
     <string name="regexSmsWakeupMessageDeprecated">^(.+?):(.+?)\\-N(.+?)\\-PS(.*?)\\-PR(.+?) (.*)$</string>
-    <string name="regexSmsWakeupMessage">^(.+?):(.+?) (.*)$</string>
+    <string name="regexSmsWakeupMessage">^cgmfollower://(.+?)\\?(.+?):(.+?) (.*)$</string>
 </resources>

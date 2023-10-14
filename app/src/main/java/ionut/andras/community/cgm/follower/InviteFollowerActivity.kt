@@ -8,6 +8,7 @@ import android.widget.EditText
 import ionut.andras.community.cgm.follower.api.cgmfollowerbe.CgmFollowerBeApiRequestHandler
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
+import ionut.andras.community.cgm.follower.core.AsyncDispatcher
 import ionut.andras.community.cgm.follower.sms.SmsAuthenticationWrapper
 import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
@@ -57,7 +58,7 @@ class InviteFollowerActivity : AppCompatActivityWrapper(R.menu.invite_followers_
                 .putString(UserPreferences.senderPhoneNo, senderPhoneNumber)
                 .apply()
 
-            GlobalScope.launch(defaultDispatcher) {
+            GlobalScope.launch(AsyncDispatcher.default) {
                 if (sendInviteToFollow(receiverPhoneNumber, senderPhoneNumber)) {
                     // Check if any receiver still exists
                     var receiversListRO = sharedPreferences.getStringSet(UserPreferences.receiverPhoneNoList, null)
@@ -73,7 +74,7 @@ class InviteFollowerActivity : AppCompatActivityWrapper(R.menu.invite_followers_
                         .putStringSet(UserPreferences.receiverPhoneNoList, receiversList)
                         .apply()
 
-                    withContext(mainDispatcher) {
+                    withContext(AsyncDispatcher.main) {
                         // Hide the button
                         button.visibility = View.INVISIBLE
 
@@ -83,7 +84,7 @@ class InviteFollowerActivity : AppCompatActivityWrapper(R.menu.invite_followers_
                         )
                     }
                 } else {
-                    withContext(mainDispatcher) {
+                    withContext(AsyncDispatcher.main) {
                         ToastWrapper(applicationContext).displayMessageToast(
                             button,
                             getString(R.string.textInvitationNotSent)

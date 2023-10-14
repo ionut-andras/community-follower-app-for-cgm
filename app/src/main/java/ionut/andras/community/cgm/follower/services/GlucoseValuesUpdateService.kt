@@ -19,6 +19,7 @@ import ionut.andras.community.cgm.follower.api.dexcom.DexcomApiRequestsHandler
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.constants.DexcomTrendsConversionMap
+import ionut.andras.community.cgm.follower.core.AsyncDispatcher
 import ionut.andras.community.cgm.follower.notifications.GlucoseNotificationData
 import ionut.andras.community.cgm.follower.notifications.NotificationsManager
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastActions
@@ -27,8 +28,6 @@ import ionut.andras.community.cgm.follower.sms.OtpSmsListener
 import ionut.andras.community.cgm.follower.utils.DateTimeConversion
 import ionut.andras.community.cgm.follower.utils.DexcomDateTimeConversion
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -38,8 +37,6 @@ import java.io.Serializable
 
 class GlucoseValuesUpdateService : Service() {
     private lateinit var appConfiguration: Configuration
-
-    private var defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
 
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
@@ -178,14 +175,14 @@ class GlucoseValuesUpdateService : Service() {
         if (!glucoseRetrievalSession.isNullOrEmpty()) {
             Log.i("getAuthenticatedUserGlucoseData", "Session available. Running authenticated flow...")
             // If a session valid, skip authentication and authorization
-            GlobalScope.launch (defaultDispatcher) {
+            GlobalScope.launch (AsyncDispatcher.default) {
                 glucoseDataString = getGlucoseData(glucoseRetrievalSession!!)
                 if (glucoseDataString.isNullOrEmpty()) {
 
                     // If the retrieval failed, try to get glucose data by running a full flow
                     getAndProcessUserGlucoseData()
                 } else {
-                    withContext(defaultDispatcher) {
+                    withContext(AsyncDispatcher.default) {
 
                         // If glucose data received, process directly
                         processGlucoseData(glucoseDataString!!)
@@ -206,7 +203,7 @@ class GlucoseValuesUpdateService : Service() {
      */
     private fun getAndProcessUserGlucoseData() {
         // Run full flow: authentication, authorization, get glucose data
-        GlobalScope.launch (defaultDispatcher) {
+        GlobalScope.launch (AsyncDispatcher.default) {
 
             // Authenticate
             val accountId: String? = authenticate()
@@ -214,16 +211,16 @@ class GlucoseValuesUpdateService : Service() {
                 saveDexcomAccountId(accountId)
             }
             if (!accountId.isNullOrEmpty()) {
-                GlobalScope.launch (defaultDispatcher) {
+                GlobalScope.launch (AsyncDispatcher.default) {
                     // Authorize
                     glucoseRetrievalSession = authorize(accountId)
                     saveDexcomSession()
                     if (null != glucoseRetrievalSession) {
-                        GlobalScope.launch(defaultDispatcher) {
+                        GlobalScope.launch(AsyncDispatcher.default) {
                             // Get glucose data
                             val glucoseDataString = getGlucoseData(glucoseRetrievalSession!!)
                             if (null != glucoseDataString) {
-                                withContext(defaultDispatcher) {
+                                withContext(AsyncDispatcher.default) {
                                     // Process glucose data when all the async operations closed
                                     processGlucoseData(glucoseDataString)
                                 }

@@ -51,9 +51,10 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Accepts URIs that begin with "cgmfollower://login” -->
-                <data android:scheme="cgmfollower"
-                    android:host="login" />
+                <!-- Accepts URIs that begin with "https://cgmfollower?...” -->
+                <data android:scheme="https"
+                    android:host="cgmfollower"
+                    />
             </intent-filter>
         </activity>
         <activity

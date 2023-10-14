@@ -9,13 +9,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import ionut.andras.community.cgm.follower.LoginActivity
 import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.R
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 
 open class AppCompatActivityWrapper(private val menuLayoutId: Int? = null): AppCompatActivity() {
-    var defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
-    var mainDispatcher: CoroutineDispatcher = Dispatchers.Main
-
     override fun onCreate(savedInstanceState: Bundle?) {
         // Force Night mode before setting the layout
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
