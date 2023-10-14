@@ -68,7 +68,10 @@ class InviteFollowerActivity : AppCompatActivityWrapper(R.menu.invite_followers_
                     }
                     val receiversList = HashSet<String>(receiversListRO)
                     // Add receiver
-                    receiversList.add(receiverPhoneNumber)
+                    if (!receiversList.contains(receiverPhoneNumber)) {
+                        receiversList.add(receiverPhoneNumber)
+                    }
+                    Log.i("receiversList", receiversList.toString())
 
                     sharedPreferences.edit()
                         .putStringSet(UserPreferences.receiverPhoneNoList, receiversList)
