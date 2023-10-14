@@ -83,5 +83,5 @@
     <string name="infoFollowerMustStartAppFirst">"IMPORTANT:\nPlease ask the follower to start the app after installation\nin order to subscribe automatically to receive invites "</string>
     <!-- Regular expressions -->
     <string name="regexSmsWakeupMessageDeprecated">^(.+?):(.+?)\\-N(.+?)\\-PS(.*?)\\-PR(.+?) (.*)$</string>
-    <string name="regexSmsWakeupMessage">^https://cgmfollower/(.+?)\\?(.+?):(.+?) (.*)$</string>
+    <string name="regexSmsWakeupMessage">^https://cgmfollower/(.+?)\\?(.+?)=(.+?) (.*)$</string>
 </resources>

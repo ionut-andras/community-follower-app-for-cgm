@@ -11,6 +11,7 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
+import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.core.SessionManager
@@ -35,10 +36,11 @@ class LoginActivity : AppCompatActivityWrapper() {
         checkApplicationOptionalRequirements()
 
         checkStartedByIntent()
-        /*// Trigger SMS Received event manually for debug purpose only
-        // Create a new Intent object and specify the action.
+
+        // Trigger SMS Received event manually for debug purpose only
+        /*// Create a new Intent object and specify the action.
         val intent = Intent(SmsRetriever.SMS_RETRIEVED_ACTION)
-        intent.putExtra(SmsRetriever.EXTRA_SMS_MESSAGE, "ST:a7bf19cbe19a149e8a52b5a0042bd690 IeIw2DQg0Io")
+        intent.putExtra(SmsRetriever.EXTRA_SMS_MESSAGE, "https://cgmfollower/login?ST=a7bf19cbe19a149e8a52b5a0042bd690 IeIw2DQg0Io")
         val status = Status(CommonStatusCodes.SUCCESS)
         // CommonStatusCodes.SUCCESS as Status)
         intent.putExtra(SmsRetriever.EXTRA_STATUS,status)
@@ -101,14 +103,19 @@ class LoginActivity : AppCompatActivityWrapper() {
         val data: Uri? = intent?.data
 
         data?.let {
-            val userKey = it.query
-            Log.i("checkStartedByIntent", "$userKey")
-            val receivedMessageComponents = mutableListOf(
-                "login",
-                "ST",
-                userKey.toString()
-            )
-            SessionManager(applicationContext).recoverSessionFromSmsKey(receivedMessageComponents)
+            val userKey = it.getQueryParameter(Configuration().smsWakeupTriggerString)
+            userKey?.let {
+                Log.i("checkStartedByIntent", "$userKey")
+                val receivedMessageComponents = mutableListOf(
+                    "https://cgmfollower/login?ST=${userKey.toString()}} IeIw2DQg0Io",
+                    "login",
+                    "ST",
+                    userKey.toString()
+                )
+                SessionManager(applicationContext).recoverSessionFromSmsKey(
+                    receivedMessageComponents
+                )
+            }
         }
     }
 
