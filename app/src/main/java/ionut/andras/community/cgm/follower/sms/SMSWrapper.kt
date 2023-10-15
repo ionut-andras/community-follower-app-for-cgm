@@ -1,12 +1,30 @@
 package ionut.andras.community.cgm.follower.sms
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.telephony.SmsManager
 import android.telephony.TelephonyManager
 
+
 class SMSWrapper(private val applicationContext: Context) {
     fun sendTextSms(phoneNumber: String, message: String) {
+        // Create an Intent to start the default SMS app.
+        // Create an Intent to start the default SMS app.
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            setDataAndType(Uri.parse("sms:$phoneNumber"), "text/plain")
+            putExtra("sms_body", message)
+        }
+        // Set the phone number and message text.
+        if (intent.resolveActivity(applicationContext.packageManager) != null) {
+            // Start the default SMS app.
+            applicationContext.startActivity(intent)
+            // startActivity(applicationContext, intent, null)
+        }
+    }
+
+    fun sendTextSmsOrig(phoneNumber: String, message: String) {
         val telephonyManager = applicationContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
 
         if (telephonyManager.simState != TelephonyManager.SIM_STATE_READY) {
