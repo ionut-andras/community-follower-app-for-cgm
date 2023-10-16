@@ -1,6 +1,5 @@
 package ionut.andras.community.cgm.follower
 
-import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -92,10 +91,12 @@ class LoginActivity : AppCompatActivityWrapper() {
         /**
          * Check if minimum permissions needed by the application are requested from the user.
          */
+        /*@Obsolete
         PermissionHandler(this, applicationContext)
             .checkPermission(Manifest.permission.SEND_SMS, getString(R.string.permissionFriendlyNameSendSms), PermissionRequestCodes.SEND_SMS)
         PermissionHandler(this, applicationContext)
             .checkPermission(Manifest.permission.READ_PHONE_STATE, getString(R.string.permissionFriendlyNameReadPhoneState), PermissionRequestCodes.READ_PHONE_STATE)
+            */
     }
 
     private fun checkStartedByIntent() {

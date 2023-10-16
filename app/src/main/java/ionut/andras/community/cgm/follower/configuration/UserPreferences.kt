@@ -12,6 +12,6 @@ object UserPreferences {
     const val senderPhoneNo = "senderPhoneNo"
     const val receiverPhoneNo = "receiverPhoneNo"
     const val receiverPhoneNoList = "receiverPhoneNoList"
-    const val smsSecurityDelayWindow = "smsSecurityDelayWindow"
     const val runMode = "runMode"
+    const val debugModeSwitch = "debugModeSwitch"
 }

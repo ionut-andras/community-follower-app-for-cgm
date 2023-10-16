@@ -7,7 +7,9 @@ import android.view.View
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import ionut.andras.community.cgm.follower.R
+import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastSender
+import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 
 class ToastWrapper(context: Context?) : Toast(context) {
     private lateinit var appContext: Context
@@ -37,6 +39,15 @@ class ToastWrapper(context: Context?) : Toast(context) {
 
     fun displayInfoToast(text: String) {
         makeText(appContext, text, LENGTH_SHORT).show()
+    }
+
+    fun displayDebugToast(text: String) {
+        val sharedPreferences = SharedPreferencesFactory(appContext).getInstance()
+
+        val debugModeSwitch = sharedPreferences.getBoolean(UserPreferences.debugModeSwitch, false)
+        if (debugModeSwitch) {
+            makeText(appContext, text, LENGTH_SHORT).show()
+        }
     }
 
     fun showDialog(title: String, text: String, onClickListener: android.content.DialogInterface.OnClickListener) {

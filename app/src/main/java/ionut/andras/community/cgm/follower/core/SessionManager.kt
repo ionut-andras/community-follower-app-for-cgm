@@ -46,7 +46,7 @@ class SessionManager (private val applicationContext: Context) {
         // https://cgmfollower/login?<SMSWAKEUPMESSAGE>=<USERKEY> GOOGLE_PLAY_11_CHARACTERS_HASH
 
         val userKey:String? = receivedMessageComponents?.get(3)
-        ToastWrapper(applicationContext).displayInfoToast("SMS Extracted userKey = $userKey")
+        ToastWrapper(applicationContext).displayDebugToast("SMS Extracted userKey = $userKey")
 
         userKey?.let {
             GlobalScope.launch(AsyncDispatcher.default) {
@@ -74,10 +74,12 @@ class SessionManager (private val applicationContext: Context) {
                                 // Extract one-time code from the message and complete verification
                                 // by sending the code back to your server.
                                 // ToastWrapper(context).displayInfoToast(message)
-                                ToastWrapper(applicationContext).displayInfoToast("Extracted Session Id = $sessionId")
-                                ToastWrapper(applicationContext).displayInfoToast("Extracted Notifications Flag = $notificationsEnabled")
-                                ToastWrapper(applicationContext).displayInfoToast("Extracted senderPhoneNo = $senderPhoneNo")
-                                ToastWrapper(applicationContext).displayInfoToast("Extracted receiverPhoneNo = $receiverPhoneNo")
+                                /* @INFO: Only for internal testing...  */
+                                ToastWrapper(applicationContext).displayDebugToast("Extracted Session Id = $sessionId")
+                                ToastWrapper(applicationContext).displayDebugToast("Extracted Notifications Flag = $notificationsEnabled")
+                                ToastWrapper(applicationContext).displayDebugToast("Extracted senderPhoneNo = $senderPhoneNo")
+                                ToastWrapper(applicationContext).displayDebugToast("Extracted receiverPhoneNo = $receiverPhoneNo")
+
 
                                 val sharedPreferences =
                                     SharedPreferencesFactory(applicationContext).getInstance()

@@ -10,6 +10,7 @@ import com.google.android.gms.common.api.Status
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.constants.ApplicationRunMode
 import ionut.andras.community.cgm.follower.core.SessionManager
+import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.ApplicationRunModesHelper
 
 /**
@@ -22,7 +23,7 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         applicationContext = context
-        // ToastWrapper(context).displayInfoToast("SMS Received")
+        ToastWrapper(applicationContext).displayDebugToast("SMS Received")
         Log.i("SmsBroadcastReceiver", "SMS received: ${intent}")
 
         if (SmsRetriever.SMS_RETRIEVED_ACTION == intent.action) {
@@ -68,7 +69,7 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
                 }
                 CommonStatusCodes.TIMEOUT -> {
                     // Waiting for SMS timed out (5 minutes)
-                    // ToastWrapper(context).displayInfoToast("SMS Timeout")
+                    ToastWrapper(context).displayDebugToast("SMS Timeout")
                 }
             }
         }

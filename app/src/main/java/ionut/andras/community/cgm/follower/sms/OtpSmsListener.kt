@@ -24,11 +24,11 @@ class OtpSmsListener(context: Context) {
         // can be made blocking using Tasks.await(task, [timeout]);
         task.addOnSuccessListener {
             // Successfully started retriever, expect broadcast intent
-            ToastWrapper(context).displayInfoToast("Successfully started retriever")
+            ToastWrapper(context).displayDebugToast("Successfully started SMS retriever service")
         }
         task.addOnFailureListener {
             // Failed to start retriever, inspect Exception for more details
-            ToastWrapper(context).displayInfoToast("Failed to start retriever")
+            ToastWrapper(context).displayDebugToast("Failed to start SMS retriever service")
         }
     }
 }
