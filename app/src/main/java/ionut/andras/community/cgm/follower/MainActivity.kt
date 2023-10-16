@@ -63,11 +63,11 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Check application minimum requirements
-        checkApplicationMinimumRequirements()
-
         // Initialize application settings
         initApplicationSettings()
+
+        // Check application minimum requirements
+        checkApplicationMinimumRequirements()
 
         // Start the Glucose monitoring service
         startServiceGetAndProcessGlucoseData()
@@ -105,6 +105,16 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
         registerBroadcastReceivers(resumeFromBackground)
         resumeFromBackground = false
+
+        val notificationsEnabledInTheApp = !sharedPreferences.getBoolean(UserPreferences.disableNotifications, false)
+
+        if (notificationsEnabledInTheApp) {
+            if (!PermissionHandler(this, applicationContext).areNotificationsEnabled()) {
+                val toastText = getString(R.string.notificationsRequiredInTheApp)
+                ToastWrapper(applicationContext).displayInfoToast(toastText)
+                finish()
+            }
+        }
     }
 
     override fun onStop() {
@@ -207,6 +217,15 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
             .checkPermission(Manifest.permission.POST_NOTIFICATIONS, getString(R.string.permissionFriendlyNamePostNotifications), PermissionRequestCodes.GLUCOSE_VALUE_NOTIFICATION)
         PermissionHandler(this, applicationContext)
             .checkPermission(Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, getString(R.string.permissionFriendlyNameDisableBatteryOptimization), PermissionRequestCodes.BATTERY_OPTIMIZATION)
+
+        sharedPreferences.let{
+            val notificationsEnabledInTheApp = !it.getBoolean(UserPreferences.disableNotifications, false)
+            if (notificationsEnabledInTheApp) {
+                if (!PermissionHandler(this, applicationContext).areNotificationsEnabled()) {
+                    PermissionHandler(this, applicationContext).promptUserToEnableNotifications()
+                }
+            }
+        }
     }
 
     // Handle the permission result in onRequestPermissionsResult()

@@ -13,5 +13,5 @@ object UserPreferences {
     const val receiverPhoneNo = "receiverPhoneNo"
     const val receiverPhoneNoList = "receiverPhoneNoList"
     const val runMode = "runMode"
-    const val debugModeSwitch = "debugModeSwitch"
+    const val enableDebugMode = "enableDebugMode"
 }

@@ -34,10 +34,9 @@ class Configuration: Serializable {
     var disableNotificationSoundSeconds = 1800 // 30 mins
 
     var disableNotification = false
+    var enableDebugMode = false
 
     var smsWakeupTriggerString = "ST"
-    var smsRefreshAuthenticationString = "RT"
-    var smsSecurityDelayWindow = 3600*12 // 12 hours
 
     var smsGooglePlayVerificationHash = "IeIw2DQg0Io"
 }

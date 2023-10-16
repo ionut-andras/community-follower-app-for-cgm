@@ -11,6 +11,7 @@ import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.constants.ApplicationRunMode
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
+import ionut.andras.community.cgm.follower.permissions.PermissionHandler
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 
 class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_settings_menu) {
@@ -44,6 +45,10 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
 
         val runModeValue = sharedPreferences.getInt(UserPreferences.runMode, ApplicationRunMode.OWNER)
 
+        val enableDebugMode = findViewById<SwitchCompat>(R.id.enableDebugMode)
+        enableDebugMode.isChecked = sharedPreferences.getBoolean(UserPreferences.enableDebugMode, appConfiguration.enableDebugMode)
+        Log.i("Settings: enableDebugMode.isChecked", enableDebugMode.isChecked.toString())
+
         findViewById<EditText>(R.id.minDisplayableGlucoseValue).setText(appConfiguration.minDisplayableGlucoseValue.toString())
         findViewById<EditText>(R.id.maxDisplayableGlucoseValue).setText(appConfiguration.maxDisplayableGlucoseValue.toString())
 
@@ -57,6 +62,7 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
     private fun enableActivityListeners() {
         val autoCancelNotifications = findViewById<SwitchCompat>(R.id.autoCancelNotifications)
         val disableNotifications = findViewById<SwitchCompat>(R.id.disableNotifications)
+        val enableDebugMode = findViewById<SwitchCompat>(R.id.enableDebugMode)
         // sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
         sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
 
@@ -77,6 +83,20 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
             } else {
                 Log.i("SettingsActivityListener: UserPreferences.disableNotifications", false.toString())
                 sharedPreferences.edit().putBoolean(UserPreferences.disableNotifications, false).apply()
+
+                if (!PermissionHandler(this, applicationContext).areNotificationsEnabled()) {
+                    PermissionHandler(this, applicationContext).promptUserToEnableNotifications()
+                }
+            }
+        }
+
+        enableDebugMode.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                Log.i("SettingsActivityListener: UserPreferences.debugModeSwitch", true.toString())
+                sharedPreferences.edit().putBoolean(UserPreferences.enableDebugMode, true).apply()
+            } else {
+                Log.i("SettingsActivityListener: UserPreferences.debugModeSwitch", false.toString())
+                sharedPreferences.edit().putBoolean(UserPreferences.enableDebugMode, false).apply()
             }
         }
 

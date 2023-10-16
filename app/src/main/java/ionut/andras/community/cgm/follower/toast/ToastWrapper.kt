@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Toast
 import com.google.android.material.snackbar.Snackbar
 import ionut.andras.community.cgm.follower.R
+import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastSender
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
@@ -44,8 +45,8 @@ class ToastWrapper(context: Context?) : Toast(context) {
     fun displayDebugToast(text: String) {
         val sharedPreferences = SharedPreferencesFactory(appContext).getInstance()
 
-        val debugModeSwitch = sharedPreferences.getBoolean(UserPreferences.debugModeSwitch, false)
-        if (debugModeSwitch) {
+        val enableDebugMode = sharedPreferences.getBoolean(UserPreferences.enableDebugMode, Configuration().enableDebugMode)
+        if (enableDebugMode) {
             makeText(appContext, text, LENGTH_SHORT).show()
         }
     }

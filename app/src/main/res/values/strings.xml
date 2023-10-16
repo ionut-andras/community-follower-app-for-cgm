@@ -18,6 +18,7 @@
     <string name="normalGlucoseValue">Normal glucose value</string>
     <string name="autoCancelNotifications">Auto cancel notifications for HarmonyOS Lite</string>
     <string name="disableNotifications">Disable notifications</string>
+    <string name="enableDebugMode">Enable Debug Mode</string>
     <string name="buttonLoginText">Login</string>
     <string name="applicationsSettingsTitleText">Settings</string>
     <string name="applicationsInviteFollowerTitleText">Invite follower</string>
@@ -61,6 +62,7 @@
     <string name="textPhoneNumberNullEmptyInvalid">Please type in a valid phone number</string>
     <string name="messageInvalidUserKey">Invalid user key</string>
     <string name="messageUserKeyUnavailable">Could not recover user key from the cloud</string>
+    <string name="notificationsRequiredInTheApp">Please enable notifications to use this app</string>
     <!-- Labels / Hints -->
     <string name="hintGlucoseMinValueChart">Glucose min value (Chart)</string>
     <string name="hintEditGlucoseMinValueChart">Edit glucose min value (Chart)</string>
