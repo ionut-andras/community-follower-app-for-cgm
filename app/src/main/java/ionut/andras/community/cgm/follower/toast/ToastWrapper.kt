@@ -52,12 +52,16 @@ class ToastWrapper(context: Context?) : Toast(context) {
     }
 
     fun showDialog(title: String, text: String, onClickListener: android.content.DialogInterface.OnClickListener) {
-        val builder = AlertDialog.Builder(appContext)
-        builder.apply {
-            setTitle(title)
-            setMessage(text)
-            setPositiveButton(context.getString(R.string.textOk), onClickListener)
+        try {
+            val builder = AlertDialog.Builder(appContext)
+            builder.apply {
+                setTitle(title)
+                setMessage(text)
+                setPositiveButton(context.getString(R.string.textOk), onClickListener)
+            }
+            builder.create().show()
+        } catch (e: Exception) {
+            Log.i("showDialog > Exception", e.toString())
         }
-        builder.create().show()
     }
 }

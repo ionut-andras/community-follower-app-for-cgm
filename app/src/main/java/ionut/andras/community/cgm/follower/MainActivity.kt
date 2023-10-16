@@ -66,9 +66,6 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         // Initialize application settings
         initApplicationSettings()
 
-        // Check application minimum requirements
-        checkApplicationMinimumRequirements()
-
         // Start the Glucose monitoring service
         startServiceGetAndProcessGlucoseData()
 
@@ -93,6 +90,9 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
             enableActivityListeners()
 
             registerBroadcastReceivers()
+
+            // Check application minimum requirements
+            checkApplicationMinimumRequirements()
         } else {
             Log.i("MainActivity > onCreate", "Login needed. Display login form...")
             displayLoginForm()

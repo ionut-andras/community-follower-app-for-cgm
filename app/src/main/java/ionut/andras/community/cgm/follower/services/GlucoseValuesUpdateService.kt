@@ -97,11 +97,15 @@ class GlucoseValuesUpdateService : Service() {
     }
 
     private fun parseBroadcastExtraInfo(intent: Intent?) {
-        appConfiguration = getSerializableExtra(intent, "appConfiguration", Configuration::class.java)
-
-        if (!appConfiguration.dexcomSessionID.isNullOrEmpty()) {
-            Log.i("parseBroadcastExtraInfo", "SessionID available: ${appConfiguration.dexcomSessionID}")
-            glucoseRetrievalSession = appConfiguration.dexcomSessionID
+        try {
+            appConfiguration =
+                getSerializableExtra(intent, "appConfiguration", Configuration::class.java)
+            if (!appConfiguration.dexcomSessionID.isNullOrEmpty()) {
+                Log.i("parseBroadcastExtraInfo", "SessionID available: ${appConfiguration.dexcomSessionID}")
+                glucoseRetrievalSession = appConfiguration.dexcomSessionID
+            }
+        }catch (e: Exception) {
+            Log.i("parseBroadcastExtraInfo > Exception", e.toString())
         }
     }
 
@@ -150,6 +154,7 @@ class GlucoseValuesUpdateService : Service() {
         Log.i("stopServiceFromForeground", "Stopping...")
         stopService(intent)
         stopSelf()
+        unregisterReceiver(broadcastReceiver)
     }
 
     private fun userRequestRefresh(intent: Intent?) {
