@@ -7,6 +7,7 @@ import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.api.cgmfollowerbe.CgmFollowerBeApiRequestHandler
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.constants.ApplicationRunMode
+import ionut.andras.community.cgm.follower.constants.DexcomConstants
 import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.ApplicationRunModesHelper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
@@ -24,6 +25,7 @@ class SessionManager (private val applicationContext: Context) {
         val apiResponse = requestHandler.getSession(userKey)
         if (!apiResponse.errorOccurred()) {
             /*{
+                "geo": "us"
                 "session": "8dfe387c-a322-430f-9b82-c23965d427b8",
                 "notifications_enabled_flag": "0",
                 "phone_sender": "+40111111111",
@@ -32,9 +34,20 @@ class SessionManager (private val applicationContext: Context) {
             }*/
             apiResponse.data?.let {
                 val userSession = JSONObject(it)
+
+                // Setup base url based on geolocation
+                val geolocation: String? = userSession.getString("geo")
+                var baseUrl = DexcomConstants().baseUrlUsa
+                if (geolocation != DexcomConstants().usa) {
+                    if (!geolocation.isNullOrEmpty()) {
+                        baseUrl = DexcomConstants().baseUrlOutsideUsa
+                    }
+                }
+
                 // Save session for later use
                 sharedPreferences.edit()
                     .putString(UserPreferences.dexcomSessionId, userSession.getString("session"))
+                    .putString(DexcomConstants().baseUrlKey, baseUrl)
                     .apply()
                 // Update application settings
                 ApplicationSettingsWrapper(applicationContext).setNotificationStatus(userSession.getString("notifications_enabled_flag"))
@@ -55,6 +68,7 @@ class SessionManager (private val applicationContext: Context) {
                     authenticationData.data?.let {
                         withContext(AsyncDispatcher.main) {
                             /*{
+                                "geo": "us"
                                 "session": "8dfe387c-a322-430f-9b82-c23965d427b8",
                                 "notifications_enabled_flag": "0",
                                 "phone_sender": "+40111111111",
@@ -63,6 +77,7 @@ class SessionManager (private val applicationContext: Context) {
                             }*/
                             val authenticationJson = JSONObject(it)
                             if (!authenticationJson.isNull("session")) {
+                                val geolocation: String? = authenticationJson.getString("geo")
                                 val sessionId: String? = authenticationJson.getString("session")
                                 val notificationsEnabled: String? =
                                     authenticationJson.getString("notifications_enabled_flag")
@@ -75,6 +90,7 @@ class SessionManager (private val applicationContext: Context) {
                                 // by sending the code back to your server.
                                 // ToastWrapper(context).displayInfoToast(message)
                                 /* @INFO: Only for internal testing...  */
+                                ToastWrapper(applicationContext).displayDebugToast("Extracted Geo location = $geolocation")
                                 ToastWrapper(applicationContext).displayDebugToast("Extracted Session Id = $sessionId")
                                 ToastWrapper(applicationContext).displayDebugToast("Extracted Notifications Flag = $notificationsEnabled")
                                 ToastWrapper(applicationContext).displayDebugToast("Extracted senderPhoneNo = $senderPhoneNo")
@@ -84,6 +100,17 @@ class SessionManager (private val applicationContext: Context) {
                                 val sharedPreferences =
                                     SharedPreferencesFactory(applicationContext).getInstance()
                                 val runModeHelper = ApplicationRunModesHelper(applicationContext)
+
+                                // Setup base url based on geolocation
+                                var baseUrl = DexcomConstants().baseUrlUsa
+                                if (geolocation != DexcomConstants().usa) {
+                                    baseUrl = DexcomConstants().baseUrlOutsideUsa
+                                }
+                                if (!geolocation.isNullOrEmpty()) {
+                                    sharedPreferences.edit()
+                                        .putString(DexcomConstants().baseUrlKey, baseUrl)
+                                        .apply()
+                                }
 
                                 // Setup shared session
                                 if (!sessionId.isNullOrEmpty()) {

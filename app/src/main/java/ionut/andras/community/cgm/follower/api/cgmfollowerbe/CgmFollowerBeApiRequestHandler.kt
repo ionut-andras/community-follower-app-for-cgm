@@ -6,6 +6,7 @@ import ionut.andras.community.cgm.follower.api.ApiResponse
 import ionut.andras.community.cgm.follower.api.HttpRequestHandler
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.constants.CgmFollowerBeConstants
+import ionut.andras.community.cgm.follower.constants.DexcomConstants
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 import org.json.JSONObject
 
@@ -29,9 +30,11 @@ class CgmFollowerBeApiRequestHandler(private val applicationContext: Context): H
             senderPhoneNumber =
                 sharedPreferences.getString(UserPreferences.senderPhoneNo, "").toString()
         }
+        val baseUrl = sharedPreferences.getString(DexcomConstants().baseUrlKey, null)
 
         if (receiverPhoneNo.isNotEmpty() && receiverPhoneNo.isNotEmpty()) {
             /*{
+                "geo": "us"
                 "session": "8dfe387c-a322-430f-9b82-c23965d427b8",
                 "notifications_enabled_flag": "0",
                 "phone_sender": "+40111111111",
@@ -39,9 +42,16 @@ class CgmFollowerBeApiRequestHandler(private val applicationContext: Context): H
                 "app_hash": "5de6329f620f38f0eaddb58cbafce54f"
             }*/
 
+            // Detect geolocation
+            var geo = DexcomConstants().usa
+            if (baseUrl != DexcomConstants().baseUrlUsa) {
+                geo = DexcomConstants().outsideUsa
+            }
+
             // Build the JSON object
             val jsonBody = JSONObject()
 
+            jsonBody.put("geo", geo)
             jsonBody.put("session", sessionId)
             jsonBody.put("notifications_enabled_flag", 0)
             jsonBody.put("phone_sender", senderPhoneNumber)

@@ -15,7 +15,7 @@ class DexcomApiRequestsHandler (applicationContext: Context) : HttpRequestHandle
     private var sharedPreferences: SharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
 
     init {
-        val savedBaseUrl = sharedPreferences.getString("dexcom_base_url", null)
+        val savedBaseUrl = sharedPreferences.getString(DexcomConstants().baseUrlKey, null)
         if (null != savedBaseUrl) {
             baseUrl = savedBaseUrl
         }
@@ -42,12 +42,23 @@ class DexcomApiRequestsHandler (applicationContext: Context) : HttpRequestHandle
                 val errorData = JSONObject(it)
                 if (errorData.getString("Code") == "AccountPasswordInvalid") {
                     if (baseUrl == dexcomConstants.baseUrlUsa) {
-                        baseUrl = dexcomConstants.baseUrlOutUsa
+                        baseUrl = dexcomConstants.baseUrlOutsideUsa
                         authenticationApiResponse = authenticateWithUsernamePassword(username, password)
                         Log.i("authenticateWithUsernamePassword (Out USA)", authenticationApiResponse.toString())
                     }
                 }
             }
+        }
+
+        // Upon successful authentication save the user geolocation
+        if (baseUrl == dexcomConstants.baseUrlUsa) {
+            sharedPreferences.edit()
+                .putString(DexcomConstants().baseUrlKey, DexcomConstants().baseUrlUsa)
+                .apply()
+        } else {
+            sharedPreferences.edit()
+                .putString(DexcomConstants().baseUrlKey, DexcomConstants().baseUrlOutsideUsa)
+                .apply()
         }
 
         return authenticationApiResponse

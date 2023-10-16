@@ -2,7 +2,7 @@ package ionut.andras.community.cgm.follower.constants
 
 open class DexcomConstants () {
     var baseUrlUsa = "https://share2.dexcom.com"
-    var baseUrlOutUsa = "https://shareous1.dexcom.com"
+    var baseUrlOutsideUsa = "https://shareous1.dexcom.com"
     var authenticationEndpoint = "/ShareWebServices/Services/General/AuthenticatePublisherAccount"
     var loginByAccountId = "/ShareWebServices/Services/General/LoginPublisherAccountById"
     var getGlucoseValueUrl = "/ShareWebServices/Services/Publisher/ReadPublisherLatestGlucoseValues"
@@ -30,4 +30,9 @@ open class DexcomConstants () {
 
     val stepDisplayIntervalSeconds = 5 * 60
     val maxDisplayIntervalSeconds = 24 * 3600
+
+
+    val baseUrlKey = "dexcom_base_url"
+    val usa = "us"
+    val outsideUsa = "ous"
 }
