@@ -1,7 +1,8 @@
 package ionut.andras.community.cgm.follower.constants
 
 open class DexcomConstants () {
-    var baseUrl = "https://share2.dexcom.com"
+    var baseUrlUsa = "https://share2.dexcom.com"
+    var baseUrlOutUsa = "https://shareous1.dexcom.com"
     var authenticationEndpoint = "/ShareWebServices/Services/General/AuthenticatePublisherAccount"
     var loginByAccountId = "/ShareWebServices/Services/General/LoginPublisherAccountById"
     var getGlucoseValueUrl = "/ShareWebServices/Services/Publisher/ReadPublisherLatestGlucoseValues"

@@ -24,6 +24,7 @@ import ionut.andras.community.cgm.follower.constants.DexcomTrendsConversionMap
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.core.AsyncDispatcher
 import ionut.andras.community.cgm.follower.core.SessionManager
+import ionut.andras.community.cgm.follower.core.Validator
 import ionut.andras.community.cgm.follower.notifications.GlucoseNotificationData
 import ionut.andras.community.cgm.follower.permissions.PermissionHandler
 import ionut.andras.community.cgm.follower.permissions.PermissionRequestCodes
@@ -369,17 +370,25 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         // Log.i("Updating MainActivity views with", glucoseDataString)
         Log.i("performGlucoseDataChange", "Updating MainActivity view")
 
-        // Update glucose value and trend in the main screen
-        val glucoseNotificationData = updateGlucoseInformation(glucoseDataString)
+        if (!Validator().isEmptyGlucoseValueHistory(glucoseDataString)) {
+            // Update glucose value and trend in the main screen
+            val glucoseNotificationData = updateGlucoseInformation(glucoseDataString)
 
-        // Draw metrics history
-        plotGlucoseData(glucoseDataString)
+            // Draw metrics history
+            plotGlucoseData(glucoseDataString)
 
-        // Display the informational toast
-        displayToastGlucoseValue(glucoseNotificationData)
+            // Display the informational toast
+            displayToastGlucoseValue(glucoseNotificationData)
 
-        // Trigger online session update
-        updateFollowersAuthenticationInCloud()
+            // Trigger online session update
+            updateFollowersAuthenticationInCloud()
+        } else {
+            ToastWrapper(applicationContext).displayMessageToast(
+                findViewById(R.id.glucoseValue),
+                getString(R.string.noGlucoseHistoryData),
+                null
+            )
+        }
     }
 
     fun disableNotificationSoundForSeconds(intent: Intent, seconds: Int) {

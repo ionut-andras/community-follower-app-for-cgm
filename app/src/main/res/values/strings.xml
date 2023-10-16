@@ -55,6 +55,7 @@
     <!-- Messages -->
     <string name="messageLoginFailed">Invalid username or password. Please try again!</string>
     <string name="messageSupportedRegions">Currently, we support Dexcom Accounts from USA only!</string>
+    <string name="noGlucoseHistoryData">No data available!</string>
     <string name="textPermissionGranted">permission granted</string>
     <string name="textPermissionDenied">permission denied</string>
     <string name="textPermissionRequired">Permission required</string>

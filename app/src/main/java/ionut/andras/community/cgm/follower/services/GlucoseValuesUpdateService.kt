@@ -18,13 +18,16 @@ import ionut.andras.community.cgm.follower.alarms.DexcomAlarmType
 import ionut.andras.community.cgm.follower.api.dexcom.DexcomApiRequestsHandler
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
+import ionut.andras.community.cgm.follower.constants.DexcomConstants
 import ionut.andras.community.cgm.follower.constants.DexcomTrendsConversionMap
 import ionut.andras.community.cgm.follower.core.AsyncDispatcher
+import ionut.andras.community.cgm.follower.core.Validator
 import ionut.andras.community.cgm.follower.notifications.GlucoseNotificationData
 import ionut.andras.community.cgm.follower.notifications.NotificationsManager
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastActions
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastSender
 import ionut.andras.community.cgm.follower.sms.OtpSmsListener
+import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.DateTimeConversion
 import ionut.andras.community.cgm.follower.utils.DexcomDateTimeConversion
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
@@ -41,7 +44,7 @@ class GlucoseValuesUpdateService : Service() {
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
 
-    private val dexcomHandler = DexcomApiRequestsHandler()
+    private lateinit var dexcomHandler: DexcomApiRequestsHandler
 
     private var glucoseRetrievalSession: String? = null
 
@@ -70,6 +73,8 @@ class GlucoseValuesUpdateService : Service() {
     override fun onCreate() {
         super.onCreate()
         Log.i("GlucoseValuesUpdateService", "Creating the service...")
+
+        dexcomHandler = DexcomApiRequestsHandler(applicationContext)
 
         broadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context, intent: Intent) {
@@ -334,16 +339,17 @@ class GlucoseValuesUpdateService : Service() {
     private fun processGlucoseData(glucoseDataString: String) {
         Log.i("processGlucoseData:", "Starting...") //glucoseDataString)
 
-        val glucoseNotificationData = buildNotificationDataObject(glucoseDataString)
-
         // Broadcast information to update glucose value and trend in the main screen
         BroadcastSender(applicationContext, BroadcastActions.GLUCOSE_DATA_CHANGED)
             .addInfo(getString(R.string.variableNameGenericData), glucoseDataString)
             .broadcast()
 
-        // Sends the notification of the service
-        triggerNotification(glucoseNotificationData)
-        // sendInitialNotification(glucoseNotificationData)
+        if (!Validator().isEmptyGlucoseValueHistory(glucoseDataString)) {
+            val glucoseNotificationData = buildNotificationDataObject(glucoseDataString)
+
+            // Sends the notification of the service
+            triggerNotification(glucoseNotificationData)
+        }
     }
 
     /**
@@ -356,26 +362,38 @@ class GlucoseValuesUpdateService : Service() {
     private fun buildNotificationDataObject(glucoseDataString: String): GlucoseNotificationData {
         val glucoseData = JSONArray(glucoseDataString)
         // Log.i("getLatestGlucoseValues", glucoseData.toString());
+        var returnValue = GlucoseNotificationData("0", DexcomTrendsConversionMap.NONE, DexcomConstants().messageNow, arrayListOf())
+        if (glucoseData.length() > 0) {
+            // Glucose Value
+            val glucoseValue = glucoseData.getJSONObject(0).getString("Value")
 
-        // Glucose Value
-        val glucoseValue = glucoseData.getJSONObject(0).getString("Value")
+            // Glucose Date and Time
+            val timeOffsetFromCurrent = DexcomDateTimeConversion().getTimeOffsetFromCurrentDate(
+                glucoseData.getJSONObject(0).getString("DT").toString()
+            )
 
-        // Glucose Date and Time
-        val timeOffsetFromCurrent = DexcomDateTimeConversion().getTimeOffsetFromCurrentDate(glucoseData.getJSONObject(0).getString("DT").toString())
+            // Glucose Trend
+            val glucoseTrend = glucoseData.getJSONObject(0).getString("Trend").toString()
+            val trendSign = DexcomTrendsConversionMap.convert[glucoseTrend]
 
-        // Glucose Trend
-        val glucoseTrend = glucoseData.getJSONObject(0).getString("Trend").toString()
-        val trendSign = DexcomTrendsConversionMap.convert[glucoseTrend]
+            val glucoseRecentHistory: ArrayList<Int> = arrayListOf()
 
-        val glucoseRecentHistory: ArrayList<Int> = arrayListOf()
+            var prevValue = glucoseValue.toInt()
+            for (i in 1..appConfiguration.glucoseNotificationHistoryValues) {
+                glucoseRecentHistory.add(
+                    prevValue - glucoseData.getJSONObject(i).getString("Value").toInt()
+                )
+                prevValue = glucoseData.getJSONObject(i).getString("Value").toInt()
+            }
 
-        var prevValue = glucoseValue.toInt()
-        for (i in 1..appConfiguration.glucoseNotificationHistoryValues) {
-            glucoseRecentHistory.add(prevValue - glucoseData.getJSONObject(i).getString("Value").toInt())
-            prevValue = glucoseData.getJSONObject(i).getString("Value").toInt()
+            returnValue = GlucoseNotificationData(
+                glucoseValue,
+                trendSign.toString(),
+                timeOffsetFromCurrent,
+                glucoseRecentHistory
+            )
         }
-
-        return GlucoseNotificationData(glucoseValue, trendSign.toString(), timeOffsetFromCurrent, glucoseRecentHistory)
+        return returnValue
     }
 
     private fun sendInitialNotificationAndStartForegroundService(glucoseNotificationData: GlucoseNotificationData) {

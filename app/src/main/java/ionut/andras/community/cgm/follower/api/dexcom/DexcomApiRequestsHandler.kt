@@ -1,12 +1,25 @@
 package ionut.andras.community.cgm.follower.api.dexcom
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.util.Log
 import ionut.andras.community.cgm.follower.api.ApiResponse
 import ionut.andras.community.cgm.follower.api.HttpRequestHandler
 import ionut.andras.community.cgm.follower.constants.DexcomConstants
+import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 import org.json.JSONObject
 
-class DexcomApiRequestsHandler : HttpRequestHandler() {
+class DexcomApiRequestsHandler (applicationContext: Context) : HttpRequestHandler() {
     private var dexcomConstants: DexcomConstants = DexcomConstants()
+    private var baseUrl: String = dexcomConstants.baseUrlUsa
+    private var sharedPreferences: SharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
+
+    init {
+        val savedBaseUrl = sharedPreferences.getString("dexcom_base_url", null)
+        if (null != savedBaseUrl) {
+            baseUrl = savedBaseUrl
+        }
+    }
 
     /**
      * Authenticates with username and password in order to get the Account ID
@@ -15,14 +28,29 @@ class DexcomApiRequestsHandler : HttpRequestHandler() {
      */
     fun authenticateWithUsernamePassword(username: String, password: String) : ApiResponse {
         // Build the complete URL
-        val urlString = dexcomConstants.baseUrl + dexcomConstants.authenticationEndpoint
+        val urlString = baseUrl + dexcomConstants.authenticationEndpoint
 
         // Build JSON nody
         val jsonBody = JSONObject()
         jsonBody.put("accountName", username)
         jsonBody.put("password", password)
         jsonBody.put("applicationId", dexcomConstants.applicationId)
-        return postHttpRequest(dexcomConstants.httpHeadersArrayLogin, urlString, jsonBody)
+        var authenticationApiResponse = postHttpRequest(dexcomConstants.httpHeadersArrayLogin, urlString, jsonBody)
+        Log.i("authenticateWithUsernamePassword (USA)", authenticationApiResponse.toString())
+        if (authenticationApiResponse.errorOccurred()) {
+            authenticationApiResponse.error?.let{
+                val errorData = JSONObject(it)
+                if (errorData.getString("Code") == "AccountPasswordInvalid") {
+                    if (baseUrl == dexcomConstants.baseUrlUsa) {
+                        baseUrl = dexcomConstants.baseUrlOutUsa
+                        authenticationApiResponse = authenticateWithUsernamePassword(username, password)
+                        Log.i("authenticateWithUsernamePassword (Out USA)", authenticationApiResponse.toString())
+                    }
+                }
+            }
+        }
+
+        return authenticationApiResponse
     }
 
     /**
@@ -37,7 +65,7 @@ class DexcomApiRequestsHandler : HttpRequestHandler() {
         if (null != accountId) {
 
             // Build the complete URL
-            val urlString = dexcomConstants.baseUrl + dexcomConstants.loginByAccountId
+            val urlString = baseUrl + dexcomConstants.loginByAccountId
 
             // Build JSON nody
             val jsonBody = JSONObject()
@@ -68,7 +96,7 @@ class DexcomApiRequestsHandler : HttpRequestHandler() {
         if (null != sessionId) {
 
             // Build the complete URL
-            val urlString = dexcomConstants.baseUrl + dexcomConstants.getGlucoseValueUrl + "?sessionId=${sessionId}&minutes=${minutes}&maxCount=${count}"
+            val urlString = baseUrl + dexcomConstants.getGlucoseValueUrl + "?sessionId=${sessionId}&minutes=${minutes}&maxCount=${count}"
 
            returnValue = postHttpRequest(dexcomConstants.httpHeadersArrayResources, urlString, null)
         } else {

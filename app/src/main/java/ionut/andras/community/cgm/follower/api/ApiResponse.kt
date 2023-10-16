@@ -1,6 +1,6 @@
 package ionut.andras.community.cgm.follower.api
 
-class ApiResponse() {
+class ApiResponse {
     var data: String? = null
     var error: String? = null
     var exception: String? = null

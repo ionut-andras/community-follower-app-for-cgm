@@ -20,7 +20,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"/>
+            android:text="@string/app_name"
+            android:contentDescription="@string/app_name"
+            android:labelFor="@id/mainActivityActionToolbar"
+            />
     </androidx.appcompat.widget.Toolbar>
 
     <TextView
