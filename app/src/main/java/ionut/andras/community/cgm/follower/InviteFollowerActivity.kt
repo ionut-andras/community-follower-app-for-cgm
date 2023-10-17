@@ -29,6 +29,8 @@ class InviteFollowerActivity : AppCompatActivityWrapper(R.menu.invite_followers_
         initializeDefaultValues()
 
         enableActivityListeners()
+
+        displayInfoMessages()
     }
 
     private fun initializeDefaultValues () {
@@ -137,5 +139,11 @@ class InviteFollowerActivity : AppCompatActivityWrapper(R.menu.invite_followers_
             }
         }
         return inviteSent
+    }
+
+    private fun displayInfoMessages() {
+        val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
+        val existingFollowers = sharedPreferences.getStringSet(UserPreferences.receiverPhoneNoList, mutableSetOf())
+        ToastWrapper(applicationContext).displayDebugToast("$existingFollowers")
     }
 }
