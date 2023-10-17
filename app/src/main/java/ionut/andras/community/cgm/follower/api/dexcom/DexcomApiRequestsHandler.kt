@@ -36,7 +36,7 @@ class DexcomApiRequestsHandler (applicationContext: Context) : HttpRequestHandle
         jsonBody.put("password", password)
         jsonBody.put("applicationId", dexcomConstants.applicationId)
         var authenticationApiResponse = postHttpRequest(dexcomConstants.httpHeadersArrayLogin, urlString, jsonBody)
-        Log.i("authenticateWithUsernamePassword (USA)", authenticationApiResponse.toString())
+        Log.i("authenticateWithUsernamePassword (Attempt 1)", authenticationApiResponse.toString())
         if (authenticationApiResponse.errorOccurred()) {
             authenticationApiResponse.error?.let{
                 val errorData = JSONObject(it)
@@ -44,22 +44,21 @@ class DexcomApiRequestsHandler (applicationContext: Context) : HttpRequestHandle
                     if (baseUrl == dexcomConstants.baseUrlUsa) {
                         baseUrl = dexcomConstants.baseUrlOutsideUsa
                         authenticationApiResponse = authenticateWithUsernamePassword(username, password)
-                        Log.i("authenticateWithUsernamePassword (Out USA)", authenticationApiResponse.toString())
+                        Log.i("authenticateWithUsernamePassword (Attempt 2)", authenticationApiResponse.toString())
                     }
                 }
             }
         }
 
         // Upon successful authentication save the user geolocation
-        if (baseUrl == dexcomConstants.baseUrlUsa) {
-            sharedPreferences.edit()
-                .putString(DexcomConstants().baseUrlKey, DexcomConstants().baseUrlUsa)
-                .apply()
-        } else {
-            sharedPreferences.edit()
-                .putString(DexcomConstants().baseUrlKey, DexcomConstants().baseUrlOutsideUsa)
-                .apply()
-        }
+        val baseUrlGeolocation = EndpointsManagement().getDomainGeolocationZone(baseUrl)
+        sharedPreferences.edit()
+            .putString(DexcomConstants().baseUrlKey, baseUrl)
+            .putString(DexcomConstants().baseUrlGeolocationKey, baseUrlGeolocation )
+            .apply()
+
+        Log.i("authenticateWithUsernamePassword > baseUrl", baseUrl)
+        Log.i("authenticateWithUsernamePassword > baseUrlGeolocation", baseUrlGeolocation)
 
         return authenticationApiResponse
     }

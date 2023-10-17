@@ -33,6 +33,8 @@ open class DexcomConstants () {
 
 
     val baseUrlKey = "dexcom_base_url"
-    val usa = "us"
-    val outsideUsa = "ous"
+    val baseUrlGeolocationKey = "dexcom_base_url_geolocation"
+
+    val geolocationUsa = "us"
+    val geolocationOutsideUsa = "ous"
 }

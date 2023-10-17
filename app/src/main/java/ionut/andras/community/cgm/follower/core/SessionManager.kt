@@ -7,7 +7,6 @@ import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.api.cgmfollowerbe.CgmFollowerBeApiRequestHandler
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.constants.ApplicationRunMode
-import ionut.andras.community.cgm.follower.constants.DexcomConstants
 import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.ApplicationRunModesHelper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
@@ -36,6 +35,7 @@ class SessionManager (private val applicationContext: Context) {
     }
 
     private fun getSessionFromBackendByUserKey(userKey: String?) {
+        val applicationSettingsWrapper = ApplicationSettingsWrapper(applicationContext)
         userKey?.let {
             GlobalScope.launch(AsyncDispatcher.default) {
                 val authenticationData = CgmFollowerBeApiRequestHandler(applicationContext).getSession(it)
@@ -77,14 +77,8 @@ class SessionManager (private val applicationContext: Context) {
                                 val runModeHelper = ApplicationRunModesHelper(applicationContext)
 
                                 // Setup base url based on geolocation
-                                var baseUrl = DexcomConstants().baseUrlUsa
-                                if (geolocation != DexcomConstants().usa) {
-                                    baseUrl = DexcomConstants().baseUrlOutsideUsa
-                                }
-                                if (!geolocation.isNullOrEmpty()) {
-                                    sharedPreferences.edit()
-                                        .putString(DexcomConstants().baseUrlKey, baseUrl)
-                                        .apply()
+                                geolocation?.let {
+                                    applicationSettingsWrapper.setApplicationBaseUrlGeolocation(it)
                                 }
 
                                 // Setup shared session
@@ -96,9 +90,7 @@ class SessionManager (private val applicationContext: Context) {
 
                                 notificationsEnabled?.let {
                                     // Enable / Disable notifications
-                                    ApplicationSettingsWrapper(applicationContext).setNotificationStatus(
-                                        notificationsEnabled
-                                    )
+                                    applicationSettingsWrapper.setNotificationStatus(it)
                                 }
 
                                 // Save phone numbers from the Follower perspective

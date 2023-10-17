@@ -30,7 +30,7 @@ class CgmFollowerBeApiRequestHandler(private val applicationContext: Context): H
             senderPhoneNumber =
                 sharedPreferences.getString(UserPreferences.senderPhoneNo, "").toString()
         }
-        val baseUrl = sharedPreferences.getString(DexcomConstants().baseUrlKey, null)
+        val geo = sharedPreferences.getString(DexcomConstants().baseUrlGeolocationKey, DexcomConstants().geolocationUsa)
 
         if (receiverPhoneNo.isNotEmpty() && receiverPhoneNo.isNotEmpty()) {
             /*{
@@ -41,12 +41,6 @@ class CgmFollowerBeApiRequestHandler(private val applicationContext: Context): H
                 "phone_receiver": "+40222222222",
                 "app_hash": "5de6329f620f38f0eaddb58cbafce54f"
             }*/
-
-            // Detect geolocation
-            var geo = DexcomConstants().usa
-            if ((null != baseUrl) && (baseUrl != DexcomConstants().baseUrlUsa)) {
-                geo = DexcomConstants().outsideUsa
-            }
 
             // Build the JSON object
             val jsonBody = JSONObject()
