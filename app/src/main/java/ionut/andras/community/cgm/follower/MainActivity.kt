@@ -360,8 +360,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
             displayLoginForm(getString(R.string.messageLoginFailed))
         } else {
             Log.i("MainActivity > handleFailedAuthentication", "Run mode: FOLLOWER. Sending trying to recover session...")
-            SessionManager(applicationContext).recoverSessionsFromBackend(
-                CgmFollowerBeApiRequestHandler(applicationContext))
+            SessionManager(applicationContext).recoverSessionsFromBackend()
         }
     }
 

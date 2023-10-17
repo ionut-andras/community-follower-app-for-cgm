@@ -44,7 +44,7 @@ class CgmFollowerBeApiRequestHandler(private val applicationContext: Context): H
 
             // Detect geolocation
             var geo = DexcomConstants().usa
-            if (baseUrl != DexcomConstants().baseUrlUsa) {
+            if ((null != baseUrl) && (baseUrl != DexcomConstants().baseUrlUsa)) {
                 geo = DexcomConstants().outsideUsa
             }
 

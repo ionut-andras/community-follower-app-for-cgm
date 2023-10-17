@@ -17,42 +17,13 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 class SessionManager (private val applicationContext: Context) {
-    fun recoverSessionsFromBackend(requestHandler: CgmFollowerBeApiRequestHandler) {
+    fun recoverSessionsFromBackend() {
         val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
         val senderPhoneNo = sharedPreferences.getString(UserPreferences.senderPhoneNo, "")
         val receiverPhoneNo = sharedPreferences.getString(UserPreferences.receiverPhoneNo, "")
-        val userKey = "$senderPhoneNo-$receiverPhoneNo"
-        val apiResponse = requestHandler.getSession(userKey)
-        if (!apiResponse.errorOccurred()) {
-            /*{
-                "geo": "us"
-                "session": "8dfe387c-a322-430f-9b82-c23965d427b8",
-                "notifications_enabled_flag": "0",
-                "phone_sender": "+40111111111",
-                "phone_receiver": "+40222222222",
-                "app_hash": "5de6329f620f38f0eaddb58cbafce54f"
-            }*/
-            apiResponse.data?.let {
-                val userSession = JSONObject(it)
+        val userKey = Security().md5("$senderPhoneNo-$receiverPhoneNo")
 
-                // Setup base url based on geolocation
-                val geolocation: String? = userSession.getString("geo")
-                var baseUrl = DexcomConstants().baseUrlUsa
-                if (geolocation != DexcomConstants().usa) {
-                    if (!geolocation.isNullOrEmpty()) {
-                        baseUrl = DexcomConstants().baseUrlOutsideUsa
-                    }
-                }
-
-                // Save session for later use
-                sharedPreferences.edit()
-                    .putString(UserPreferences.dexcomSessionId, userSession.getString("session"))
-                    .putString(DexcomConstants().baseUrlKey, baseUrl)
-                    .apply()
-                // Update application settings
-                ApplicationSettingsWrapper(applicationContext).setNotificationStatus(userSession.getString("notifications_enabled_flag"))
-            }
-        }
+        getSessionFromBackendByUserKey(userKey)
     }
 
     fun recoverSessionFromSmsKey(receivedMessageComponents: List<String>?) {
@@ -61,6 +32,10 @@ class SessionManager (private val applicationContext: Context) {
         val userKey:String? = receivedMessageComponents?.get(3)
         ToastWrapper(applicationContext).displayDebugToast("SMS Extracted userKey = $userKey")
 
+        getSessionFromBackendByUserKey(userKey)
+    }
+
+    private fun getSessionFromBackendByUserKey(userKey: String?) {
         userKey?.let {
             GlobalScope.launch(AsyncDispatcher.default) {
                 val authenticationData = CgmFollowerBeApiRequestHandler(applicationContext).getSession(it)
@@ -119,15 +94,11 @@ class SessionManager (private val applicationContext: Context) {
                                         .apply()
                                 }
 
-                                // Enable / Disable notifications
-                                if ("1" == notificationsEnabled) {
-                                    sharedPreferences.edit()
-                                        .putBoolean(UserPreferences.disableNotifications, false)
-                                        .apply()
-                                } else {
-                                    sharedPreferences.edit()
-                                        .putBoolean(UserPreferences.disableNotifications, true)
-                                        .apply()
+                                notificationsEnabled?.let {
+                                    // Enable / Disable notifications
+                                    ApplicationSettingsWrapper(applicationContext).setNotificationStatus(
+                                        notificationsEnabled
+                                    )
                                 }
 
                                 // Save phone numbers from the Follower perspective
