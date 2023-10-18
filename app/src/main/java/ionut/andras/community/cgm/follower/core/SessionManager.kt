@@ -7,6 +7,8 @@ import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.api.cgmfollowerbe.CgmFollowerBeApiRequestHandler
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.constants.ApplicationRunMode
+import ionut.andras.community.cgm.follower.services.broadcast.BroadcastActions
+import ionut.andras.community.cgm.follower.services.broadcast.BroadcastSender
 import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.ApplicationRunModesHelper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
@@ -105,7 +107,7 @@ class SessionManager (private val applicationContext: Context) {
 
                                 // Enable Follower Mode
                                 Log.i(
-                                    "SmsBroadCastReceiver > processWakeUpSmsActionSessionSet",
+                                    "SessionManager > getSessionFromBackendByUserKey",
                                     "Switching application mode to FOLLOWER ..."
                                 )
                                 runModeHelper.switchRunModeTo(ApplicationRunMode.FOLLOWER)
@@ -115,11 +117,24 @@ class SessionManager (private val applicationContext: Context) {
                                         flags = Intent.FLAG_ACTIVITY_NEW_TASK
                                     }
                                 applicationContext.startActivity(redirectIntent)
+                            } else {
+                                Log.i("getSessionFromBackendByUserKey", "Authentication session is null")
+                                Log.i("getSessionFromBackendByUserKey", "Authentication data: ${authenticationData.data}")
                             }
                         }
+                    } ?: {
+                        Log.i("getSessionFromBackendByUserKey", "Authentication information is empty ")
+                        Log.i("getSessionFromBackendByUserKey", "Authentication data object: $authenticationData")
+                        BroadcastSender(applicationContext, BroadcastActions.USER_AUTHENTICATION_KEY_RETRIEVAL_FAILED).broadcast()
                     }
+                } else {
+                    Log.i("getSessionFromBackendByUserKey", "Error while getting authentication data: " + authenticationData.error)
+                    BroadcastSender(applicationContext, BroadcastActions.USER_AUTHENTICATION_KEY_RETRIEVAL_FAILED).broadcast()
                 }
             }
+        } ?: {
+            Log.i("getSessionFromBackendByUserKey", "User key is null")
+            BroadcastSender(applicationContext, BroadcastActions.USER_AUTHENTICATION_KEY_RETRIEVAL_FAILED).broadcast()
         }
     }
 }

@@ -1,6 +1,9 @@
 package ionut.andras.community.cgm.follower
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
@@ -9,19 +12,22 @@ import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.TextView
-import android.widget.Toast
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.core.AppCompatActivityWrapper
 import ionut.andras.community.cgm.follower.core.SessionManager
 import ionut.andras.community.cgm.follower.permissions.PermissionHandler
 import ionut.andras.community.cgm.follower.permissions.PermissionRequestCodes
+import ionut.andras.community.cgm.follower.services.broadcast.BroadcastActions
+import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
 
 class LoginActivity : AppCompatActivityWrapper() {
     private lateinit var emailText: TextView
     private lateinit var passwordText: TextView
     private lateinit var loginButton: Button
+    private val configuration: Configuration = Configuration()
+    private var broadcastReceiver: BroadcastReceiver? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +39,8 @@ class LoginActivity : AppCompatActivityWrapper() {
         showToastIfMessageAvailable(intent)
 
         checkApplicationOptionalRequirements()
+
+        registerBroadcastReceivers()
 
         checkStartedByIntent()
 
@@ -81,8 +89,7 @@ class LoginActivity : AppCompatActivityWrapper() {
         if (null != intent) {
             val toastMessage = intent.getStringExtra(getString(R.string.variableNameLoginFormMessage))
             if (!toastMessage.isNullOrEmpty()) {
-                val toast = Toast.makeText(applicationContext, toastMessage, Toast.LENGTH_LONG)
-                toast.show()
+                ToastWrapper(applicationContext).displayInfoToast(toastMessage)
             }
         }
     }
@@ -91,12 +98,30 @@ class LoginActivity : AppCompatActivityWrapper() {
         /**
          * Check if minimum permissions needed by the application are requested from the user.
          */
-        /*@Obsolete
-        PermissionHandler(this, applicationContext)
-            .checkPermission(Manifest.permission.SEND_SMS, getString(R.string.permissionFriendlyNameSendSms), PermissionRequestCodes.SEND_SMS)
-        PermissionHandler(this, applicationContext)
-            .checkPermission(Manifest.permission.READ_PHONE_STATE, getString(R.string.permissionFriendlyNameReadPhoneState), PermissionRequestCodes.READ_PHONE_STATE)
-            */
+    }
+
+    private fun registerBroadcastReceivers() {
+        Log.i("LoginActivity > registerBroadcastReceivers", "Starting...")
+
+        if ((null == broadcastReceiver)) {
+            Log.i("LoginActivity > registerBroadcastReceivers", "Registering broadcast receiver...")
+            broadcastReceiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    Log.i("MainActivity > registerBroadcastReceivers", "Received broadcast: " + intent.action)
+                    // Identify broadcast operation
+                    when (intent.action) {
+                        BroadcastActions.USER_AUTHENTICATION_KEY_RETRIEVAL_FAILED -> handleFailedUserAuthenticationKeyRetrieval()
+                        BroadcastActions.AUTHENTICATION_SESSION_SETUP_FAILED -> handleFailedAuthenticationSessionSetup()
+                        else -> {}
+                    }
+                }
+            }
+
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.USER_AUTHENTICATION_KEY_RETRIEVAL_FAILED), RECEIVER_NOT_EXPORTED)
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.AUTHENTICATION_SESSION_SETUP_FAILED), RECEIVER_NOT_EXPORTED)
+        } else {
+            Log.i("LoginActivity > registerBroadcastReceivers", "Skip broadcast receiver registration...")
+        }
     }
 
     private fun checkStartedByIntent() {
@@ -104,13 +129,22 @@ class LoginActivity : AppCompatActivityWrapper() {
         val data: Uri? = intent?.data
 
         data?.let {
+            Log.i("checkStartedByIntent", "Application started by clicking Authentication link in SMS")
+
             val userKey = it.getQueryParameter(Configuration().smsWakeupTriggerString)
             userKey?.let {
-                Log.i("checkStartedByIntent", "$userKey")
+                Log.i("checkStartedByIntent", "User Key: $userKey")
+                val url = getString(R.string.autologinUrlPrefix) +
+                        "?" +
+                        configuration.smsWakeupTriggerString +
+                        "=" +
+                        userKey.toString() +
+                        " " +
+                        configuration.smsGooglePlayVerificationHash
                 val receivedMessageComponents = mutableListOf(
-                    "https://cgmfollower/login?ST=${userKey.toString()}} IeIw2DQg0Io",
+                    url,
                     "login",
-                    "ST",
+                    configuration.smsWakeupTriggerString,
                     userKey.toString()
                 )
                 SessionManager(applicationContext).recoverSessionFromSmsKey(
@@ -139,5 +173,13 @@ class LoginActivity : AppCompatActivityWrapper() {
                     .onRequestPermissionResult(getString(R.string.permissionFriendlyNameReadPhoneState), grantResults)
             }
         }
+    }
+
+    private fun handleFailedUserAuthenticationKeyRetrieval() {
+        ToastWrapper(applicationContext).displayInfoToast(getString(R.string.messageUserKeyUnavailable))
+    }
+
+    private fun handleFailedAuthenticationSessionSetup() {
+
     }
 }

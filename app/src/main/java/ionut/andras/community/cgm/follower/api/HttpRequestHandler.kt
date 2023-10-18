@@ -58,7 +58,7 @@ open class HttpRequestHandler {
                 }
 
                 httpHeadersArray.map {
-                    Log.i("httpRequest > httpHeadersArray > $it", it.trim())
+                    Log.i("httpRequest > httpHeadersArray", it.trim())
                 }
 
                 // There is a known issue in the Android Kotlin HttpsURLConnection class
