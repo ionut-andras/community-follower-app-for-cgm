@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i("MainActivity", "onCreate")
 
         // Initialize application settings
         initApplicationSettings()
@@ -184,6 +185,8 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
     }
 
     private fun initApplicationSettings() {
+        Log.i("MainActivity", "initApplicationSettings")
+
         // sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
         sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
 
@@ -254,6 +257,8 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
     }
 
     private fun startServiceGetAndProcessGlucoseData() {
+        Log.i("MainActivity", "startServiceGetAndProcessGlucoseData")
+
         val intent = Intent(applicationContext, GlucoseValuesUpdateService::class.java)
         intent.putExtra("appConfiguration", appConfiguration)
         intent.putExtra(GlucoseValuesUpdateService.ACTION, GlucoseValuesUpdateService.START_FOREGROUND_SERVICE)

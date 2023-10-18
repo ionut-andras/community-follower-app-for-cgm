@@ -27,7 +27,6 @@ import ionut.andras.community.cgm.follower.notifications.NotificationsManager
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastActions
 import ionut.andras.community.cgm.follower.services.broadcast.BroadcastSender
 import ionut.andras.community.cgm.follower.sms.OtpSmsListener
-import ionut.andras.community.cgm.follower.toast.ToastWrapper
 import ionut.andras.community.cgm.follower.utils.DateTimeConversion
 import ionut.andras.community.cgm.follower.utils.DexcomDateTimeConversion
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
@@ -109,7 +108,7 @@ class GlucoseValuesUpdateService : Service() {
                 Log.i("parseBroadcastExtraInfo", "SessionID available: ${appConfiguration.dexcomSessionID}")
                 glucoseRetrievalSession = appConfiguration.dexcomSessionID
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             Log.i("parseBroadcastExtraInfo > Exception", e.toString())
         }
     }
@@ -269,11 +268,16 @@ class GlucoseValuesUpdateService : Service() {
      */
     private fun authenticate(): String? {
         Log.i("Authenticate", "Running Authenticate routine")
+        val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
+
+        val username = sharedPreferences.getString(UserPreferences.loginEmail, null)
+        val password = sharedPreferences.getString(UserPreferences.loginPassword, null)
         var accountId: String? = null
-        if (!appConfiguration.username.isNullOrEmpty() && !appConfiguration.password.isNullOrEmpty()) {
+
+        if (!username.isNullOrEmpty() && !password.isNullOrEmpty()) {
             val apiResponse = dexcomHandler.authenticateWithUsernamePassword(
-                appConfiguration.username!!,
-                appConfiguration.password!!
+                username!!,
+                password!!
             )
             if (apiResponse.isSuccess()) {
                 accountId = apiResponse.data.toString().trim('"')
