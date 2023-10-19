@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-feature android:name="android.hardware.telephony" android:required="true" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="true" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -20,6 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CGMFollower"
         tools:targetApi="31">
+        <activity
+            android:name=".LoadingAuthenticationActivity"
+            android:exported="false" />
 
         <service
             android:name=".services.GlucoseValuesUpdateService"
@@ -46,12 +51,13 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Accepts URIs that begin with "https://cgmfollower?...” -->
-                <data android:scheme="https"
+                <data
                     android:host="cgmfollower"
-                    />
+                    android:scheme="https" />
             </intent-filter>
         </activity>
         <activity
@@ -94,7 +100,6 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
         <!--
         Important: You can detect that the broadcast intent is from SMS Retriever API by adding the
         com.google.android.gms.auth.api.phone.permission.SEND
@@ -107,8 +112,8 @@
         -->
         <receiver
             android:name=".sms.SmsBroadcastReceiver"
-            android:exported="true"
             android:enabled="true"
+            android:exported="true"
             android:permission="com.google.android.gms.auth.api.phone.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
