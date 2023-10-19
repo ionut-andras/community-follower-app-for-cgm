@@ -74,11 +74,10 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         // Initialize application settings
         initApplicationSettings()
 
-        // Start the Glucose monitoring service
-        startServiceGetAndProcessGlucoseData()
-
         if (!displayLoginFormNeeded()) {
             Log.i("MainActivity > onCreate", "Login form not needed. Continue...")
+            // Start the Glucose monitoring service
+            startServiceGetAndProcessGlucoseData()
 
             // Setup design elements
             setContentView(R.layout.activity_main)
