@@ -24,7 +24,8 @@ class SmsBroadcastReceiver: BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         applicationContext = context
         ToastWrapper(applicationContext).displayDebugToast("SMS Received")
-        Log.i("SmsBroadcastReceiver", "SMS received: ${intent}")
+        Log.i("SmsBroadcastReceiver", "SMS received: $intent")
+        Log.i("SmsBroadcastReceiver", "Intent action: ${intent.action}")
 
         if (SmsRetriever.SMS_RETRIEVED_ACTION == intent.action) {
             val extras = intent.extras ?: return

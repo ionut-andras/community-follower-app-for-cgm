@@ -38,7 +38,7 @@ class DexcomApiRequestsHandler (applicationContext: Context) : HttpRequestHandle
         var authenticationApiResponse = postHttpRequest(dexcomConstants.httpHeadersArrayLogin, urlString, jsonBody)
         Log.i("authenticateWithUsernamePassword (Attempt 1)", authenticationApiResponse.toString())
         if (authenticationApiResponse.errorOccurred()) {
-            authenticationApiResponse.error?.let{
+            authenticationApiResponse.getError()?.let{
                 val errorData = JSONObject(it)
                 if (errorData.getString("Code") == "AccountPasswordInvalid") {
                     if (baseUrl == dexcomConstants.baseUrlUsa) {
@@ -85,7 +85,7 @@ class DexcomApiRequestsHandler (applicationContext: Context) : HttpRequestHandle
 
             returnValue = postHttpRequest(dexcomConstants.httpHeadersArrayLogin, urlString, jsonBody)
         } else {
-            returnValue.error = dexcomConstants.messageInvalidAccountId
+            returnValue.setError(dexcomConstants.messageInvalidAccountId)
         }
 
         return returnValue
@@ -110,7 +110,7 @@ class DexcomApiRequestsHandler (applicationContext: Context) : HttpRequestHandle
 
            returnValue = postHttpRequest(dexcomConstants.httpHeadersArrayResources, urlString, null)
         } else {
-            returnValue.error = dexcomConstants.messageInvalidSessionId
+            returnValue.setError(dexcomConstants.messageInvalidSessionId)
         }
         return returnValue
     }

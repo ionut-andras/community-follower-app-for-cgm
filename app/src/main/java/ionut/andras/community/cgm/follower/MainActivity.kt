@@ -7,6 +7,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Html
 import android.util.Log
 import android.view.Menu
@@ -61,6 +63,10 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
     private var resumeFromBackground: Boolean = false
 
+    private var handlerSessionRecoverFromBackend = Handler(Looper.getMainLooper())
+    private var tokenForHandlerSessionRecoverFromBackend = "tokenForHandlerSessionRecoverFromBackend"
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i("MainActivity", "onCreate")
@@ -91,7 +97,8 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
             enableActivityListeners()
 
-            registerBroadcastReceivers()
+            // Called in MainActivity.onResume
+            // registerBroadcastReceivers()
 
             // Check application minimum requirements
             checkApplicationMinimumRequirements()
@@ -340,6 +347,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
                     // Identify broadcast operation
                     when (intent.action) {
                         BroadcastActions.AUTHENTICATION_FAILED -> handleFailedAuthentication()
+                        BroadcastActions.INVALID_SESSION -> handleFailedAuthenticationInvalidSession()
                         BroadcastActions.GLUCOSE_DATA_CHANGED -> performGlucoseDataChange(intent)
                         BroadcastActions.TOASTER_OK_GLUCOSE_VALUE -> disableNotificationSoundForSeconds(intent, appConfiguration.disableNotificationSoundSeconds)
                         else -> {}
@@ -348,6 +356,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
             }
 
             registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.AUTHENTICATION_FAILED), RECEIVER_NOT_EXPORTED)
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.INVALID_SESSION), RECEIVER_NOT_EXPORTED)
             registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.GLUCOSE_DATA_CHANGED), RECEIVER_NOT_EXPORTED)
             registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TOASTER_OK_GLUCOSE_VALUE), RECEIVER_NOT_EXPORTED)
         } else {
@@ -366,6 +375,25 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         } else {
             Log.i("MainActivity > handleFailedAuthentication", "Run mode: FOLLOWER. Sending trying to recover session...")
             SessionManager(applicationContext).recoverSessionsFromBackend()
+        }
+    }
+
+    private fun handleFailedAuthenticationInvalidSession(){
+        val retrySeconds = appConfiguration.glucoseAutomaticUpdateMiliseconds / 1000
+        Log.i("MainActivity > handleFailedAuthenticationInvalidSession", "Invalid session")
+
+        Log.i("MainActivity > handleFailedAuthenticationInvalidSession", "Stopping any current handlers...")
+        try {
+            handlerSessionRecoverFromBackend.removeCallbacksAndMessages(
+                tokenForHandlerSessionRecoverFromBackend
+            )
+            Log.i("MainActivity > handleFailedAuthenticationInvalidSession", "Will try again in $retrySeconds seconds")
+            val runnable = Runnable {
+                SessionManager(applicationContext).recoverSessionsFromBackend()
+            }
+            handlerSessionRecoverFromBackend.postDelayed(runnable, tokenForHandlerSessionRecoverFromBackend, appConfiguration.glucoseAutomaticUpdateMiliseconds)
+        } catch (e: Exception) {
+            Log.i("MainActivity > handleFailedAuthenticationInvalidSession", "Stopping current handler failed. Skip creating new attempts for application safe...")
         }
     }
 

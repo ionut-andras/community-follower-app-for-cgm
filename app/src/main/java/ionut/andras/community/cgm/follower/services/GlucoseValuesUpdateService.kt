@@ -15,7 +15,9 @@ import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.alarms.DexcomAlarmManager
 import ionut.andras.community.cgm.follower.alarms.DexcomAlarmType
+import ionut.andras.community.cgm.follower.api.ApiResponse
 import ionut.andras.community.cgm.follower.api.dexcom.DexcomApiRequestsHandler
+import ionut.andras.community.cgm.follower.api.dexcom.DexcomErrorCodes
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.constants.DexcomConstants
@@ -56,6 +58,7 @@ class GlucoseValuesUpdateService : Service() {
     private lateinit var broadcastReceiver: BroadcastReceiver
 
     private var isServiceRunning = false
+    private lateinit var apiResponse: ApiResponse
 
     companion object{
         // Action
@@ -172,6 +175,21 @@ class GlucoseValuesUpdateService : Service() {
         temporaryDisableNotificationTimestamp = DateTimeConversion().getCurrentTimestamp()
     }
 
+    private fun getApiResponseErrorCode(): String? {
+        var errorCode: String? = null
+        val errorData = apiResponse.getErrorData()
+        try{
+            if (null != errorData) {
+                if (errorData.has("Code")) {
+                    errorCode = errorData.getString("Code")
+                }
+            }
+        } catch (e: Exception) {
+            errorCode = null
+        }
+        return errorCode
+    }
+
     /**
      * Tries to get the glucose data in an optimized way.
      *
@@ -187,9 +205,17 @@ class GlucoseValuesUpdateService : Service() {
             GlobalScope.launch (AsyncDispatcher.default) {
                 glucoseDataString = getGlucoseData(glucoseRetrievalSession!!)
                 if (glucoseDataString.isNullOrEmpty()) {
+                    // If the retrieval failed,
+                    // - try to identify why it fails before running get glucose data using a full flow
+                    when (getApiResponseErrorCode()) {
+                        DexcomErrorCodes.SESSION_NOT_FOUND -> {
+                            broadcastLoginFailedSessionNotFound()
+                        }
 
-                    // If the retrieval failed, try to get glucose data by running a full flow
-                    getAndProcessUserGlucoseData()
+                        else -> {
+                            getAndProcessUserGlucoseData()
+                        }
+                    }
                 } else {
                     withContext(AsyncDispatcher.default) {
 
@@ -247,7 +273,7 @@ class GlucoseValuesUpdateService : Service() {
                         // we need to clear credentials only when thread finishes,
                         // and not at the end of getAndProcessUserGlucoseData
                         clearStoredCredentials()
-                        broadcastLoginFailed()
+                        broadcastLoginFailedUsernamePassword()
                     }
                 }
             } else {
@@ -256,7 +282,7 @@ class GlucoseValuesUpdateService : Service() {
                 // we need to clear credentials only when thread finishes,
                 // and not at the end of getAndProcessUserGlucoseData
                 clearStoredCredentials()
-                broadcastLoginFailed()
+                broadcastLoginFailedUsernamePassword()
             }
         }
     }
@@ -273,9 +299,10 @@ class GlucoseValuesUpdateService : Service() {
         val username = sharedPreferences.getString(UserPreferences.loginEmail, null)
         val password = sharedPreferences.getString(UserPreferences.loginPassword, null)
         var accountId: String? = null
-
+        // Initialize API Response before use
+        apiResponse = ApiResponse()
         if (!username.isNullOrEmpty() && !password.isNullOrEmpty()) {
-            val apiResponse = dexcomHandler.authenticateWithUsernamePassword(
+            apiResponse = dexcomHandler.authenticateWithUsernamePassword(
                 username!!,
                 password!!
             )
@@ -300,8 +327,10 @@ class GlucoseValuesUpdateService : Service() {
     private fun authorize(accountId: String): String? {
         Log.i("Authorize", "Running Authorize routine")
         var sessionId: String? = null
+        // Initialize API Response before use
+        apiResponse = ApiResponse()
         if(accountId.isNotEmpty() && !appConfiguration.password.isNullOrEmpty()) {
-            val apiResponse = dexcomHandler.loginWithAccountId(
+            apiResponse = dexcomHandler.loginWithAccountId(
                 accountId,
                 appConfiguration.password!!
             )
@@ -320,8 +349,10 @@ class GlucoseValuesUpdateService : Service() {
         Log.i("getGlucoseData", "Running Get Glucose Data routine")
 
         var glucoseDataString: String? = null
+        // Initialize API Response before use
+        apiResponse = ApiResponse()
         if (!sessionId.isNullOrEmpty()) {
-            val apiResponse = dexcomHandler.getLatestGlucoseValues(
+            apiResponse = dexcomHandler.getLatestGlucoseValues(
                 sessionId,
                 appConfiguration.glucoseHistoryMinutesBack,
                 appConfiguration.glucoseHistoryNumberOfMetrics
@@ -540,9 +571,16 @@ class GlucoseValuesUpdateService : Service() {
             .apply()
     }
 
-    private fun broadcastLoginFailed() {
+    private fun broadcastLoginFailedUsernamePassword() {
         // Broadcast command to redirect to login with message
         BroadcastSender(applicationContext, BroadcastActions.AUTHENTICATION_FAILED)
+            .addInfo(getString(R.string.variableNameLoginFailed), "true")
+            .broadcast()
+    }
+
+    private fun broadcastLoginFailedSessionNotFound() {
+        // Broadcast command to redirect to login with message
+        BroadcastSender(applicationContext, BroadcastActions.INVALID_SESSION)
             .addInfo(getString(R.string.variableNameLoginFailed), "true")
             .broadcast()
     }

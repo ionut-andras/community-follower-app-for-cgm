@@ -26,7 +26,7 @@ internal class DexcomApiResponseTest {
     @Test
     fun errorOccurred() {
         assert(!SUT.errorOccurred())
-        SUT.error = "0000"
+        SUT.setError("0000")
         assert(SUT.errorOccurred())
     }
 

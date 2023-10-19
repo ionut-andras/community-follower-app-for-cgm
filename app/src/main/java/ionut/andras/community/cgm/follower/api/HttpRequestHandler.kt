@@ -80,10 +80,10 @@ open class HttpRequestHandler {
                     }
                     HttpsURLConnection.HTTP_INTERNAL_ERROR -> {
                         // Receive response as inputStream
-                        returnValue.error = connection.errorStream.bufferedReader().readText()
+                        returnValue.setError(connection.errorStream.bufferedReader().readText())
                     }
                     else -> {
-                        returnValue.error = connection.responseMessage
+                        returnValue.setError(connection.responseMessage)
                     }
                 }
 

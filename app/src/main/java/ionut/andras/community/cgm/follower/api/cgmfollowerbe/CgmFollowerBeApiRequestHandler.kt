@@ -57,7 +57,7 @@ class CgmFollowerBeApiRequestHandler(private val applicationContext: Context): H
             // Perform the HTTP call
             returnValue = postHttpRequest(cgmFollowerBeConstants.httpHeadersArray, urlString, jsonBody)
         } else {
-            returnValue.error = applicationContext.getString(R.string.textPhoneNumberNullEmptyInvalid)
+            returnValue.setError(applicationContext.getString(R.string.textPhoneNumberNullEmptyInvalid))
         }
         return returnValue
     }
@@ -77,7 +77,7 @@ class CgmFollowerBeApiRequestHandler(private val applicationContext: Context): H
             // Perform the HTTP cal
             returnValue = getHttpRequest(cgmFollowerBeConstants.httpHeadersArray, urlString, null)
         } else {
-            returnValue.error = applicationContext.getString(R.string.messageInvalidUserKey)
+            returnValue.setError(applicationContext.getString(R.string.messageInvalidUserKey))
         }
         return returnValue
     }

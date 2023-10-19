@@ -1,10 +1,34 @@
 package ionut.andras.community.cgm.follower.api
 
+import org.json.JSONObject
+
 class ApiResponse {
     var data: String? = null
-    var error: String? = null
+    private var error: String? = null
+    private var errorData: JSONObject? = null
     var exception: String? = null
     var noInternetConnection: Boolean = false
+
+    fun setError(errorString: String) {
+        error = errorString
+        errorData = try {
+            if (errorString.startsWith("{")) {
+                JSONObject(errorString)
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun getError(): String? {
+        return error
+    }
+
+    fun getErrorData(): JSONObject? {
+        return errorData
+    }
 
     fun isSuccess(): Boolean {
         return (null != data)
@@ -23,6 +47,6 @@ class ApiResponse {
     }
 
     override fun toString(): String {
-        return "{data: $data, error: $error, exception: $exception, noInternetConnection: $noInternetConnection}"
+        return "{data: $data, error: $error, errorData: $errorData, exception: $exception, noInternetConnection: $noInternetConnection}"
     }
 }

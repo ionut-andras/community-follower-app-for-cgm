@@ -4,6 +4,7 @@ object BroadcastActions {
     const val STOP_FOREGROUND_SERVICE = "ionut.andras.community.cgm.follower.STOP_FOREGROUND_SERVICE"
 
     const val AUTHENTICATION_FAILED = "ionut.andras.community.cgm.follower.AUTHENTICATION_FAILED"
+    const val INVALID_SESSION = "ionut.andras.community.cgm.follower.INVALID_SESSION"
     const val USER_AUTHENTICATION_KEY_RETRIEVAL_FAILED = "ionut.andras.community.cgm.follower.USER_AUTHENTICATION_KEY_RETRIEVAL_FAILED"
     const val AUTHENTICATION_SESSION_SETUP_FAILED = "ionut.andras.community.cgm.follower.AUTHENTICATION_SESSION_SETUP_FAILED"
 

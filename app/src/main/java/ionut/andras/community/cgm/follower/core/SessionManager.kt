@@ -19,6 +19,8 @@ import org.json.JSONObject
 
 class SessionManager (private val applicationContext: Context) {
     fun recoverSessionsFromBackend() {
+        Log.i("recoverSessionsFromBackend", "Starting...")
+
         val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
         val senderPhoneNo = sharedPreferences.getString(UserPreferences.senderPhoneNo, "")
         val receiverPhoneNo = sharedPreferences.getString(UserPreferences.receiverPhoneNo, "")
@@ -28,6 +30,8 @@ class SessionManager (private val applicationContext: Context) {
     }
 
     fun recoverSessionFromSmsKey(receivedMessageComponents: List<String>?) {
+        Log.i("recoverSessionFromSmsKey", "Starting...")
+
         // https://cgmfollower/login?<SMSWAKEUPMESSAGE>=<USERKEY> GOOGLE_PLAY_11_CHARACTERS_HASH
 
         val userKey:String? = receivedMessageComponents?.get(3)
@@ -37,6 +41,8 @@ class SessionManager (private val applicationContext: Context) {
     }
 
     private fun getSessionFromBackendByUserKey(userKey: String?) {
+        Log.i("getSessionFromBackendByUserKey", "Starting...")
+
         val applicationSettingsWrapper = ApplicationSettingsWrapper(applicationContext)
         userKey?.let {
             GlobalScope.launch(AsyncDispatcher.default) {
@@ -128,7 +134,7 @@ class SessionManager (private val applicationContext: Context) {
                         BroadcastSender(applicationContext, BroadcastActions.USER_AUTHENTICATION_KEY_RETRIEVAL_FAILED).broadcast()
                     }
                 } else {
-                    Log.i("getSessionFromBackendByUserKey", "Error while getting authentication data: " + authenticationData.error)
+                    Log.i("getSessionFromBackendByUserKey", "Error while getting authentication data: " + authenticationData.getError())
                     BroadcastSender(applicationContext, BroadcastActions.USER_AUTHENTICATION_KEY_RETRIEVAL_FAILED).broadcast()
                 }
             }
