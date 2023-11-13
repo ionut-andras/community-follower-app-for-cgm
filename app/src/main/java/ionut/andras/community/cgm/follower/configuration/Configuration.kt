@@ -34,6 +34,7 @@ class Configuration: Serializable {
     var disableNotificationSoundSeconds = 1800 // 30 mins
 
     var disableNotification = false
+    var disableNotificationsSound = false
     var enableDebugMode = false
 
     var smsWakeupTriggerString = "ST"

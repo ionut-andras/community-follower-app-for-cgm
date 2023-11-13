@@ -18,6 +18,7 @@
     <string name="normalGlucoseValue">Normal glucose value</string>
     <string name="autoCancelNotifications">Auto cancel notifications for HarmonyOS Lite</string>
     <string name="disableNotifications">Disable notifications</string>
+    <string name="disableNotificationsSound">Disable notifications sound</string>
     <string name="enableDebugMode">Enable Debug Mode</string>
     <string name="buttonLoginText">Login</string>
     <string name="applicationsSettingsTitleText">Settings</string>

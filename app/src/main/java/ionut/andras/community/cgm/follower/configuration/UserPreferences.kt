@@ -9,6 +9,7 @@ object UserPreferences {
     const val dexcomSessionIdUpdated = "dexcomSessionIdUpdated"
     const val lastToastDisplayTimestamp = "lastToastDisplayTimestamp"
     const val disableNotifications = "disableNotifications"
+    const val disableNotificationsSound = "disableNotificationsSound"
     const val senderPhoneNo = "senderPhoneNo"
     const val receiverPhoneNo = "receiverPhoneNo"
     const val receiverPhoneNoList = "receiverPhoneNoList"

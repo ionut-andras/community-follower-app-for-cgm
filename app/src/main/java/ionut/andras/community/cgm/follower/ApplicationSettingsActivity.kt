@@ -43,6 +43,10 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
         disableNotifications.isChecked = sharedPreferences.getBoolean(UserPreferences.disableNotifications, appConfiguration.disableNotification)
         Log.i("Settings: disableNotifications.isChecked", disableNotifications.isChecked.toString())
 
+        val disableNotificationsSound = findViewById<SwitchCompat>(R.id.disableNotificationsSound)
+        disableNotificationsSound.isChecked = sharedPreferences.getBoolean(UserPreferences.disableNotificationsSound, appConfiguration.disableNotificationsSound)
+        Log.i("Settings: disableNotificationsSound.isChecked", disableNotificationsSound.isChecked.toString())
+
         val runModeValue = sharedPreferences.getInt(UserPreferences.runMode, ApplicationRunMode.OWNER)
 
         val enableDebugMode = findViewById<SwitchCompat>(R.id.enableDebugMode)
@@ -62,6 +66,7 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
     private fun enableActivityListeners() {
         val autoCancelNotifications = findViewById<SwitchCompat>(R.id.autoCancelNotifications)
         val disableNotifications = findViewById<SwitchCompat>(R.id.disableNotifications)
+        val disableNotificationsSound = findViewById<SwitchCompat>(R.id.disableNotificationsSound)
         val enableDebugMode = findViewById<SwitchCompat>(R.id.enableDebugMode)
         // sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
         sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
@@ -83,6 +88,20 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
             } else {
                 Log.i("SettingsActivityListener: UserPreferences.disableNotifications", false.toString())
                 sharedPreferences.edit().putBoolean(UserPreferences.disableNotifications, false).apply()
+
+                if (!PermissionHandler(this, applicationContext).areNotificationsEnabled()) {
+                    PermissionHandler(this, applicationContext).promptUserToEnableNotifications()
+                }
+            }
+        }
+
+        disableNotificationsSound.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                Log.i("SettingsActivityListener: UserPreferences.disableNotificationsSound", true.toString())
+                sharedPreferences.edit().putBoolean(UserPreferences.disableNotificationsSound, true).apply()
+            } else {
+                Log.i("SettingsActivityListener: UserPreferences.disableNotificationsSound", false.toString())
+                sharedPreferences.edit().putBoolean(UserPreferences.disableNotificationsSound, false).apply()
 
                 if (!PermissionHandler(this, applicationContext).areNotificationsEnabled()) {
                     PermissionHandler(this, applicationContext).promptUserToEnableNotifications()

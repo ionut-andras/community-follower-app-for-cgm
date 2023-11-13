@@ -22,9 +22,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CGMFollower"
         tools:targetApi="31">
-        <activity
-            android:name=".LoadingAuthenticationActivity"
-            android:exported="false" />
 
         <service
             android:name=".services.GlucoseValuesUpdateService"
@@ -39,6 +36,15 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".LoadingAuthenticationActivity"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity

@@ -456,6 +456,11 @@ class GlucoseValuesUpdateService : Service() {
 
 
     private fun triggerNotification(glucoseNotificationData: GlucoseNotificationData) {
+        val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
+        appConfiguration.autoCancelNotifications = sharedPreferences.getBoolean(UserPreferences.autoCancelNotifications, appConfiguration.autoCancelNotifications)
+        appConfiguration.disableNotification = sharedPreferences.getBoolean(UserPreferences.disableNotifications, appConfiguration.disableNotification)
+        appConfiguration.disableNotificationsSound = sharedPreferences.getBoolean(UserPreferences.disableNotificationsSound, appConfiguration.disableNotificationsSound)
+
         if (
             // Just updated
             (glucoseNotificationData.timeOffset.compareTo("now") == 0) ||
@@ -489,12 +494,13 @@ class GlucoseValuesUpdateService : Service() {
                 }
             }
 
-            notificationManager.setAlarmType(alarmType)
+            // If user opted out for notification sound for some period
+            if (appConfiguration.disableNotificationsSound) {
+                Log.i("triggerNotification", "Notification sound disabled by user.")
+                alarmType = DexcomAlarmType.NORMAL
+            }
 
-            // val sharedPreferences = applicationContext.getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
-            val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
-            appConfiguration.autoCancelNotifications = sharedPreferences.getBoolean(UserPreferences.autoCancelNotifications, appConfiguration.autoCancelNotifications)
-            appConfiguration.disableNotification = sharedPreferences.getBoolean(UserPreferences.disableNotifications, appConfiguration.disableNotification)
+            notificationManager.setAlarmType(alarmType)
 
             // Set the flag for NotificationManager
             notificationManager.setAutoCancelNotificationFlag(appConfiguration.autoCancelNotifications)
