@@ -354,10 +354,10 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
                 }
             }
 
-            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.AUTHENTICATION_FAILED), RECEIVER_NOT_EXPORTED)
-            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.INVALID_SESSION), RECEIVER_NOT_EXPORTED)
-            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.GLUCOSE_DATA_CHANGED), RECEIVER_NOT_EXPORTED)
-            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TOASTER_OK_GLUCOSE_VALUE), RECEIVER_NOT_EXPORTED)
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.AUTHENTICATION_FAILED), RECEIVER_EXPORTED)
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.INVALID_SESSION), RECEIVER_EXPORTED)
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.GLUCOSE_DATA_CHANGED), RECEIVER_EXPORTED)
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TOASTER_OK_GLUCOSE_VALUE), RECEIVER_EXPORTED)
         } else {
             Log.i("MainActivity > registerBroadcastReceivers", "Skip broadcast receiver registration...")
         }
