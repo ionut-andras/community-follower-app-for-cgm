@@ -91,9 +91,9 @@ class GlucoseValuesUpdateService : Service() {
                 }
             }
         }
-        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.STOP_FOREGROUND_SERVICE), RECEIVER_NOT_EXPORTED)
-        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.USER_REQUEST_REFRESH), RECEIVER_NOT_EXPORTED)
-        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND), RECEIVER_NOT_EXPORTED)
+        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.STOP_FOREGROUND_SERVICE), RECEIVER_EXPORTED)
+        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.USER_REQUEST_REFRESH), RECEIVER_EXPORTED)
+        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND), RECEIVER_EXPORTED)
 
         // Send the notification needed by OS in order to start a foreground service
         val title = "Starting " + applicationContext.getString(R.string.app_name) + " in background"

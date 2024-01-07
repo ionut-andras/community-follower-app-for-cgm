@@ -117,8 +117,8 @@ class LoginActivity : AppCompatActivityWrapper() {
                 }
             }
 
-            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.USER_AUTHENTICATION_KEY_RETRIEVAL_FAILED), RECEIVER_NOT_EXPORTED)
-            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.AUTHENTICATION_SESSION_SETUP_FAILED), RECEIVER_NOT_EXPORTED)
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.USER_AUTHENTICATION_KEY_RETRIEVAL_FAILED), RECEIVER_EXPORTED)
+            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.AUTHENTICATION_SESSION_SETUP_FAILED), RECEIVER_EXPORTED)
         } else {
             Log.i("LoginActivity > registerBroadcastReceivers", "Skip broadcast receiver registration...")
         }
