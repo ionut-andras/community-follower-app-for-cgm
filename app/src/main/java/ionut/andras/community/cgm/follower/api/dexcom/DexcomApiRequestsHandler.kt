@@ -40,7 +40,10 @@ class DexcomApiRequestsHandler (applicationContext: Context) : HttpRequestHandle
         if (authenticationApiResponse.errorOccurred()) {
             authenticationApiResponse.getError()?.let{
                 val errorData = JSONObject(it)
-                if (errorData.getString("Code") == "AccountPasswordInvalid") {
+                if (
+                    (errorData.getString("Code") == "AccountPasswordInvalid") ||
+                    (errorData.getString("Code") == "SSO_InternalError")
+                    ) {
                     if (baseUrl == dexcomConstants.baseUrlUsa) {
                         baseUrl = dexcomConstants.baseUrlOutsideUsa
                         authenticationApiResponse = authenticateWithUsernamePassword(username, password)
