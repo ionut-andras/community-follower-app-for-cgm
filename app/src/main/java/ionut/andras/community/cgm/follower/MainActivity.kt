@@ -206,7 +206,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
                 // Enable Main Application mode if session not empty and credentials not empty
                 ApplicationRunModesHelper(applicationContext).switchRunModeTo(ApplicationRunMode.OWNER)
             } else {
-                // Enable UNDEFINED mode if session not empty and credentials in undefined state
+                // Enable FOLLOWER mode if session not empty and any of the credentials in null
                 ApplicationRunModesHelper(applicationContext).switchRunModeTo(ApplicationRunMode.FOLLOWER)
             }
         } else {

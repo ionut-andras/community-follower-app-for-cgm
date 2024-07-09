@@ -56,6 +56,7 @@ open class HttpRequestHandler {
                     val (key, value) = header.split(":").map { str -> str.trim() }
                     connection.setRequestProperty(key, value)
                 }
+                httpHeadersArray[0] = "Host: " + url.host
 
                 httpHeadersArray.map {
                     Log.i("httpRequest > httpHeadersArray", it.trim())
@@ -90,12 +91,14 @@ open class HttpRequestHandler {
             } catch (exception1: Exception) {
                 returnValue.exception = exception1.toString()
                 returnValue.noInternetConnection = true
+                Log.i("httpRequest > exception1: ", exception1.toString())
             } finally {
                 connection.disconnect()
             }
         } catch (exception2: Exception) {
             returnValue.exception = exception2.toString()
             returnValue.noInternetConnection = true
+            Log.i("httpRequest > exception2: ", exception2.toString())
         }
         Log.i("httpRequest > returnValue", returnValue.toString())
         return returnValue

@@ -39,11 +39,26 @@ class DexcomApiRequestsHandler (applicationContext: Context) : HttpRequestHandle
         Log.i("authenticateWithUsernamePassword (Attempt 1)", authenticationApiResponse.toString())
         if (authenticationApiResponse.errorOccurred()) {
             authenticationApiResponse.getError()?.let{
-                val errorData = JSONObject(it)
+                Log.i("authenticateWithUsernamePassword", "Authentication failed with message: $it")
+                var errorData = JSONObject()
+                try {
+                    errorData = JSONObject(it)
+                } catch (exception1: Exception){
+                    Log.i("authenticateWithUsernamePassword > exception1: ", exception1.toString())
+                }
+
+                var changeZoneNeeded = false
+
                 if (
+                    (errorData.has("Code")) &&
+                    (
                     (errorData.getString("Code") == "AccountPasswordInvalid") ||
-                    (errorData.getString("Code") == "SSO_InternalError")
+                    (errorData.getString("Code") == "SSO_InternalError"))
                     ) {
+                    changeZoneNeeded = true
+                }
+
+                if (changeZoneNeeded) {
                     if (baseUrl == dexcomConstants.baseUrlUsa) {
                         baseUrl = dexcomConstants.baseUrlOutsideUsa
                         authenticationApiResponse = authenticateWithUsernamePassword(username, password)

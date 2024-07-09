@@ -9,7 +9,6 @@ open class DexcomConstants () {
 
     var httpHeadersArrayLogin = arrayOf(
         "User-Agent: Dexcom Share/3.0.2.11 CFNetwork/672.0.2 Darwin/14.0.0",
-        "Accept: application/json",
         "Content-Type: application/json"
     )
 
