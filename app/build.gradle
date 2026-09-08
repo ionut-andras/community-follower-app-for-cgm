@@ -4,14 +4,14 @@ plugins {
 }
 
 android {
-    compileSdk 35
+    compileSdk 37
 
     defaultConfig {
         applicationId "ionut.andras.community.cgm.follower"
         minSdk 28
-        targetSdk 34
-        versionCode 95
-        versionName '2.1.0'
+        targetSdk 37
+        versionCode 96
+        versionName '2.1.1'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testFunctionalTest false
@@ -39,35 +39,35 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.15.0'
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'com.google.android.material:material:1.12.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
+    implementation 'androidx.core:core-ktx:1.19.0'
+    implementation 'androidx.appcompat:appcompat:1.8.0'
+    implementation 'com.google.android.material:material:1.14.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.2'
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:6.1.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter:6.1.3'
 
-    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.3.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.7.0'
 
     // Enable coroutines
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.7'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.11.0'
 
     // Enable backward compatibility for HTML symbols
-    implementation 'androidx.core:core-ktx:1.15.0'
+    implementation 'androidx.core:core-ktx:1.19.0'
 
     // Enable refresh on swipe down on the main window
-    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.2.0'
 
     // Enable drawing charts
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
 
     // Enable object reflection
-    implementation 'org.jetbrains.kotlin:kotlin-reflect:2.1.0'
+    implementation 'org.jetbrains.kotlin:kotlin-reflect:2.4.0'
 
     // Google Play services dependency for the SMS Retriever API
-    implementation 'com.google.android.gms:play-services-auth:21.3.0'
-    implementation 'com.google.android.gms:play-services-auth-api-phone:18.2.0'
+    implementation 'com.google.android.gms:play-services-auth:22.0.0'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:18.3.1'
 }
