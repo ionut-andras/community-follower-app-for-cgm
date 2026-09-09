@@ -1,15 +1,14 @@
 plugins {
     alias libs.plugins.android.application
-    alias libs.plugins.jetbrains.kotlin.android
 }
 
 android {
-    compileSdk 37
+    compileSdk = 37
 
     defaultConfig {
         applicationId "ionut.andras.community.cgm.follower"
-        minSdk 28
-        targetSdk 37
+        minSdk = 28
+        targetSdk = 37
         versionCode 97
         versionName '2.1.2'
 
@@ -32,31 +31,25 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = '11'
-    }
     namespace 'ionut.andras.community.cgm.follower'
 }
 
 dependencies {
-    implementation libs.core.ktx
+    implementation libs.coreKtx
     implementation libs.appcompat
     implementation libs.material
     implementation libs.constraintlayout
 
     testImplementation libs.junit
-    testImplementation libs.junit.jupiter.api
-    testImplementation libs.junit.jupiter
+    testImplementation libs.junitJupiterApi
+    testImplementation libs.junitJupiter
 
-    androidTestImplementation libs.ext.junit
-    androidTestImplementation libs.espresso.core
+    androidTestImplementation libs.extJunit
+    androidTestImplementation libs.espressoCore
 
     // Enable coroutines
-    implementation libs.kotlinx.coroutines.android
-    implementation libs.lifecycle.runtime.ktx
-
-    // Enable backward compatibility for HTML symbols
-    implementation libs.core.ktx
+    implementation libs.kotlinxCoroutinesAndroid
+    implementation libs.lifecycleRuntimeKtx
 
     // Enable refresh on swipe down on the main window
     implementation libs.swiperefreshlayout
@@ -65,9 +58,9 @@ dependencies {
     implementation libs.mpandroidchart
 
     // Enable object reflection
-    implementation libs.kotlin.reflect
+    implementation libs.kotlinReflect
 
     // Google Play services dependency for the SMS Retriever API
-    implementation libs.play.services.auth
-    implementation libs.play.services.auth.api.phone
+    implementation libs.playAuth
+    implementation libs.playSms
 }
