@@ -7,7 +7,7 @@ import javax.net.ssl.HttpsURLConnection
 
 open class HttpRequestHandler {
     /**
-     * Performs a HTTP POST request
+     * Performs a HTTP GET request
      *
      * @param httpHeadersArray Array<String>
      * @param urlString String
@@ -52,15 +52,15 @@ open class HttpRequestHandler {
                 connection.requestMethod = method
                 Log.i("httpRequest > method", connection.requestMethod)
 
-                httpHeadersArray.map { header ->
-                    val (key, value) = header.split(":").map { str -> str.trim() }
+                httpHeadersArray.forEach { header ->
+                    // Split on the first ':' only, so header values may themselves contain ':'
+                    val (key, value) = header.split(":", limit = 2).map { str -> str.trim() }
                     connection.setRequestProperty(key, value)
-                }
-                httpHeadersArray[0] = "Host: " + url.host
 
-                httpHeadersArray.map {
-                    Log.i("httpRequest > httpHeadersArray", it.trim())
+                    val loggedHeader = if (key.equals("X-App-Hash", ignoreCase = true)) "$key: <redacted>" else header.trim()
+                    Log.i("httpRequest > httpHeadersArray", loggedHeader)
                 }
+                Log.i("httpRequest > httpHeadersArray", "Host: " + url.host)
 
                 // There is a known issue in the Android Kotlin HttpsURLConnection class
                 // where the request method is set to POST even if the connection.requestMethod property is set to GET.
@@ -72,20 +72,22 @@ open class HttpRequestHandler {
                     connection.outputStream.write(jsonBody.toString().toByteArray())
                 }
 
-                Log.i("httpRequest > responseCode", connection.responseCode.toString())
+                val responseCode = connection.responseCode
+                Log.i("httpRequest > responseCode", responseCode.toString())
 
-                when (connection.responseCode) {
-                    HttpsURLConnection.HTTP_OK -> {
-                        // Receive response as inputStream
-                        returnValue.data = connection.inputStream.bufferedReader().readText()
+                if (HttpsURLConnection.HTTP_OK == responseCode) {
+                    // Receive response as inputStream
+                    returnValue.data = connection.inputStream.bufferedReader().readText()
+                } else {
+                    // Prefer the error body (the backend replies with JSON on every error).
+                    // Fall back to the status line, which may be empty over HTTP/2.
+                    val errorBody = connection.errorStream?.bufferedReader()?.readText()
+                    val errorMessage = if (errorBody.isNullOrEmpty()) {
+                        "HTTP $responseCode " + (connection.responseMessage ?: "")
+                    } else {
+                        errorBody
                     }
-                    HttpsURLConnection.HTTP_INTERNAL_ERROR -> {
-                        // Receive response as inputStream
-                        returnValue.setError(connection.errorStream.bufferedReader().readText())
-                    }
-                    else -> {
-                        returnValue.setError(connection.responseMessage)
-                    }
+                    returnValue.setError(errorMessage.trim())
                 }
 
             } catch (exception1: Exception) {

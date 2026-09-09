@@ -4,8 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import ionut.andras.community.cgm.follower.LoginActivity
 import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.R
@@ -16,6 +19,32 @@ open class AppCompatActivityWrapper(private val menuLayoutId: Int? = null): AppC
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
         super.onCreate(savedInstanceState)
+    }
+
+    /**
+     * Since Android 15 (targetSdk 35+) every activity is drawn edge-to-edge, i.e. under the
+     * status bar and the navigation bar. None of the layouts handle window insets, so the
+     * toolbars ended up under the status bar. Apply the system bar insets once, centrally,
+     * to the activity content so every screen (with or without a toolbar) keeps clear of them.
+     */
+    override fun setContentView(layoutResID: Int) {
+        super.setContentView(layoutResID)
+        applySystemBarsInsets()
+    }
+
+    private fun applySystemBarsInsets() {
+        val content = findViewById<View>(android.R.id.content) ?: return
+
+        ViewCompat.setOnApplyWindowInsetsListener(content) { view, windowInsets ->
+            val insets = windowInsets.getInsets(
+                WindowInsetsCompat.Type.systemBars()
+                        or WindowInsetsCompat.Type.displayCutout()
+                        or WindowInsetsCompat.Type.ime()
+            )
+            view.setPadding(insets.left, insets.top, insets.right, insets.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        ViewCompat.requestApplyInsets(content)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

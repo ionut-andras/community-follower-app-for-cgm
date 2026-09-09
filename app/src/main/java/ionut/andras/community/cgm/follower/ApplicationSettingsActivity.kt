@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.content.edit
 import ionut.andras.community.cgm.follower.configuration.Configuration
 import ionut.andras.community.cgm.follower.configuration.UserPreferences
 import ionut.andras.community.cgm.follower.constants.ApplicationRunMode
@@ -72,23 +73,15 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
         sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
 
         autoCancelNotifications.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                Log.i("SettingsActivityListener: UserPreferences.autoCancelNotifications", true.toString())
-                sharedPreferences.edit().putBoolean(UserPreferences.autoCancelNotifications, true).apply()
-            } else {
-                Log.i("SettingsActivityListener: UserPreferences.autoCancelNotifications", false.toString())
-                sharedPreferences.edit().putBoolean(UserPreferences.autoCancelNotifications, false).apply()
-            }
+            Log.i("SettingsActivityListener: UserPreferences.autoCancelNotifications", isChecked.toString())
+            sharedPreferences.edit { putBoolean(UserPreferences.autoCancelNotifications, isChecked) }
         }
 
         disableNotifications.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                Log.i("SettingsActivityListener: UserPreferences.disableNotifications", true.toString())
-                sharedPreferences.edit().putBoolean(UserPreferences.disableNotifications, true).apply()
-            } else {
-                Log.i("SettingsActivityListener: UserPreferences.disableNotifications", false.toString())
-                sharedPreferences.edit().putBoolean(UserPreferences.disableNotifications, false).apply()
+            Log.i("SettingsActivityListener: UserPreferences.disableNotifications", isChecked.toString())
+            sharedPreferences.edit { putBoolean(UserPreferences.disableNotifications, isChecked) }
 
+            if (!isChecked) {
                 if (!PermissionHandler(this, applicationContext).areNotificationsEnabled()) {
                     PermissionHandler(this, applicationContext).promptUserToEnableNotifications()
                 }
@@ -96,13 +89,10 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
         }
 
         disableNotificationsSound.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                Log.i("SettingsActivityListener: UserPreferences.disableNotificationsSound", true.toString())
-                sharedPreferences.edit().putBoolean(UserPreferences.disableNotificationsSound, true).apply()
-            } else {
-                Log.i("SettingsActivityListener: UserPreferences.disableNotificationsSound", false.toString())
-                sharedPreferences.edit().putBoolean(UserPreferences.disableNotificationsSound, false).apply()
+            Log.i("SettingsActivityListener: UserPreferences.disableNotificationsSound", isChecked.toString())
+            sharedPreferences.edit { putBoolean(UserPreferences.disableNotificationsSound, isChecked) }
 
+            if (!isChecked) {
                 if (!PermissionHandler(this, applicationContext).areNotificationsEnabled()) {
                     PermissionHandler(this, applicationContext).promptUserToEnableNotifications()
                 }
@@ -110,13 +100,8 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
         }
 
         enableDebugMode.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                Log.i("SettingsActivityListener: UserPreferences.debugModeSwitch", true.toString())
-                sharedPreferences.edit().putBoolean(UserPreferences.enableDebugMode, true).apply()
-            } else {
-                Log.i("SettingsActivityListener: UserPreferences.debugModeSwitch", false.toString())
-                sharedPreferences.edit().putBoolean(UserPreferences.enableDebugMode, false).apply()
-            }
+            Log.i("SettingsActivityListener: UserPreferences.debugModeSwitch", isChecked.toString())
+            sharedPreferences.edit { putBoolean(UserPreferences.enableDebugMode, isChecked) }
         }
 
         val logoutButton = findViewById<Button>(R.id.btnSettingsLogout)
@@ -136,7 +121,7 @@ class ApplicationSettingsActivity : AppCompatActivityWrapper(R.menu.application_
         Log.i("displayLoginFormNeeded > dexcomSessionID", dexcomSessionID.toString())
 
 
-        SharedPreferencesFactory(applicationContext).getInstance().edit().clear().apply()
+        SharedPreferencesFactory(applicationContext).getInstance().edit { clear() }
 
         email = sharedPreferences.getString(UserPreferences.loginEmail, null)
         password = sharedPreferences.getString(UserPreferences.loginPassword, null)

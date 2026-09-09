@@ -20,14 +20,14 @@ class DexcomAlarmManager(private var configuration: Configuration) {
 
         val glucoseRecentHistory = glucoseNotificationData.glucoseRecentHistory
         val trend = if (
-                (glucoseRecentHistory[0] - glucoseRecentHistory[1] >= configuration.glucoseRisingDroppingHighThreshold)
-                && (glucoseRecentHistory[1] - glucoseRecentHistory[2] >= configuration.glucoseRisingDroppingHighThreshold)
-            ) {
-                DexcomTrendsConversionMap.DOUBLE_UP
-            } else if (
-                (glucoseRecentHistory[0] - glucoseRecentHistory[1] <= -configuration.glucoseRisingDroppingHighThreshold)
-                && (glucoseRecentHistory[1] - glucoseRecentHistory[2] <= -configuration.glucoseRisingDroppingHighThreshold)
-            ) {
+            ((glucoseRecentHistory[0] - glucoseRecentHistory[1]) >= configuration.glucoseRisingDroppingHighThreshold)
+                && ((glucoseRecentHistory[1] - glucoseRecentHistory[2]) >= configuration.glucoseRisingDroppingHighThreshold)
+        ) {
+            DexcomTrendsConversionMap.DOUBLE_UP
+        } else if (
+            ((glucoseRecentHistory[0] - glucoseRecentHistory[1]) <= -configuration.glucoseRisingDroppingHighThreshold)
+                && ((glucoseRecentHistory[1] - glucoseRecentHistory[2]) <= -configuration.glucoseRisingDroppingHighThreshold)
+        ) {
             DexcomTrendsConversionMap.DOUBLE_DOWN
         } else {
             DexcomTrendsConversionMap.FLAT

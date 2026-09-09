@@ -11,6 +11,8 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import ionut.andras.community.cgm.follower.MainActivity
 import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.alarms.DexcomAlarmManager
@@ -32,7 +34,9 @@ import ionut.andras.community.cgm.follower.sms.OtpSmsListener
 import ionut.andras.community.cgm.follower.utils.DateTimeConversion
 import ionut.andras.community.cgm.follower.utils.DexcomDateTimeConversion
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -41,6 +45,8 @@ import java.io.Serializable
 
 class GlucoseValuesUpdateService : Service() {
     private lateinit var appConfiguration: Configuration
+
+    private val serviceScope = CoroutineScope(SupervisorJob() + AsyncDispatcher.default)
 
     private lateinit var handler: Handler
     private lateinit var runnable: Runnable
@@ -86,14 +92,15 @@ class GlucoseValuesUpdateService : Service() {
                 // Identify broadcast operation
                 when (intent.action) {
                     BroadcastActions.USER_REQUEST_REFRESH -> userRequestRefresh(intent)
-                    BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND -> temporaryDisableNotificationSound(intent)
+                    BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND -> temporaryDisableNotificationSound()
                     BroadcastActions.STOP_FOREGROUND_SERVICE -> stopServiceFromForeground(intent)
                 }
             }
         }
-        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.STOP_FOREGROUND_SERVICE), RECEIVER_EXPORTED)
-        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.USER_REQUEST_REFRESH), RECEIVER_EXPORTED)
-        registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND), RECEIVER_EXPORTED)
+        val flags = ContextCompat.RECEIVER_EXPORTED
+        ContextCompat.registerReceiver(this, broadcastReceiver, IntentFilter(BroadcastActions.STOP_FOREGROUND_SERVICE), flags)
+        ContextCompat.registerReceiver(this, broadcastReceiver, IntentFilter(BroadcastActions.USER_REQUEST_REFRESH), flags)
+        ContextCompat.registerReceiver(this, broadcastReceiver, IntentFilter(BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND), flags)
 
         // Send the notification needed by OS in order to start a foreground service
         val title = "Starting " + applicationContext.getString(R.string.app_name) + " in background"
@@ -105,14 +112,15 @@ class GlucoseValuesUpdateService : Service() {
 
     private fun parseBroadcastExtraInfo(intent: Intent?) {
         try {
-            appConfiguration =
-                getSerializableExtra(intent, "appConfiguration", Configuration::class.java)
+            getSerializableExtra(intent, "appConfiguration", Configuration::class.java)?.let {
+                appConfiguration = it
+            }
             if (!appConfiguration.dexcomSessionID.isNullOrEmpty()) {
                 Log.i("parseBroadcastExtraInfo", "SessionID available: ${appConfiguration.dexcomSessionID}")
                 glucoseRetrievalSession = appConfiguration.dexcomSessionID
             }
-        } catch (e: Exception) {
-            Log.i("parseBroadcastExtraInfo > Exception", e.toString())
+        } catch (_: Exception) {
+            // Log.i("parseBroadcastExtraInfo > Exception", e.toString())
         }
     }
 
@@ -126,13 +134,13 @@ class GlucoseValuesUpdateService : Service() {
         parseBroadcastExtraInfo(intent)
 
         when (serviceAction) {
-            START_FOREGROUND_SERVICE -> startServiceInForeground(intent)
+            START_FOREGROUND_SERVICE -> startServiceInForeground()
         }
 
         return START_STICKY
     }
 
-    private fun startServiceInForeground(intent: Intent?) {
+    private fun startServiceInForeground() {
         if (!isServiceRunning) {
             Log.i("startServiceInForeground", "Starting...")
 
@@ -170,7 +178,7 @@ class GlucoseValuesUpdateService : Service() {
         getAuthenticatedUserGlucoseData()
     }
 
-    private fun temporaryDisableNotificationSound(intent: Intent?) {
+    private fun temporaryDisableNotificationSound() {
         Log.i("temporaryDisableNotificationSound", "Starting...")
         temporaryDisableNotificationTimestamp = DateTimeConversion().getCurrentTimestamp()
     }
@@ -184,7 +192,7 @@ class GlucoseValuesUpdateService : Service() {
                     errorCode = errorData.getString("Code")
                 }
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             errorCode = null
         }
         return errorCode
@@ -202,7 +210,7 @@ class GlucoseValuesUpdateService : Service() {
         if (!glucoseRetrievalSession.isNullOrEmpty()) {
             Log.i("getAuthenticatedUserGlucoseData", "Session available. Running authenticated flow...")
             // If a session valid, skip authentication and authorization
-            GlobalScope.launch (AsyncDispatcher.default) {
+            serviceScope.launch {
                 glucoseDataString = getGlucoseData(glucoseRetrievalSession!!)
                 if (glucoseDataString.isNullOrEmpty()) {
                     // If the retrieval failed,
@@ -238,7 +246,7 @@ class GlucoseValuesUpdateService : Service() {
      */
     private fun getAndProcessUserGlucoseData() {
         // Run full flow: authentication, authorization, get glucose data
-        GlobalScope.launch (AsyncDispatcher.default) {
+        serviceScope.launch {
 
             // Authenticate
             val accountId: String? = authenticate()
@@ -246,12 +254,12 @@ class GlucoseValuesUpdateService : Service() {
                 saveDexcomAccountId(accountId)
             }
             if (!accountId.isNullOrEmpty()) {
-                GlobalScope.launch (AsyncDispatcher.default) {
+                serviceScope.launch {
                     // Authorize
                     glucoseRetrievalSession = authorize(accountId)
                     saveDexcomSession()
                     if (null != glucoseRetrievalSession) {
-                        GlobalScope.launch(AsyncDispatcher.default) {
+                        serviceScope.launch {
                             // Get glucose data
                             val glucoseDataString = getGlucoseData(glucoseRetrievalSession!!)
                             if (null != glucoseDataString) {
@@ -303,8 +311,8 @@ class GlucoseValuesUpdateService : Service() {
         apiResponse = ApiResponse()
         if (!username.isNullOrEmpty() && !password.isNullOrEmpty()) {
             apiResponse = dexcomHandler.authenticateWithUsernamePassword(
-                username!!,
-                password!!
+                username,
+                password,
             )
             if (apiResponse.isSuccess()) {
                 accountId = apiResponse.data.toString().trim('"')
@@ -312,7 +320,7 @@ class GlucoseValuesUpdateService : Service() {
             } else {
                 Log.i("authenticateWithUsernamePassword - Failure: ", "Clean authentication data")
                 if (!apiResponse.noInternetConnectionError()) {
-                    SharedPreferencesFactory(applicationContext).getInstance().edit().clear().apply()
+                    SharedPreferencesFactory(applicationContext).getInstance().edit { clear() }
                 }
             }
         }
@@ -336,7 +344,7 @@ class GlucoseValuesUpdateService : Service() {
             )
             if (apiResponse.isSuccess()) {
                 sessionId = apiResponse.data.toString().trim('"')
-                Log.i("loginWithAccountId - Response: ", sessionId.toString())
+                Log.i("loginWithAccountId - Response: ", sessionId)
             }
         }
         return sessionId
@@ -431,6 +439,11 @@ class GlucoseValuesUpdateService : Service() {
         return returnValue
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceScope.cancel()
+    }
+
     private fun sendInitialNotificationAndStartForegroundService(glucoseNotificationData: GlucoseNotificationData) {
         // Get notification main thread intent
         val notificationIntent = Intent(this, MainActivity::class.java)
@@ -447,7 +460,7 @@ class GlucoseValuesUpdateService : Service() {
         val builder = notificationManager.createNotificationBuilder(
             glucoseNotificationData.glucoseValue,
             glucoseNotificationData.glucoseValueTrend,
-            true
+            isServiceInitial = true
         )
         builder.setContentIntent(pendingIntent)
 
@@ -463,11 +476,11 @@ class GlucoseValuesUpdateService : Service() {
 
         if (
             // Just updated
-            (glucoseNotificationData.timeOffset.compareTo("now") == 0) ||
+            ((glucoseNotificationData.timeOffset.compareTo("now") == 0) ||
             // Value of the data changed
             (lastNotificationValue != glucoseNotificationData.glucoseValue.toInt()) ||
             // More than a period of time happen since last notification
-            (DateTimeConversion().getCurrentTimestamp() - lastNotificationTimestamp > appConfiguration.glucoseValueNotificationIntervalSeconds)
+            (DateTimeConversion().getCurrentTimestamp() - lastNotificationTimestamp > appConfiguration.glucoseValueNotificationIntervalSeconds))
         ) {
             // Get notification main thread intent
             val notificationIntent = Intent(this, MainActivity::class.java)
@@ -564,17 +577,17 @@ class GlucoseValuesUpdateService : Service() {
         // val sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
         val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
 
-        sharedPreferences.edit().putString(UserPreferences.dexcomAccountId, accountId).apply()
+        sharedPreferences.edit { putString(UserPreferences.dexcomAccountId, accountId) }
     }
 
     private fun saveDexcomSession() {
         // val sharedPreferences = getSharedPreferences(applicationContext.getString(R.string.app_name), Context.MODE_PRIVATE)
         val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
 
-        sharedPreferences.edit()
-            .putString(UserPreferences.dexcomSessionId, glucoseRetrievalSession)
-            .putBoolean(UserPreferences.dexcomSessionIdUpdated, true)
-            .apply()
+        sharedPreferences.edit {
+            putString(UserPreferences.dexcomSessionId, glucoseRetrievalSession)
+            putBoolean(UserPreferences.dexcomSessionIdUpdated, true)
+        }
     }
 
     private fun broadcastLoginFailedUsernamePassword() {
@@ -591,12 +604,13 @@ class GlucoseValuesUpdateService : Service() {
             .broadcast()
     }
 
-    private fun <T : Serializable?> getSerializableExtra(intent: Intent?, extraParameterName: String, className: Class<T>): T
+    private fun <T : Serializable?> getSerializableExtra(intent: Intent?, extraParameterName: String, className: Class<T>): T?
     {
         return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-            intent?.getSerializableExtra(extraParameterName, className)!!
+            intent?.getSerializableExtra(extraParameterName, className)
         else
-            intent?.getSerializableExtra(extraParameterName) as T
+            @Suppress("DEPRECATION", "UNCHECKED_CAST")
+            intent?.getSerializableExtra(extraParameterName) as? T
     }
 
 }

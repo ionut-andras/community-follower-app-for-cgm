@@ -32,7 +32,7 @@ class CgmFollowerBeApiRequestHandler(private val applicationContext: Context): H
         }
         val geo = sharedPreferences.getString(DexcomConstants().baseUrlGeolocationKey, DexcomConstants().geolocationUsa)
 
-        if (receiverPhoneNo.isNotEmpty() && receiverPhoneNo.isNotEmpty()) {
+        if (receiverPhoneNo.isNotEmpty() && senderPhoneNumber.isNotEmpty()) {
             /*{
                 "geo": "us"
                 "session": "8dfe387c-a322-430f-9b82-c23965d427b8",
@@ -50,7 +50,7 @@ class CgmFollowerBeApiRequestHandler(private val applicationContext: Context): H
             jsonBody.put("notifications_enabled_flag", 0)
             jsonBody.put("phone_sender", senderPhoneNumber)
             jsonBody.put("phone_receiver", receiverPhoneNo)
-            jsonBody.put("app_hash", "5de6329f620f38f0eaddb58cbafce54f")
+            jsonBody.put("app_hash", cgmFollowerBeConstants.appHash)
 
             // Build the complete URL
             val urlString = cgmFollowerBeConstants.baseUrl + cgmFollowerBeConstants.sessionManagementEndpoint

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +16,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.content.edit
+import androidx.lifecycle.lifecycleScope
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.mikephil.charting.charts.LineChart
 import ionut.andras.community.cgm.follower.api.cgmfollowerbe.CgmFollowerBeApiRequestHandler
@@ -40,7 +44,6 @@ import ionut.andras.community.cgm.follower.utils.DateTimeConversion
 import ionut.andras.community.cgm.follower.utils.DexcomDateTimeConversion
 import ionut.andras.community.cgm.follower.utils.GlucoseValueColorRange
 import ionut.andras.community.cgm.follower.utils.SharedPreferencesFactory
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 
@@ -157,13 +160,13 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         try {
             if (sharedPreferences.getInt(
                     UserPreferences.runMode,
-                    ApplicationRunMode.UNDEFINED
+                    ApplicationRunMode.UNDEFINED,
                 ) == ApplicationRunMode.FOLLOWER
             ) {
                 buttonInviteFollower.isVisible = false
             }
-        } catch (e: Exception) {
-            Log.i("onCreateOptionsMenu Exception", e.toString())
+        } catch (_: Exception) {
+            // Log.i("onCreateOptionsMenu Exception", e.toString())
         }
 
         return true
@@ -221,10 +224,17 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
          */
         PermissionHandler(this, applicationContext)
             .checkPermission(Manifest.permission.FOREGROUND_SERVICE, getString(R.string.permissionFriendlyNameForegroundService), PermissionRequestCodes.FOREGROUND_SERVICE)
-        PermissionHandler(this, applicationContext)
-            .checkPermission(Manifest.permission.FOREGROUND_SERVICE_DATA_SYNC, getString(R.string.permissionFriendlyNameForegroundService), PermissionRequestCodes.FOREGROUND_SERVICE_DATA_SYNC)
-        PermissionHandler(this, applicationContext)
-            .checkPermission(Manifest.permission.POST_NOTIFICATIONS, getString(R.string.permissionFriendlyNamePostNotifications), PermissionRequestCodes.GLUCOSE_VALUE_NOTIFICATION)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            PermissionHandler(this, applicationContext)
+                .checkPermission(Manifest.permission.FOREGROUND_SERVICE_DATA_SYNC, getString(R.string.permissionFriendlyNameForegroundService), PermissionRequestCodes.FOREGROUND_SERVICE_DATA_SYNC)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            PermissionHandler(this, applicationContext)
+                .checkPermission(Manifest.permission.POST_NOTIFICATIONS, getString(R.string.permissionFriendlyNamePostNotifications), PermissionRequestCodes.GLUCOSE_VALUE_NOTIFICATION)
+        }
+
         PermissionHandler(this, applicationContext)
             .checkPermission(Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, getString(R.string.permissionFriendlyNameDisableBatteryOptimization), PermissionRequestCodes.BATTERY_OPTIMIZATION)
 
@@ -308,7 +318,8 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
     private fun plotGlucoseData(chartJsonDataAsString: String) {
         Log.i("MainActivity > plotGlucoseData", "Starting")
         val plotGlucoseHistoricValues = PlotGlucoseHistoricValues(appConfiguration, JSONArray(chartJsonDataAsString))
-        plotGlucoseHistoricValues.start(applicationContext, glucoseHistoricChart,
+        plotGlucoseHistoricValues.start(
+            applicationContext, glucoseHistoricChart,
             R.layout.glucose_plot_marker_view
         )
     }
@@ -354,10 +365,11 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
                 }
             }
 
-            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.AUTHENTICATION_FAILED), RECEIVER_EXPORTED)
-            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.INVALID_SESSION), RECEIVER_EXPORTED)
-            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.GLUCOSE_DATA_CHANGED), RECEIVER_EXPORTED)
-            registerReceiver(broadcastReceiver, IntentFilter(BroadcastActions.TOASTER_OK_GLUCOSE_VALUE), RECEIVER_EXPORTED)
+            val flags = ContextCompat.RECEIVER_EXPORTED
+            ContextCompat.registerReceiver(this, broadcastReceiver, IntentFilter(BroadcastActions.AUTHENTICATION_FAILED), flags)
+            ContextCompat.registerReceiver(this, broadcastReceiver, IntentFilter(BroadcastActions.INVALID_SESSION), flags)
+            ContextCompat.registerReceiver(this, broadcastReceiver, IntentFilter(BroadcastActions.GLUCOSE_DATA_CHANGED), flags)
+            ContextCompat.registerReceiver(this, broadcastReceiver, IntentFilter(BroadcastActions.TOASTER_OK_GLUCOSE_VALUE), flags)
         } else {
             Log.i("MainActivity > registerBroadcastReceivers", "Skip broadcast receiver registration...")
         }
@@ -391,7 +403,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
                 SessionManager(applicationContext).recoverSessionsFromBackend()
             }
             handlerSessionRecoverFromBackend.postDelayed(runnable, tokenForHandlerSessionRecoverFromBackend, appConfiguration.glucoseAutomaticUpdateMiliseconds)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             Log.i("MainActivity > handleFailedAuthenticationInvalidSession", "Stopping current handler failed. Skip creating new attempts for application safe...")
         }
     }
@@ -438,7 +450,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         Log.i("displayToastGlucoseValue", "Current TS: $currentTimestamp / Last Toast Display TS: $lastToastDisplayTimestamp")
         Log.i("displayToastGlucoseValue", "Notification interval (sec): ${appConfiguration.glucoseValueNotificationIntervalSeconds}")
         Log.i("displayToastGlucoseValue", "Delta (sec): ${currentTimestamp - lastToastDisplayTimestamp}")
-        if (currentTimestamp - lastToastDisplayTimestamp > appConfiguration.glucoseValueNotificationIntervalSeconds) {
+        if ((currentTimestamp - lastToastDisplayTimestamp) > appConfiguration.glucoseValueNotificationIntervalSeconds) {
             Log.i("displayToastGlucoseValue", "Displaying toast...")
             // Display the informational toast
             val toastText =
@@ -450,7 +462,9 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
             )
             lastToastDisplayTimestamp = DateTimeConversion().getCurrentTimestamp()
             sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
-            sharedPreferences.edit().putLong(UserPreferences.lastToastDisplayTimestamp, lastToastDisplayTimestamp).apply()
+            sharedPreferences.edit {
+                putLong(UserPreferences.lastToastDisplayTimestamp, lastToastDisplayTimestamp)
+            }
         } else {
             Log.i("displayToastGlucoseValue", "Conditions for displaying toast not meet.")
         }
@@ -465,9 +479,9 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
             val receiverPhoneNoList = sharedPreferences.getStringSet(UserPreferences.receiverPhoneNoList, null)
             Log.i("receiverPhoneNoList", receiverPhoneNoList.toString())
 
-            receiverPhoneNoList?.map { receiverPhoneNo ->
+            receiverPhoneNoList?.forEach { receiverPhoneNo ->
                 ownPhoneNo?.let {
-                    GlobalScope.launch(AsyncDispatcher.default) {
+                    lifecycleScope.launch(AsyncDispatcher.default) {
                         Log.i(
                             "updateFollowersAuthenticationInCloud",
                             "$ownPhoneNo -> $receiverPhoneNo"
@@ -481,9 +495,9 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
             }
 
-            sharedPreferences.edit()
-                .putBoolean(UserPreferences.dexcomSessionIdUpdated, false)
-                .apply()
+            sharedPreferences.edit {
+                putBoolean(UserPreferences.dexcomSessionIdUpdated, false)
+            }
         }
     }
 

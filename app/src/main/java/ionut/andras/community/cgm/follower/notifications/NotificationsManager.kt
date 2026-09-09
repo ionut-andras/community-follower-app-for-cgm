@@ -1,7 +1,6 @@
 package ionut.andras.community.cgm.follower.notifications
 
 import android.Manifest
-import android.app.AlertDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -16,7 +15,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.graphics.drawable.IconCompat
-import ionut.andras.community.cgm.follower.MainActivity
+import androidx.core.net.toUri
 import ionut.andras.community.cgm.follower.R
 import ionut.andras.community.cgm.follower.alarms.DexcomAlarmSoundMap
 import ionut.andras.community.cgm.follower.alarms.DexcomAlarmType
@@ -47,7 +46,7 @@ class NotificationsManager (private var appContext: Context) {
         this.builderContentIntent = intent
     }
 
-    fun setAutoCancelNotificationFlag(autoCancelFlag: Boolean= false) {
+    fun setAutoCancelNotificationFlag(autoCancelFlag: Boolean = false) {
         this.autoCancelNotification = autoCancelFlag
     }
 
@@ -58,7 +57,7 @@ class NotificationsManager (private var appContext: Context) {
     }
 
     private fun setSoundUrl(soundUrl: String) {
-        this.soundUri = Uri.parse(soundUrl)
+        this.soundUri = soundUrl.toUri()
     }
 
     private fun clearSound() {
@@ -88,7 +87,7 @@ class NotificationsManager (private var appContext: Context) {
 
             if (ActivityCompat.checkSelfPermission(
                     appContext,
-                    Manifest.permission.POST_NOTIFICATIONS
+                    Manifest.permission.POST_NOTIFICATIONS,
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 // TODO: Consider calling ActivityCompat#requestPermissions
@@ -137,7 +136,7 @@ class NotificationsManager (private var appContext: Context) {
         Log.i("NotificationManager > Alarm types: ", DexcomAlarmType.getValues().toString())
 
         // Alarm channels
-        DexcomAlarmType.getValues().map {
+        DexcomAlarmType.getValues().forEach {
             val normalizedValue = DexcomAlarmType.normalizeValue(it)
             Log.i("prepareNotificationChannels", normalizedValue)
 
@@ -145,7 +144,7 @@ class NotificationsManager (private var appContext: Context) {
                 appContext.getString(R.string.notificationChannelId) + "_$normalizedValue",
                 it,
                 appContext.getString(R.string.notificationChannelDescription),
-                normalizedValue
+                normalizedValue,
             )
         }
     }
@@ -188,7 +187,7 @@ class NotificationsManager (private var appContext: Context) {
             val soundResourceId = DexcomAlarmSoundMap.SOUND_MAP[alarmTypeNormalized]
 
             if (0 < soundResourceId!!) {
-                setSoundUrl("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${appContext.packageName}/${soundResourceId}")
+                setSoundUrl("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${appContext.packageName}/$soundResourceId")
                 Log.i("NotificationsManager:createNotificationChannel",
                     "Setting sound URI: $soundUri for channel $channelId"
                 )

@@ -24,7 +24,9 @@ class SessionManager (private val applicationContext: Context) {
         val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
         val senderPhoneNo = sharedPreferences.getString(UserPreferences.senderPhoneNo, "")
         val receiverPhoneNo = sharedPreferences.getString(UserPreferences.receiverPhoneNo, "")
-        val userKey = Security().md5("$senderPhoneNo-$receiverPhoneNo")
+        // Must match the backend: userKey = SHA-256(phone_receiver + "-" + phone_sender).
+        // From the follower's perspective senderPhoneNo is its own number (the original receiver).
+        val userKey = Security().sha256("$senderPhoneNo-$receiverPhoneNo")
 
         getSessionFromBackendByUserKey(userKey)
     }
