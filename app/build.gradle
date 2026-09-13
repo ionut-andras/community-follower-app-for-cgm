@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias libs.plugins.android.application
     alias libs.plugins.kotlin.android
@@ -10,8 +12,8 @@ android {
         applicationId "ionut.andras.community.cgm.follower"
         minSdk = 28
         targetSdk = 37
-        versionCode 97
-        versionName '2.1.2'
+        versionCode 99
+        versionName '2.1.4'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testFunctionalTest false
@@ -20,6 +22,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
@@ -28,13 +31,19 @@ android {
             // proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+        unitTests.all {
+            it.useJUnitPlatform()
+        }
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
     kotlin {
         compilerOptions {
-            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+            jvmTarget = JvmTarget.JVM_11
         }
     }
     namespace 'ionut.andras.community.cgm.follower'
@@ -46,9 +55,9 @@ dependencies {
     implementation libs.material
     implementation libs.constraintlayout
 
-    testImplementation libs.junit
     testImplementation libs.junitJupiterApi
     testImplementation libs.junitJupiter
+    testRuntimeOnly libs.junitPlatformLauncher
 
     androidTestImplementation libs.extJunit
     androidTestImplementation libs.espressoCore
@@ -62,9 +71,6 @@ dependencies {
 
     // Enable drawing charts
     implementation libs.mpandroidchart
-
-    // Enable object reflection
-    implementation libs.kotlinReflect
 
     // Google Play services dependency for the SMS Retriever API
     implementation libs.playAuth
