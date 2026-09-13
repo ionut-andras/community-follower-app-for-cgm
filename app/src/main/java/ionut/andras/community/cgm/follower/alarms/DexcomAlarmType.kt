@@ -1,10 +1,5 @@
 package ionut.andras.community.cgm.follower.alarms
 
-import androidx.annotation.Keep
-import ionut.andras.community.cgm.follower.constants.DexcomTrendsConversionMap
-import kotlin.reflect.full.companionObject
-import kotlin.reflect.full.memberProperties
-
 open class DexcomAlarmType {
     companion object {
         const val URGENT_LOW: String = "Urgent Low"
