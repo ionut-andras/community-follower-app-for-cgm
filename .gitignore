@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Release build outputs (Play retains the deobfuscation mapping on upload)
+app/release/
