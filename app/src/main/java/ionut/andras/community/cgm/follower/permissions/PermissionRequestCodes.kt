@@ -4,7 +4,7 @@ class PermissionRequestCodes {
     companion object {
         // Mandatory permissions
         const val FOREGROUND_SERVICE = 100
-        const val FOREGROUND_SERVICE_DATA_SYNC = 101
+        const val FOREGROUND_SERVICE_SPECIAL_USE = 101
         const val GLUCOSE_VALUE_NOTIFICATION = 102
         const val BATTERY_OPTIMIZATION = 103
 

@@ -109,8 +109,8 @@ class GlucoseValuesUpdateService : Service() {
     /**
      * Shows the service notification and moves the service to the foreground.
      *
-     * Returns false when Android refuses, for example when the daily time of dataSync foreground
-     * services is used up and the app is in the background.
+     * Returns false when Android refuses, for example when the system restarts the service while
+     * the app is in the background and no background start exemption applies.
      */
     private fun promoteToForeground(): Boolean {
         return try {
@@ -125,10 +125,11 @@ class GlucoseValuesUpdateService : Service() {
     }
 
     /**
-     * Android 15+ gives dataSync foreground services 6 hours a day while the app is in the
-     * background. When the time is up the service has a few seconds to stop. Otherwise Android
-     * reports an ANR (Android 15) or crashes the app (Android 16+), and refuses to restart the
-     * service until the user opens the app. Stop cleanly and tell the user how to resume.
+     * Called when a time-limited foreground service type runs out of time (Android 15+). The
+     * service is now specialUse, which has no limit; with dataSync it was cut after 6 hours a day
+     * in the background. Kept as a safety net: if it is ever called, the service has a few seconds
+     * to stop, otherwise Android reports an ANR or crashes the app. Stop cleanly and tell the user
+     * how to resume.
      */
     override fun onTimeout(startId: Int, fgsType: Int) {
         Log.w("GlucoseValuesUpdateService", "Foreground service time limit reached (type $fgsType). Stopping...")

@@ -113,8 +113,8 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         super.onStart()
 
         if (::glucoseHistoricChart.isInitialized) {
-            // Start the Glucose monitoring service, or restart it: Android stops it after some hours
-            // in the background (dataSync time limit), and opening the app resets that limit.
+            // Start the Glucose monitoring service, or restart it if Android stopped it while the
+            // app was in the background (the service cannot always restart itself from there).
             startServiceGetAndProcessGlucoseData()
         }
     }
@@ -237,7 +237,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             PermissionHandler(this, applicationContext)
-                .checkPermission(Manifest.permission.FOREGROUND_SERVICE_DATA_SYNC, getString(R.string.permissionFriendlyNameForegroundService), PermissionRequestCodes.FOREGROUND_SERVICE_DATA_SYNC)
+                .checkPermission(Manifest.permission.FOREGROUND_SERVICE_SPECIAL_USE, getString(R.string.permissionFriendlyNameForegroundService), PermissionRequestCodes.FOREGROUND_SERVICE_SPECIAL_USE)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

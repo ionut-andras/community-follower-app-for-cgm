@@ -8,7 +8,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
@@ -27,7 +27,14 @@
             android:name=".services.GlucoseValuesUpdateService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="dataSync" />
+            android:foregroundServiceType="specialUse">
+            <!-- specialUse has no daily time limit. dataSync is cut after 6 hours a day in the
+                 background on Android 15+, which stopped glucose alarms overnight.
+                 The same use case must be declared in Play Console (App content). -->
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Continuous glucose monitoring for people with diabetes and their caregivers. Reads the latest glucose value from Dexcom Share every minute and raises low/high glucose alarms, so it must keep running in the background, including overnight." />
+        </service>
 
         <activity
             android:name=".MainActivity"
