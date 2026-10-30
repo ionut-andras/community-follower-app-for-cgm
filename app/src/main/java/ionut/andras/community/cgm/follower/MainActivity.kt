@@ -79,8 +79,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
 
         if (!displayLoginFormNeeded()) {
             Log.i("MainActivity > onCreate", "Login form not needed. Continue...")
-            // Start the Glucose monitoring service
-            startServiceGetAndProcessGlucoseData()
+            // The Glucose monitoring service is started in onStart
 
             // Setup design elements
             setContentView(R.layout.activity_main)
@@ -110,11 +109,21 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        if (::glucoseHistoricChart.isInitialized) {
+            // Start the Glucose monitoring service, or restart it: Android stops it after some hours
+            // in the background (dataSync time limit), and opening the app resets that limit.
+            startServiceGetAndProcessGlucoseData()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         Log.i("MainActivity > onResume", "Resuming main activity. Resume from background: $resumeFromBackground")
 
-        registerBroadcastReceivers(resumeFromBackground)
+        registerBroadcastReceivers()
         resumeFromBackground = false
 
         val notificationsEnabledInTheApp = !sharedPreferences.getBoolean(UserPreferences.disableNotifications, false)
@@ -148,6 +157,7 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         super.onDestroy()
 
         unregisterBroadcastReceivers()
+        handlerSessionRecoverFromBackend.removeCallbacksAndMessages(null)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -278,7 +288,11 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
         val intent = Intent(applicationContext, GlucoseValuesUpdateService::class.java)
         intent.putExtra("appConfiguration", appConfiguration)
         intent.putExtra(GlucoseValuesUpdateService.ACTION, GlucoseValuesUpdateService.START_FOREGROUND_SERVICE)
-        applicationContext.startForegroundService(intent)
+        try {
+            applicationContext.startForegroundService(intent)
+        } catch (e: Exception) {
+            Log.w("MainActivity", "Cannot start the glucose monitoring service: $e")
+        }
     }
 
     private fun updateGlucoseInformation(glucoseDataString: String): GlucoseNotificationData {
@@ -346,10 +360,13 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
        // Placeholder
     }
 
-    private fun registerBroadcastReceivers(forceRegister: Boolean = false) {
+    private fun registerBroadcastReceivers() {
         Log.i("MainActivity > registerBroadcastReceivers", "Starting...")
 
-        if ((null == broadcastReceiver) || forceRegister) {
+        // Registered once until onStop. Registering again on every onResume leaked a receiver each
+        // time the activity paused without stopping (permission dialogs, multi-window), and every
+        // leaked receiver processed and redrew each glucose update again.
+        if (null == broadcastReceiver) {
             Log.i("MainActivity > registerBroadcastReceivers", "Registering broadcast receiver...")
             broadcastReceiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
@@ -502,11 +519,13 @@ class MainActivity : AppCompatActivityWrapper(R.menu.main_menu) {
     }
 
     private fun unregisterBroadcastReceivers() {
-        try {
-            unregisterReceiver(broadcastReceiver)
-        } catch (_: Exception) {
-        } finally {
+        broadcastReceiver?.let {
+            try {
+                unregisterReceiver(it)
+            } catch (_: Exception) {
+            }
         }
+        broadcastReceiver = null
     }
 
     private fun iconSettingsOnClick() {

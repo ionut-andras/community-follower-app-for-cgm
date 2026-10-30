@@ -65,6 +65,8 @@
     <string name="messageInvalidUserKey">Invalid user key</string>
     <string name="messageUserKeyUnavailable">Could not recover user key from the cloud</string>
     <string name="notificationsRequiredInTheApp">Please enable notifications to use this app</string>
+    <string name="monitoringPausedTitle">Glucose monitoring paused</string>
+    <string name="monitoringPausedMessage">Open CGM Follower to resume monitoring</string>
     <!-- Labels / Hints -->
     <string name="hintGlucoseMinValueChart">Glucose min value (Chart)</string>
     <string name="hintEditGlucoseMinValueChart">Edit glucose min value (Chart)</string>

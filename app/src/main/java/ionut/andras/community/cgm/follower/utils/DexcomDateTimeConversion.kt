@@ -21,11 +21,12 @@ class DexcomDateTimeConversion: DateTimeConversion() {
 
         // Convert
         // Log.i("unformattedDateTime", unformattedDateTime)
-        val (unixTimestamp, _) = unformattedDateTime.split("(")[1].trim(')').split("+")
+        // Also handles negative UTC offsets ("-0500"), which splitting on "+" did not
+        val readingEpochSeconds = DexcomDate.parse(unformattedDateTime).epochSeconds
 
         val currentTimestamp = getCurrentTimestamp()
 
-        val minutesAgo = ((currentTimestamp - (unixTimestamp.toLong() / 1000)) / 60).toInt()
+        val minutesAgo = ((currentTimestamp - readingEpochSeconds) / 60).toInt()
 
         returnValue = if (0 >= minutesAgo) {
             DexcomConstants().messageNow

@@ -2,7 +2,6 @@ package ionut.andras.community.cgm.follower.plot
 
 import com.github.mikephil.charting.components.AxisBase
 import com.github.mikephil.charting.formatter.ValueFormatter
-import ionut.andras.community.cgm.follower.constants.DexcomConstants
 import kotlin.math.floor
 
 class DexcomChartValuesFormatter: ValueFormatter() {
@@ -23,13 +22,5 @@ class DexcomChartValuesFormatter: ValueFormatter() {
         return hour.toString().padStart(2, '0')
             .plus(":")
             .plus(minute.toString().padStart(2, '0'))
-    }
-
-    fun formatTimeForChartDisplay(timestampValue: Long): Float {
-        return timestampValue.toDouble().mod(DexcomConstants().maxDisplayIntervalSeconds.toDouble()).toFloat()
-    }
-
-    fun formatTimeForChartDisplay(timestampValue: Float): Float {
-        return timestampValue.mod(DexcomConstants().maxDisplayIntervalSeconds.toDouble()).toFloat()
     }
 }

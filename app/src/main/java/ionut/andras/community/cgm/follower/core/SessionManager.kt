@@ -120,9 +120,11 @@ class SessionManager (private val applicationContext: Context) {
                                 )
                                 runModeHelper.switchRunModeTo(ApplicationRunMode.FOLLOWER)
 
+                                // CLEAR_TOP replaces the running MainActivity. Without it every
+                                // session recovery stacked one more MainActivity (with its chart).
                                 val redirectIntent =
                                     Intent(applicationContext, MainActivity::class.java).apply {
-                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                                     }
                                 applicationContext.startActivity(redirectIntent)
                             } else {

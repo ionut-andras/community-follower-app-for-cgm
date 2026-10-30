@@ -49,6 +49,11 @@ open class HttpRequestHandler {
             val connection = url.openConnection() as HttpsURLConnection
 
             try {
+                // Android's default is to wait forever. A stalled connection would then block
+                // this call, and the refresh waiting on it, until the process dies.
+                connection.connectTimeout = CONNECT_TIMEOUT_MILLIS
+                connection.readTimeout = READ_TIMEOUT_MILLIS
+
                 connection.requestMethod = method
                 Log.i("httpRequest > method", connection.requestMethod)
 
@@ -104,6 +109,11 @@ open class HttpRequestHandler {
         }
         Log.i("httpRequest > returnValue", returnValue.toString())
         return returnValue
+    }
+
+    companion object {
+        const val CONNECT_TIMEOUT_MILLIS = 15_000
+        const val READ_TIMEOUT_MILLIS = 30_000
     }
 
 }

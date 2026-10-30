@@ -102,12 +102,69 @@ class GlucoseValuesUpdateService : Service() {
         ContextCompat.registerReceiver(this, broadcastReceiver, IntentFilter(BroadcastActions.USER_REQUEST_REFRESH), flags)
         ContextCompat.registerReceiver(this, broadcastReceiver, IntentFilter(BroadcastActions.TEMPORARY_DISABLE_NOTIFICATIONS_SOUND), flags)
 
-        // Send the notification needed by OS in order to start a foreground service
-        val title = "Starting " + applicationContext.getString(R.string.app_name) + " in background"
-        sendInitialNotificationAndStartForegroundService(GlucoseNotificationData(title, "", "now"))
-
         // Start One Time PIN SMS listener
         OtpSmsListener(applicationContext)
+    }
+
+    /**
+     * Shows the service notification and moves the service to the foreground.
+     *
+     * Returns false when Android refuses, for example when the daily time of dataSync foreground
+     * services is used up and the app is in the background.
+     */
+    private fun promoteToForeground(): Boolean {
+        return try {
+            // Send the notification needed by OS in order to start a foreground service
+            val title = "Starting " + applicationContext.getString(R.string.app_name) + " in background"
+            sendInitialNotificationAndStartForegroundService(GlucoseNotificationData(title, "", "now"))
+            true
+        } catch (e: Exception) {
+            Log.w("GlucoseValuesUpdateService", "Cannot run in the foreground: $e")
+            false
+        }
+    }
+
+    /**
+     * Android 15+ gives dataSync foreground services 6 hours a day while the app is in the
+     * background. When the time is up the service has a few seconds to stop. Otherwise Android
+     * reports an ANR (Android 15) or crashes the app (Android 16+), and refuses to restart the
+     * service until the user opens the app. Stop cleanly and tell the user how to resume.
+     */
+    override fun onTimeout(startId: Int, fgsType: Int) {
+        Log.w("GlucoseValuesUpdateService", "Foreground service time limit reached (type $fgsType). Stopping...")
+        notifyMonitoringPaused()
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
+    }
+
+    private fun notifyMonitoringPaused() {
+        try {
+            val notificationIntent = Intent(this, MainActivity::class.java)
+            val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE)
+            notificationManager.setBuilderContentIntent(pendingIntent)
+            notificationManager.setAlarmType(DexcomAlarmType.NORMAL)
+            notificationManager.setAutoCancelNotificationFlag(false)
+            // Replaces the last glucose notification, which would otherwise look current
+            notificationManager.triggerNotification(
+                getString(R.string.monitoringPausedTitle),
+                getString(R.string.monitoringPausedMessage)
+            )
+        } catch (e: Exception) {
+            Log.w("GlucoseValuesUpdateService", "Cannot show the monitoring paused notification: $e")
+        }
+    }
+
+    /**
+     * Builds the configuration from the saved preferences, the same way MainActivity does.
+     * Used when the system restarts the service on its own, without MainActivity's intent.
+     */
+    private fun loadConfigurationFromPreferences(): Configuration {
+        val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
+        return Configuration().apply {
+            username = sharedPreferences.getString(UserPreferences.loginEmail, null)
+            password = sharedPreferences.getString(UserPreferences.loginPassword, null)
+            dexcomSessionID = sharedPreferences.getString(UserPreferences.dexcomSessionId, null)
+        }
     }
 
     private fun parseBroadcastExtraInfo(intent: Intent?) {
@@ -127,11 +184,29 @@ class GlucoseValuesUpdateService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
 
-        val serviceAction = intent?.getStringExtra(ACTION)
+        // A null intent means the system restarted the service after the process was killed.
+        // Resume monitoring instead of sitting idle behind the "Starting..." notification.
+        val serviceAction = if (null == intent) START_FOREGROUND_SERVICE else intent.getStringExtra(ACTION)
 
-        Log.i("onStartCommand", "Action: $serviceAction")
+        Log.i("onStartCommand", "Action: $serviceAction (restarted by system: ${null == intent})")
+
+        if (!promoteToForeground()) {
+            // Opening the app starts the service again
+            stopSelf()
+            return START_NOT_STICKY
+        }
+
+        if (!::appConfiguration.isInitialized) {
+            appConfiguration = loadConfigurationFromPreferences()
+        }
 
         parseBroadcastExtraInfo(intent)
+
+        if (null == intent && glucoseRetrievalSession.isNullOrEmpty() && appConfiguration.password.isNullOrEmpty()) {
+            Log.i("onStartCommand", "Restarted by system but nobody is logged in. Stopping...")
+            stopSelf()
+            return START_NOT_STICKY
+        }
 
         when (serviceAction) {
             START_FOREGROUND_SERVICE -> startServiceInForeground()
@@ -217,7 +292,14 @@ class GlucoseValuesUpdateService : Service() {
                     // - try to identify why it fails before running get glucose data using a full flow
                     when (getApiResponseErrorCode()) {
                         DexcomErrorCodes.SESSION_NOT_FOUND -> {
-                            broadcastLoginFailedSessionNotFound()
+                            if (hasStoredCredentials()) {
+                                // Owner: the Dexcom session expired. Log in again with the saved
+                                // credentials, otherwise the readings stay frozen until logout.
+                                getAndProcessUserGlucoseData()
+                            } else {
+                                // Follower: only the owner can renew it, ask the backend for it
+                                broadcastLoginFailedSessionNotFound()
+                            }
                         }
 
                         else -> {
@@ -439,8 +521,24 @@ class GlucoseValuesUpdateService : Service() {
         return returnValue
     }
 
+    private fun hasStoredCredentials(): Boolean {
+        val sharedPreferences = SharedPreferencesFactory(applicationContext).getInstance()
+        return !sharedPreferences.getString(UserPreferences.loginEmail, null).isNullOrEmpty() &&
+            !sharedPreferences.getString(UserPreferences.loginPassword, null).isNullOrEmpty()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        // Stop the periodic refresh, it is posted on the main looper and outlives the service
+        if (::handler.isInitialized && ::runnable.isInitialized) {
+            handler.removeCallbacks(runnable)
+        }
+        try {
+            unregisterReceiver(broadcastReceiver)
+        } catch (_: Exception) {
+            // Already unregistered by stopServiceFromForeground
+        }
+        isServiceRunning = false
         serviceScope.cancel()
     }
 

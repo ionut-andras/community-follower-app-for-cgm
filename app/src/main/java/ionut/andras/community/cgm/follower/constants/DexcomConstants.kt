@@ -27,9 +27,6 @@ open class DexcomConstants () {
     var messageNow = "Now"
     var messageMinutesAgo = "m ago"
 
-    val stepDisplayIntervalSeconds = 5 * 60
-    val maxDisplayIntervalSeconds = 24 * 3600
-
 
     val baseUrlKey = "dexcom_base_url"
     val baseUrlGeolocationKey = "dexcom_base_url_geolocation"
