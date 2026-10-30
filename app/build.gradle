@@ -12,8 +12,8 @@ android {
         applicationId "ionut.andras.community.cgm.follower"
         minSdk = 28
         targetSdk = 37
-        versionCode 99
-        versionName '2.1.4'
+        versionCode 100
+        versionName '2.2.0'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testFunctionalTest false
